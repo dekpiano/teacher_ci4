@@ -66,6 +66,7 @@ $routes->get('login/googleCallback', 'Login::googleCallback');
 
     // Curriculum Routes
     $routes->group('curriculum', static function ($routes) {
+        $routes->get('', 'CurriculumController::index');
         $routes->get('SendPlan', 'CurriculumController::index');
         $routes->get('(:num)/(:num)', 'CurriculumController::index/$1/$2');
         $routes->get('send-plan', 'CurriculumController::sendPlan');
@@ -75,4 +76,7 @@ $routes->get('login/googleCallback', 'Login::googleCallback');
         $routes->post('set-main-subject', 'CurriculumController::setMainSubject');
         $routes->get('delete-plan/(:num)', 'CurriculumController::deletePlan/$1');
         $routes->get('download-plan-file/(:num)', 'CurriculumController::downloadPlanFile/$1');
+        $routes->get('download-plan', 'CurriculumController::loadPlan');
+        $routes->get('download-plan/(:num)/(:num)/(:any)', 'CurriculumController::loadPlan/$1/$2/$3');
+        $routes->get('download-plan-zip/(:any)', 'CurriculumController::downloadPlanZip/$1');
     });

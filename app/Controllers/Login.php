@@ -13,7 +13,10 @@ class Login extends BaseController
     public function __construct()
     {
         //$path = (dirname(dirname(dirname(dirname((dirname(__FILE__)))))));
-		require SHARED_LIB_PATH.'/google_sheet/vendor/autoload.php';
+		//require SHARED_LIB_PATH.'/google_sheet/vendor/autoload.php';
+
+        $path = (dirname(dirname(dirname(dirname((dirname(__FILE__)))))));
+		require $path . '/librarie_skj/google_sheet/vendor/autoload.php';
 
         $this->googleClient = new Client();
         $this->googleClient->setClientId(getenv('GOOGLE_CLIENT_ID'));
@@ -87,6 +90,7 @@ class Login extends BaseController
                 // Check if user exists in database
                 $user = $model->checkGoogleLogin($email);
 
+                
                 if ($user) {
                     // Update user's OAuth UID and last updated time
                     $model->updateGoogleUserData($email, $userData['id']);

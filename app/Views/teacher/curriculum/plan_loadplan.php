@@ -88,7 +88,7 @@
                                             'files' => []
                                         ];
                                     }
-                                    $organizedPlans[$key]['files'][$p->seplan_typeplan] = $p->seplan_file;
+                                    $organizedPlans[$key]['files'][$p->seplan_typeplan] = ['file' => $p->seplan_file, 'id' => $p->seplan_ID];
                                 }
                                 ?>
                                 <?php foreach ($organizedPlans as $op):?>
@@ -99,13 +99,44 @@
                                     <td><?= esc($op['seplan_typesubject']) ?></td>
 
                                     <?php foreach($typeplan as $tp): ?>
-                                    <td>
-                                        <?php if(isset($op['files'][$tp]) && !empty($op['files'][$tp])): ?>
-                                        <a href="<?= base_url('uploads/academic/course/plan/' . esc($op['seplan_year']) . '/' . esc($op['seplan_term']) . '/' . esc($op['seplan_namesubject']) . '/' . esc($op['files'][$tp])) ?>"
-                                            target="_blank" rel="noopener noreferrer">
-                                            <span class="badge badge-primary h6 text-white"><i class="bi bi-eye-fill"
-                                                    aria-hidden="true" data-toggle="popover" data-trigger="hover"
-                                                    data-content="เปิดดู" data-placement="top"></i></span>
+                                    <td class="text-center">
+                                        <?php if(isset($op['files'][$tp]) && !empty($op['files'][$tp]['file'])):
+                                            $file = $op['files'][$tp]['file'];
+                                            $id = $op['files'][$tp]['id'];
+                                            $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                                            $iconClass = '';
+                                            switch ($ext) {
+                                                case 'pdf':
+                                                    $iconClass = 'bi-file-earmark-pdf-fill text-danger';
+                                                    break;
+                                                case 'doc':
+                                                case 'docx':
+                                                    $iconClass = 'bi-file-earmark-word-fill text-primary';
+                                                    break;
+                                                case 'xls':
+                                                case 'xlsx':
+                                                    $iconClass = 'bi-file-earmark-excel-fill text-success';
+                                                    break;
+                                                case 'ppt':
+                                                case 'pptx':
+                                                    $iconClass = 'bi-file-earmark-ppt-fill text-warning';
+                                                    break;
+                                                case 'zip':
+                                                case 'rar':
+                                                    $iconClass = 'bi-file-earmark-zip-fill text-secondary';
+                                                    break;
+                                                case 'jpg':
+                                                case 'jpeg':
+                                                case 'png':
+                                                case 'gif':
+                                                    $iconClass = 'bi-file-earmark-image-fill text-info';
+                                                    break;
+                                                default:
+                                                    $iconClass = 'bi-file-earmark-arrow-down-fill';
+                                            }
+                                        ?>
+                                        <a href="<?= site_url('curriculum/download-plan-file/' . esc($id)) ?>">
+                                            <i class="bi <?= $iconClass ?> h4"></i>
                                         </a>
                                         <?php else: ?>
                                         <span class="badge badge-danger h6 text-white">ยังไม่ส่ง</span>
@@ -145,7 +176,7 @@ $(document).ready(function() {
         var yearParts = selectedYearTerm.split('/');
         var year = yearParts[0];
         var term = yearParts[1];
-        window.location.href = '<?= site_url('curriculum/load-plan/') ?>' + year + '/' + term + '/' + selectedTeacher;
+        window.location.href = '<?= site_url('curriculum/download-plan/') ?>' + year + '/' + term + '/' + selectedTeacher;
     });
 
     // Initialize DataTables if needed

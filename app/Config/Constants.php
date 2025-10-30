@@ -99,5 +99,5 @@ if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'localhost') {
     defined('SHARED_LIB_PATH') OR define('SHARED_LIB_PATH', 'D:\xampp\librarie_skj');
 } else {
     // โค้ดกำลังรันบนโฮสต์จริง (production environment)
-    defined('SHARED_LIB_PATH') OR define('SHARED_LIB_PATH', '/var/www/shared_libs');
+    defined('SHARED_LIB_PATH') OR define('SHARED_LIB_PATH', '/domains/librarie_skj');
 }

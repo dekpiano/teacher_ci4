@@ -159,14 +159,14 @@
                                     <i class="nav-arrow bi bi-chevron-right"></i>
                                 </p>
                             </a>
-                            <ul class="nav nav-treeview">
+                            <!-- <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="#" class="nav-link">
                                         <i class="nav-icon bi bi-circle"></i>
                                         <p>เชื่คชื่อโฮมรูม</p>
                                     </a>
                                 </li>
-                            </ul>
+                            </ul> -->
                         </li>
 
                         <li class="nav-item">
@@ -234,14 +234,14 @@
         <!--begin::Footer-->
         <footer class="app-footer">
             <!--begin::To the end-->
-            <div class="float-end d-none d-sm-inline">Anything you want</div>
+            <!-- <div class="float-end d-none d-sm-inline">Anything you want</div> -->
             <!--end::To the end-->
             <!--begin::Copyright-->
             <strong>
-                Copyright &copy; 2014-2025&nbsp;
-                <a href="https://adminlte.io" class="text-decoration-none">AdminLTE.io</a>.
+                Copyright &copy; 2025&nbsp;
+                <a href="https://facebook.com/dekpiano" class="text-decoration-none">Dekpiano</a>.
             </strong>
-            All rights reserved.
+            ผู้พัฒนาระบบ
             <!--end::Copyright-->
         </footer>
         <!--end::Footer-->

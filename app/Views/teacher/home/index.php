@@ -54,7 +54,7 @@
             </div>
 
             <div class="row">
-                <div class="col-md-12">
+                <!-- <div class="col-md-12">
                     <div class="card card-primary card-outline">
                         <div class="card-header">
                             <h3 class="card-title">
@@ -74,7 +74,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="col-md-12 mt-4">
                     <div class="card card-danger card-outline">
                         <div class="card-header">
@@ -122,9 +122,9 @@
                                     </div>
                                     <p class="mb-1">อัปโหลดและส่งแผนการสอนเพื่อขออนุมัติ</p>
                                 </a>
-                                <a href="#" class="list-group-item list-group-item-action">
+                                <a href="<?= base_url('curriculum/download-plan') ?>" class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">ดาวน์โหลดแผนการสอน</h5>
+                                    <h5 class="mb-1">ดาวน์โหลดแผน</h5>
                                         <small><i class="bi bi-arrow-right-circle-fill list-group-icon"></i></small>
                                     </div>
                                     <p class="mb-1">ดาวน์โหลดแผนการสอนที่ได้รับอนุมัติแล้ว</p>
