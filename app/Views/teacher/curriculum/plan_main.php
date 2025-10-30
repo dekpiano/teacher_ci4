@@ -540,15 +540,18 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = `<?= site_url('curriculum/') ?>${selectedYearTerm}`;
     });
 
-    // Modal Update
-    const modalUpdatePlan = new bootstrap.Modal(document.getElementById('ModalUpdatePlan'));
+    // --- Modal Handling --- 
+    const modalUpdatePlanEl = document.getElementById('ModalUpdatePlan');
+    const modalUpdatePlan = new bootstrap.Modal(modalUpdatePlanEl);
+
+    // Populate modal with data when triggered
     document.querySelectorAll('.Model_update').forEach(button => {
         button.addEventListener('click', function() {
             document.getElementById('seplan_ID').value = this.dataset.seplanId;
             document.getElementById('seplan_typeplan').value = this.dataset.seplanTypeplan;
             document.getElementById('seplan_coursecode').value = this.dataset.seplanCoursecode;
             document.getElementById('seplan_sendcomment').value = this.dataset.seplanSendcomment;
-            // modalUpdatePlan.show(); // This might be an error in original code, let's keep it as is.
+            modalUpdatePlan.show();
         });
     });
 
@@ -570,38 +573,25 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
+                modalUpdatePlan.hide(); // Hide modal on response
                 if (data.status === 'success') {
-                    submitButton.classList.remove('btn-danger');
-                    submitButton.classList.add('btn-warning');
-                    submitButton.innerHTML = originalButtonHtml; // Restore text before reload
                     Swal.fire('สำเร็จ', data.message, 'success').then(() => location.reload());
                 } else {
                     Swal.fire('ผิดพลาด', data.message, 'error');
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = originalButtonHtml;
                 }
             })
             .catch(error => {
+                modalUpdatePlan.hide(); // Hide modal on error
                 console.error('Error:', error);
                 Swal.fire('ผิดพลาด', 'เกิดข้อผิดพลาดในการอัปโหลดไฟล์', 'error');
+            })
+            .finally(() => {
+                // Restore button state regardless of outcome
                 submitButton.disabled = false;
                 submitButton.innerHTML = originalButtonHtml;
             });
         });
     }
-    
-    // Re-enable showing the modal which might have been a bug in original code
-    document.querySelectorAll('.Model_update').forEach(button => {
-        button.addEventListener('click', function() {
-            // This logic was already present, just ensuring the modal shows
-            const modal = new bootstrap.Modal(document.getElementById('ModalUpdatePlan'));
-            document.getElementById('seplan_ID').value = this.dataset.seplanId;
-            document.getElementById('seplan_typeplan').value = this.dataset.seplanTypeplan;
-            document.getElementById('seplan_coursecode').value = this.dataset.seplanCoursecode;
-            document.getElementById('seplan_sendcomment').value = this.dataset.seplanSendcomment;
-            modal.show();
-        });
-    });
 });
 </script>
 <?= $this->endSection() ?>

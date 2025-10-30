@@ -115,7 +115,7 @@
                         </div>
                         <div class="card-body">
                             <div class="list-group">
-                                <a href="<?= base_url('curriculum/') ?>" class="list-group-item list-group-item-action">
+                                <a href="<?= base_url('curriculum/SendPlan') ?>" class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h5 class="mb-1">ส่งแผนการสอน</h5>
                                         <small><i class="bi bi-arrow-right-circle-fill list-group-icon"></i></small>
