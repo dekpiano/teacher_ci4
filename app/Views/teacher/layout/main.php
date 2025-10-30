@@ -62,6 +62,8 @@
         integrity="sha256-4MX+61mt9NVvvuPjUWdUdyfZfxSB1/Rf9WtqRHgG5S0=" crossorigin="anonymous" />
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 </head>
 
 <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
@@ -205,9 +207,17 @@
                                 <li class="nav-item">
                                     <a href="<?= base_url('curriculum/SendPlan') ?>" class="nav-link">
                                         <i class="nav-icon bi bi-circle"></i>
-                                        <p>ส่งแผนการสอน</p>
+                                        <p>ส่งแผนการสอน </p>
                                     </a>
                                 </li>
+                                <?php if (session()->get('pers_groupleade') !== null && session()->get('pers_groupleade') !== ''): ?>
+                                <li class="nav-item">
+                                    <a href="<?= base_url('curriculum/check-plan-head') ?>" class="nav-link">
+                                        <i class="nav-icon bi bi-check-circle-fill"></i>
+                                        <p>ตรวจแผน (หน.กลุ่มสาระ)</p>
+                                    </a>
+                                </li>
+                                <?php endif; ?>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link">
                                         <i class="nav-icon bi bi-circle"></i>
@@ -291,13 +301,16 @@
     });
     </script>
     <!--end::OverlayScrollbars Configure-->
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     <!-- OPTIONAL SCRIPTS -->
     <?= $this->renderSection('scripts') ?>
     <script>
         $(function() {
             var current_url = window.location.href;
             $(".sidebar-menu .nav-link").each(function() {
-                if (this.href === current_url) {
+                if (current_url.startsWith(this.href) && this.href.length > 1) { // Added length check to avoid matching empty href
                     $(this).addClass("active");
                     var treeview = $(this).closest(".nav-treeview");
                     if (treeview.length) {

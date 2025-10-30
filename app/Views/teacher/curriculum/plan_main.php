@@ -248,7 +248,7 @@
                                                     } elseif ($v_plan->seplan_status1 == 'ไม่ผ่าน') {
                                                         echo '<span class="badge bg-danger" title="' . esc($v_plan->seplan_comment1) . '">ไม่ผ่าน</span>';
                                                     } else {
-                                                        echo '<span class="badge bg-light text-dark">รอตรวจ</span>';
+                                                        echo '<span class="badge bg-warning">รอตรวจ</span>';
                                                     }
                                                 ?>
                                                 </span>
@@ -259,7 +259,7 @@
                                                     } elseif ($v_plan->seplan_status2 == 'ไม่ผ่าน') {
                                                         echo '<span class="badge bg-danger" title="' . esc($v_plan->seplan_comment2) . '">ไม่ผ่าน</span>';
                                                     } else {
-                                                        echo '<span class="badge bg-light text-dark">รอตรวจ</span>';
+                                                        echo '<span class="badge bg-warning">รอตรวจ</span>';
                                                     }
                                                 ?>
                                                 </span>

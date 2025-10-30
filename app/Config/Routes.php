@@ -79,4 +79,12 @@ $routes->get('login/googleCallback', 'Login::googleCallback');
         $routes->get('download-plan', 'CurriculumController::loadPlan');
         $routes->get('download-plan/(:num)/(:num)/(:any)', 'CurriculumController::loadPlan/$1/$2/$3');
         $routes->get('download-plan-zip/(:any)', 'CurriculumController::downloadPlanZip/$1');
+
+        // Routes for Head of Department
+        $routes->get('check-plan-head', 'CurriculumController::checkPlanHead');
+        $routes->get('check-plan-head-detail/(:any)', 'CurriculumController::checkPlanHeadDetail/$1');
+        $routes->get('check-plan-head-detail/(:any)/(:num)/(:num)', 'CurriculumController::checkPlanHeadDetail/$1/$2/$3');
+        $routes->post('update_status1', 'CurriculumController::update_status1');
+        $routes->post('get_comment', 'CurriculumController::get_comment');
+        $routes->post('save_comment', 'CurriculumController::save_comment');
     });

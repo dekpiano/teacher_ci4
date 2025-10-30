@@ -22,9 +22,9 @@ class LoginModel extends Model
 
     public function checkGoogleLogin($email)
     {
-        return $this->select('pers_id, pers_username, CONCAT(pers_firstname, " ", pers_lastname) as fullname, pers_img')
+        return $this->select('pers_id, pers_username, CONCAT(pers_firstname, " ", pers_lastname) as fullname, pers_img,pers_groupleade,pers_learning')
                      ->where('pers_username', $email)
-                     ->where('pers_status', 'กำลังใช้งาน')
+                     //->where('pers_status', 'กำลังใช้งาน')
                      ->first();
     }
 

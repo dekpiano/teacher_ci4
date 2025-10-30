@@ -840,6 +840,119 @@ class CurriculumController extends BaseController
         return $this->response->setJSON(['success' => $result]);
     }
 
+
+    public function checkPlanHead()
+    {
+        $data['title'] = "ตรวจสอบแผนการสอน (เลือกครู)";
+
+        $user_learning_group = $this->session->get('pers_learning');
+
+        $data['teachers'] = $this->db_personnel->table('tb_personnel')
+            ->select('pers_id, pers_prefix, pers_firstname, pers_lastname, pers_img')
+            ->where('pers_learning', $user_learning_group)
+            ->where('pers_status', 'กำลังใช้งาน')
+            ->orderBy('pers_firstname', 'ASC')
+            ->get()->getResult();
+
+            //print_r($data['teachers']); exit;
+        return view('teacher/curriculum/plan_check_head_teachers', $data);
+    }
+
+    public function checkPlanHeadDetail($teacher_id = null, $year = null, $term = null)
+    {
+        if ($teacher_id === null) {
+            return redirect()->to('curriculum/check-plan-head')->with('error', 'ไม่ได้ระบุรหัสครู');
+        }
+
+        $data['teacher_info'] = $this->db_personnel->table('tb_personnel')
+            ->select('pers_id, pers_prefix, pers_firstname, pers_lastname')
+            ->where('pers_id', $teacher_id)
+            ->get()->getRow();
+
+        $data['title'] = "ตรวจสอบแผนการสอน: " . $data['teacher_info']->pers_firstname;
+
+        // Determine current year and term if not provided
+        if ($year === null || $term === null) {
+            if (!empty($this->setup)) {
+                $year = $this->setup->seplanset_year;
+                $term = $this->setup->seplanset_term;
+            } else {
+                $year = date('Y') + 543;
+                $term = 1;
+            }
+        }
+
+        $data['current_year'] = $year;
+        $data['current_term'] = $term;
+        $data['upload_base_url'] = env('upload.server.baseurl');
+
+        $data['CheckYear'] = $this->curriculumModel->select('seplan_year,seplan_term')
+            ->distinct()
+            ->orderBy('seplan_year', 'desc')
+            ->orderBy('seplan_term', 'desc')
+            ->get()->getResult();
+
+        $data['plans'] = $this->curriculumModel
+            ->select('tb_send_plan.*, u.pers_firstname, u.pers_lastname')
+            ->join($this->db_personnel->database . '.tb_personnel as u', 'u.pers_id = tb_send_plan.seplan_usersend')
+            ->where('tb_send_plan.seplan_usersend', $teacher_id)
+            ->where('tb_send_plan.seplan_year', $year)
+            ->where('tb_send_plan.seplan_term', $term)
+            ->groupBy('tb_send_plan.seplan_ID')
+            ->orderBy('tb_send_plan.seplan_namesubject', 'ASC')
+            ->get()->getResult();
+
+        return view('teacher/curriculum/plan_check_head_detail', $data);
+    }
+
+    public function update_status1()
+    {
+        if ($this->request->isAJAX()) {
+            $plan_id = $this->request->getPost('plan_id');
+            $status = $this->request->getPost('status');
+
+            $result = $this->curriculumModel->update($plan_id, ['seplan_status1' => $status]);
+
+            if ($result) {
+                return $this->response->setJSON(['success' => true]);
+            }
+        }
+        return $this->response->setJSON(['success' => false]);
+    }
+
+    public function get_comment()
+    {
+        if ($this->request->isAJAX()) {
+            $plan_id = $this->request->getPost('plan_id');
+            $comment_type = $this->request->getPost('comment_type');
+            $field = ($comment_type == 1) ? 'seplan_comment1' : 'seplan_comment2';
+
+            $plan = $this->curriculumModel->find($plan_id);
+
+            if ($plan) {
+                return $this->response->setJSON(['comment' => $plan[$field]]);
+            }
+        }
+        return $this->response->setJSON(['comment' => '']);
+    }
+
+    public function save_comment()
+    {
+        if ($this->request->isAJAX()) {
+            $plan_id = $this->request->getPost('plan_id');
+            $comment_type = $this->request->getPost('comment_type');
+            $comment = $this->request->getPost('comment');
+            $field = ($comment_type == 1) ? 'seplan_comment1' : 'seplan_comment2';
+
+            $result = $this->curriculumModel->update($plan_id, [$field => $comment]);
+
+            if ($result) {
+                return $this->response->setJSON(['success' => true]);
+            }
+        }
+        return $this->response->setJSON(['success' => false]);
+    }
+
     public function settingPlan()
     {
         $data['title'] = "ตั้งค่า";

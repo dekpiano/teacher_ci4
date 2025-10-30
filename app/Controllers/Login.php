@@ -100,6 +100,8 @@ class Login extends BaseController
                         'gmail_account'  => $user['pers_username'],
                         'fullname'       => $user['fullname'],
                         'person_img'     => $user['pers_img'],
+                        'pers_groupleade' => $user['pers_groupleade'],
+                        'pers_learning' => $user['pers_learning'],
                         'isLoggedIn'     => TRUE
                     ];
                     $session->set($ses_data);

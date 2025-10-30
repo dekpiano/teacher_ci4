@@ -129,6 +129,15 @@
                                     </div>
                                     <p class="mb-1">ดาวน์โหลดแผนการสอนที่ได้รับอนุมัติแล้ว</p>
                                 </a>
+                                <?php if (session()->get('pers_groupleade') !== null && session()->get('pers_groupleade') !== ''): ?>
+                                <a href="<?= base_url('curriculum/check-plan-head') ?>" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">ตรวจแผน (หน.กลุ่มสาระ)</h5>
+                                        <small><i class="bi bi-arrow-right-circle-fill list-group-icon"></i></small>
+                                    </div>
+                                    <p class="mb-1">ตรวจสอบและอนุมัติแผนการสอนของครูในกลุ่มสาระ</p>
+                                </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
