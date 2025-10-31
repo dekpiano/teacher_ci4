@@ -182,6 +182,19 @@ class CurriculumController extends BaseController
             return $this->response->setStatusCode(200);
         }
 
+        $rules = [
+            'seplan_file' => [
+                'rules' => 'ext_in[seplan_file,doc,docx,pdf]',
+                'errors' => [
+                    'ext_in' => 'อนุญาตเฉพาะไฟล์ .doc, .docx, .pdf เท่านั้น'
+                ]
+            ]
+        ];
+
+        if (!$this->validate($rules)) {
+            return $this->response->setJSON(['status' => 'error', 'message' => $this->validator->getErrors()['seplan_file']]);
+        }
+
         $post = $this->request->getPost();
         $seplan_ID = $post['seplan_ID'] ?? null;
 

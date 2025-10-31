@@ -48,3 +48,7 @@ Options -Indexes
 # Disable server signature start
 ServerSignature Off
 # Disable server signature end
+
+# Set PHP values for file upload limits
+php_value upload_max_filesize 64M
+php_value post_max_size 64M
