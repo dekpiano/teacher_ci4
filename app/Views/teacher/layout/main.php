@@ -12,16 +12,17 @@
     <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
     <!--end::Accessibility Meta Tags-->
     <!--begin::Primary Meta Tags-->
-    <meta name="title" content="AdminLTE | Dashboard v2" />
-    <meta name="author" content="ColorlibHQ" />
+    <meta name="title" content="ระบบงานครู สกจ.9" />
+    <meta name="author" content="Dekpiano" />
     <meta name="description"
-        content="AdminLTE is a Free Bootstrap 5 Admin Dashboard, 30 example pages using Vanilla JS. Fully accessible with WCAG 2.1 AA compliance." />
+        content="ระบบบริหารจัดการข้อมูลสำหรับครู โรงเรียนสวนกุหลาบวิทยาลัย (จิรประวัติ) นครสวรรค์ ช่วยในการจัดการงานวิชาการ งานวัดผล และงานหลักสูตร" />
     <meta name="keywords"
-        content="bootstrap 5, bootstrap, bootstrap 5 admin dashboard, bootstrap 5 dashboard, bootstrap 5 charts, bootstrap 5 calendar, bootstrap 5 datepicker, bootstrap 5 tables, bootstrap 5 datatable, vanilla js datatable, colorlibhq, colorlibhq dashboard, colorlibhq admin dashboard, accessible admin panel, WCAG compliant" />
+        content="ระบบงานครู, สกจ.9, โรงเรียนสวนกุหลาบวิทยาลัย (จิรประวัติ) นครสวรรค์, งานวิชาการ, งานวัดผล, งานหลักสูตร, ครู, การศึกษา" />
     <!--end::Primary Meta Tags-->
     <!--begin::Accessibility Features-->
     <!-- Skip links will be dynamically added by accessibility.js -->
     <meta name="supported-color-schemes" content="light dark" />
+    <link href="https://skj.ac.th/uploads/logoSchool/LogoSKJ_4.png" rel="icon">
     <link rel="preload" href="<?=base_url()?>assets/adminlte/dist/css/adminlte.css" as="style" />
     <!--end::Accessibility Features-->
     <!--begin::Fonts-->
@@ -150,12 +151,19 @@
                     <!--begin::Sidebar Menu-->
                     <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="navigation"
                         aria-label="Main navigation" data-accordion="false" id="navigation">
+                        <!-- <li class="nav-header">ทั่วไป</li> -->
+                        <li class="nav-item">
+                            <a href="<?=base_url();?>" class="nav-link">
+                                <i class="nav-icon bi bi-house-door-fill"></i>
+                                <p>หน้าหลัก</p>
+                            </a>
+                        </li>
                         <li class="nav-header">งานวิชาการ</li>
 
 
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-box-seam-fill"></i>
+                                <i class="nav-icon bi bi-person-fill"></i>
                                 <p>
                                     ครูผู้สอน
                                     <i class="nav-arrow bi bi-chevron-right"></i>
@@ -173,7 +181,7 @@
 
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-box-seam-fill"></i>
+                                <i class="nav-icon bi bi-file-earmark-ruled-fill"></i>
                                 <p>
                                     งานวัดผล
                                     <i class="nav-arrow bi bi-chevron-right"></i>
@@ -182,13 +190,13 @@
                             <ul class="nav nav-treeview">
                                 <li class="nav-item ">
                                     <a href="<?= base_url('assessment/save-score-normal') ?>" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
+                                        <i class="nav-icon bi bi-journal-text"></i>
                                         <p>บันทึกผลการเรียน(ปกติ)</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="<?= base_url('assessment/save-score-repeat') ?>" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
+                                        <i class="nav-icon bi bi-arrow-repeat"></i>
                                         <p>บันทึกผลการเรียน(ซ้ำ)</p>
                                     </a>
                                 </li>
@@ -197,7 +205,7 @@
 
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-box-seam-fill"></i>
+                                <i class="nav-icon bi bi-book-fill"></i>
                                 <p>
                                     งานหลักสูตร
                                     <i class="nav-arrow bi bi-chevron-right"></i>
@@ -206,7 +214,7 @@
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="<?= base_url('curriculum/SendPlan') ?>" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
+                                        <i class="nav-icon bi bi-cloud-arrow-up-fill"></i>
                                         <p>ส่งแผนการสอน </p>
                                     </a>
                                 </li>
@@ -220,7 +228,7 @@
                                 <?php endif; ?>
                                 <li class="nav-item">
                                     <a href="<?= base_url('curriculum/download-plan') ?>" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
+                                        <i class="nav-icon bi bi-cloud-arrow-down-fill"></i>
                                         <p>ดาวโหลดแผน</p>
                                     </a>
                                 </li>
@@ -228,7 +236,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="./generate/theme.html" class="nav-link">
-                                <i class="nav-icon bi bi-palette"></i>
+                                <i class="nav-icon bi bi-award-fill"></i>
                                 <p>งานประกันคุณภาพ</p>
                             </a>
                         </li>
@@ -309,8 +317,23 @@
     <script>
         $(function() {
             var current_url = window.location.href;
+
+            // Normalize current_url: remove trailing slash unless it's the root itself
+            if (current_url.endsWith('/') && current_url.length > (window.location.origin + '/').length) {
+                current_url = current_url.slice(0, -1);
+            }
+
             $(".sidebar-menu .nav-link").each(function() {
-                if (current_url.startsWith(this.href) && this.href.length > 1) { // Added length check to avoid matching empty href
+                var link_href = this.href;
+
+                // Normalize link_href: remove trailing slash unless it's the root itself
+                if (link_href.endsWith('/') && link_href.length > (window.location.origin + '/').length) {
+                    link_href = link_href.slice(0, -1);
+                }
+
+                // Check if the current URL exactly matches the link's href
+                // OR if the current URL starts with the link's href AND the link's href is not just the base URL
+                if (current_url === link_href || (current_url.startsWith(link_href) && link_href !== '<?=base_url();?>' && link_href.length > 1)) {
                     $(this).addClass("active");
                     var treeview = $(this).closest(".nav-treeview");
                     if (treeview.length) {

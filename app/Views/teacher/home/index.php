@@ -12,7 +12,7 @@
         <!--begin::Container-->
         <div class="container-fluid">
             <!--begin::Row-->
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-sm-6">
                     <h3 class="mb-0">Dashboard v2</h3>
                 </div>
@@ -22,7 +22,7 @@
                         <li class="breadcrumb-item active" aria-current="page">Dashboard v2</li>
                     </ol>
                 </div>
-            </div>
+            </div> -->
             <!--end::Row-->
         </div>
         <!--end::Container-->
@@ -46,7 +46,7 @@
                     <div class="card card-primary card-outline">
                         <div class="card-body text-center">
                             <i class="bi bi-person-square dashboard-icon"></i>
-                            <h4>ยินดีต้อนรับ, คุณครู</h4>
+                            <h4>ยินดีต้อนรับ, ครู<?= session()->get('fullname')?></h4>
                             <p>ระบบบริหารจัดการข้อมูลสำหรับครู โรงเรียนสวนกุหลาบวิทยาลัย (จิรประวัติ) นครสวรรค์</p>
                         </div>
                     </div>
