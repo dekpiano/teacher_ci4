@@ -30,8 +30,8 @@
                 <div cass="card-body">
                     <div class="d-flex justify-content-center align-items-center">
                         <div class="mr-2">
-                            <select name="SelTeacher" id="SelTeacher" class="form-control w-auto">
-                                <option value="All">เลือกทั้งหมด</option>
+                            <select name="SelTeacher" id="SelTeacher" class="form-select w-auto">
+                                <option value="All">กรุณาเลือกครูผู้สอน</option>
                                 <?php foreach ($SelTeacher as $v_SelTeacher): ?>
                                 <option <?= ($CheckTeach == $v_SelTeacher->pers_id) ? "selected":"" ?> value="<?= esc($v_SelTeacher->pers_id) ?>">
                                     <?= esc($v_SelTeacher->pers_prefix . $v_SelTeacher->pers_firstname . ' ' . $v_SelTeacher->pers_lastname) ?>
@@ -40,7 +40,7 @@
                             </select>
                         </div>
                         <div class="mr-2">                      
-                            <select name="CheckYear" id="CheckYear" class="form-control w-auto">
+                            <select name="CheckYear" id="CheckYear" class="form-select w-auto">
                                 <?php foreach ($CheckYear as $v_CheckYear): ?>
                                 <option
                                     <?= ($current_year == $v_CheckYear->seplan_year && $current_term == $v_CheckYear->seplan_term) ? "selected":"" ?>

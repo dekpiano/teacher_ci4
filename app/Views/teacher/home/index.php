@@ -88,7 +88,7 @@
                                 <a href="<?= base_url('assessment/save-score-normal') ?>"
                                     class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">บันทึกผลการเรียน (ปกติ)</h5>
+                                        <h5 class="mb-1"><i class="bi bi-file-earmark-text list-group-icon"></i> บันทึกผลการเรียน (ปกติ)</h5>
                                         <small><i class="bi bi-arrow-right-circle-fill list-group-icon"></i></small>
                                     </div>
                                     <p class="mb-1">บันทึกคะแนนและผลการเรียนของนักเรียนในรายวิชาปกติ</p>
@@ -96,7 +96,7 @@
                                 <a href="<?= base_url('assessment/save-score-repeat') ?>"
                                     class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">บันทึกผลการเรียน (ซ้ำ)</h5>
+                                        <h5 class="mb-1"><i class="bi bi-repeat list-group-icon"></i> บันทึกผลการเรียน (ซ้ำ)</h5>
                                         <small><i class="bi bi-arrow-right-circle-fill list-group-icon"></i></small>
                                     </div>
                                     <p class="mb-1">บันทึกคะแนนและผลการเรียนของนักเรียนที่เรียนซ้ำ</p>
@@ -117,14 +117,14 @@
                             <div class="list-group">
                                 <a href="<?= base_url('curriculum/SendPlan') ?>" class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">ส่งแผนการสอน</h5>
+                                        <h5 class="mb-1"><i class="bi bi-cloud-upload list-group-icon"></i> ส่งแผนการสอน</h5>
                                         <small><i class="bi bi-arrow-right-circle-fill list-group-icon"></i></small>
                                     </div>
                                     <p class="mb-1">อัปโหลดและส่งแผนการสอนเพื่อขออนุมัติ</p>
                                 </a>
                                 <a href="<?= base_url('curriculum/download-plan') ?>" class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
-                                    <h5 class="mb-1">ดาวน์โหลดแผน</h5>
+                                    <h5 class="mb-1"><i class="bi bi-cloud-download list-group-icon"></i> ดาวน์โหลดแผน</h5>
                                         <small><i class="bi bi-arrow-right-circle-fill list-group-icon"></i></small>
                                     </div>
                                     <p class="mb-1">ดาวน์โหลดแผนการสอนที่ได้รับอนุมัติแล้ว</p>
@@ -132,7 +132,7 @@
                                 <?php if (session()->get('pers_groupleade') !== null && session()->get('pers_groupleade') !== ''): ?>
                                 <a href="<?= base_url('curriculum/check-plan-head') ?>" class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
-                                    <h5 class="mb-1">ตรวจแผน (หน.กลุ่มสาระ)</h5>
+                                    <h5 class="mb-1"><i class="bi bi-clipboard-check list-group-icon"></i> ตรวจแผน (หน.กลุ่มสาระ)</h5>
                                         <small><i class="bi bi-arrow-right-circle-fill list-group-icon"></i></small>
                                     </div>
                                     <p class="mb-1">ตรวจสอบและอนุมัติแผนการสอนของครูในกลุ่มสาระ</p>
@@ -154,7 +154,7 @@
                             <div class="list-group">
                                 <a href="#" class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">งานประกันคุณภาพ</h5>
+                                        <h5 class="mb-1"><i class="bi bi-shield-check list-group-icon"></i> งานประกันคุณภาพ</h5>
                                         <small><i class="bi bi-arrow-right-circle-fill list-group-icon"></i></small>
                                     </div>
                                     <p class="mb-1">จัดการข้อมูลและเอกสารที่เกี่ยวข้องกับงานประกันคุณภาพ</p>

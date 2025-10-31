@@ -33,6 +33,10 @@
     <div class="d-flex justify-content-center align-items-center vh-100">
         <div class="card shadow-lg p-4" style="width: 25rem;">
             <div class="card-body">
+                <div class="text-center mb-2">
+                    <img src="https://skj.ac.th/uploads/logoSchool/LogoSKJ_4.png" class="img-fluid" alt="" style="width: 5rem;">
+                </div>
+                
                 <h3 class="card-title text-center mb-4">เข้าสู่ระบบ งานครู SKJ</h3>
                 <!-- <form method="post" action="<?php echo site_url('login/authenticate'); ?>">
                     <div class="form-floating mb-3">
@@ -49,9 +53,11 @@
                 </form>
                 <hr class="my-4"> -->
                 <div class="d-grid gap-2">
+                    
                     <a href="<?= $google_login_url ?>" class="btn btn-outline-danger btn-lg">
-                        <i class="fab fa-google"></i> Sign in with Google
+                        <i class="fab fa-google"></i> Sign in with Google SKJ
                     </a>
+                    <small class="text-center">ล็อกอินด้วย อีเมลโรงเรียนเท่านั้น @skj.ac.th</small>
                 </div>
                 <?php if (session()->getFlashdata('msg')) : ?>
                     <div class="alert alert-danger text-center" role="alert">
