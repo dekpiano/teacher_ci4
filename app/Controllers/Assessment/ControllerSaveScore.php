@@ -328,8 +328,9 @@ class ControllerSaveScore extends BaseController
     public function ReportLearnNormal()
     {
     
-        // $path = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))));
-		require SHARED_LIB_PATH . '/mpdf/vendor/autoload.php';
+       $path = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))));
+		require $path . '/librarie_skj/mpdf/vendor/autoload.php';
+		//require SHARED_LIB_PATH . '/mpdf/vendor/autoload.php';
         // The manual require is removed. Composer handles autoloading.
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8',
