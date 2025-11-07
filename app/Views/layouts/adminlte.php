@@ -357,6 +357,12 @@
                       <p>เช็ตชื่อโฮมรูม</p>
                     </a>
                   </li>
+                  <li class="nav-item">
+                    <a href="<?= base_url('teacher/reading_assessment') ?>" class="nav-link <?= service('uri')->getSegment(1) == 'teacher' && service('uri')->getSegment(2) == 'reading_assessment' ? 'active' : '' ?>">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>แบบประเมินอ่านคิดวิเคราะห์</p>
+                    </a>
+                  </li>
                 </ul>
               </li>
 

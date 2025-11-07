@@ -88,3 +88,12 @@ $routes->get('login/googleCallback', 'Login::googleCallback');
         $routes->post('get_comment', 'CurriculumController::get_comment');
         $routes->post('save_comment', 'CurriculumController::save_comment');
     });
+
+    // Reading Assessment Routes
+    $routes->group('teacher/reading_assessment', static function ($routes) {
+        $routes->get('', 'ReadingAssessmentController::index');
+        $routes->get('assess/(:num)/(:num)', 'ReadingAssessmentController::assessClass/$1/$2');
+        $routes->post('save', 'ReadingAssessmentController::saveEvaluation');
+        $routes->post('save_class', 'ReadingAssessmentController::saveClassEvaluation');
+        $routes->get('print_report/(:num)/(:num)', 'ReadingAssessmentController::printReport/$1/$2');
+    });

@@ -57,6 +57,22 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-12">
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>แบบประเมิน</h3>
+                    <p>อ่าน คิดวิเคราะห์ และเขียน</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-book-reader"></i>
+                </div>
+                <a href="<?= base_url('teacher/reading_assessment') ?>" class="small-box-footer">
+                    เข้าสู่ระบบประเมิน <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <?= $this->endSection() ?>
