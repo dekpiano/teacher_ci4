@@ -163,20 +163,20 @@
 
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-person-fill"></i>
+                                <i class="nav-icon bi bi-clipboard-check"></i>
                                 <p>
-                                    ครูผู้สอน
+                                    งานประเมินนักเรียน
                                     <i class="nav-arrow bi bi-chevron-right"></i>
                                 </p>
                             </a>
-                            <!-- <ul class="nav nav-treeview">
+                            <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
-                                        <p>เชื่คชื่อโฮมรูม</p>
+                                    <a href="<?= base_url('teacher/reading_assessment') ?>" class="nav-link">
+                                        <i class="nav-icon bi bi-book-half"></i>
+                                        <p>แบบประเมินอ่านคิดวิเคราะห์</p>
                                     </a>
                                 </li>
-                            </ul> -->
+                            </ul>
                         </li>
 
                         <li class="nav-item">

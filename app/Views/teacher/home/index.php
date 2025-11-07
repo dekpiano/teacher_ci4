@@ -59,21 +59,14 @@
                         <div class="card-header">
                             <h3 class="card-title">
                                 <i class="bi bi-calendar-check"></i>
-                                งานครูผู้สอน
+                                งานประเมินนักเรียน
                             </h3>
                         </div>
                         <div class="card-body">
                             <div class="list-group">
-                                <a href="<?= base_url('Teaching/CheckHomeRoomMain') ?>" class="list-group-item list-group-item-action">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">เช็คชื่อโฮมรูม</h5>
-                                        <small><i class="bi bi-arrow-right-circle-fill list-group-icon"></i></small>
-                                    </div>
-                                    <p class="mb-1">จัดการการเช็คชื่อนักเรียนในห้องโฮมรูม</p>
-                                </a>
                                 <a href="<?= base_url('teacher/reading_assessment') ?>" class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1"><i class="fas fa-book-reader list-group-icon"></i> แบบประเมินอ่านคิดวิเคราะห์</h5>
+                                        <h5 class="mb-1"><i class="bi bi-book-half list-group-icon"></i> แบบประเมินอ่านคิดวิเคราะห์</h5>
                                         <small><i class="bi bi-arrow-right-circle-fill list-group-icon"></i></small>
                                     </div>
                                     <p class="mb-1">ประเมินความสามารถในการอ่าน คิดวิเคราะห์ และเขียนของนักเรียน</p>
