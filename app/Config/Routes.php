@@ -97,3 +97,11 @@ $routes->get('login/googleCallback', 'Login::googleCallback');
         $routes->post('save_class', 'ReadingAssessmentController::saveClassEvaluation');
         $routes->get('print_report/(:num)/(:num)', 'ReadingAssessmentController::printReport/$1/$2');
     });
+
+    // Desirable Characteristics Assessment Routes
+    $routes->group('teacher/desirable_assessment', static function ($routes) {
+        $routes->get('', 'DesirableAssessmentController::index');
+        $routes->get('assess/(:num)/(:num)', 'DesirableAssessmentController::assessClass/$1/$2');
+        $routes->post('save_class', 'DesirableAssessmentController::saveClassEvaluation');
+        $routes->get('print_report/(:num)/(:num)', 'DesirableAssessmentController::printReport/$1/$2');
+    });

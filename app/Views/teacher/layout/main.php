@@ -176,6 +176,12 @@
                                         <p>แบบประเมินอ่านคิดวิเคราะห์</p>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="<?= base_url('teacher/desirable_assessment') ?>" class="nav-link">
+                                        <i class="nav-icon bi bi-check2-circle"></i>
+                                        <p>คุณลักษณะอันพึงประสงค์</p>
+                                    </a>
+                                </li>
                             </ul>
                         </li>
 

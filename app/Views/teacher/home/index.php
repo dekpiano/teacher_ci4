@@ -58,7 +58,7 @@
                     <div class="card card-primary card-outline">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="bi bi-calendar-check"></i>
+                                <i class="bi bi-clipboard-check"></i>
                                 งานประเมินนักเรียน
                             </h3>
                         </div>
@@ -70,6 +70,13 @@
                                         <small><i class="bi bi-arrow-right-circle-fill list-group-icon"></i></small>
                                     </div>
                                     <p class="mb-1">ประเมินความสามารถในการอ่าน คิดวิเคราะห์ และเขียนของนักเรียน</p>
+                                </a>
+                                <a href="<?= base_url('teacher/desirable_assessment') ?>" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1"><i class="bi bi-check2-circle list-group-icon"></i> คุณลักษณะอันพึงประสงค์</h5>
+                                        <small><i class="bi bi-arrow-right-circle-fill list-group-icon"></i></small>
+                                    </div>
+                                    <p class="mb-1">ประเมินคุณลักษณะอันพึงประสงค์ 8 ประการของนักเรียน</p>
                                 </a>
                             </div>
                         </div>
