@@ -116,6 +116,64 @@ class ReadingAssessmentModel extends Model
         return $evaluations;
     }
 
+    public function getLatestSchoolYear()
+    {
+        $db = db_connect(); // Default DB
+        $allEntries = $db->table('tb_schoolyear')->select('schyear_year')->get()->getResultArray();
+
+        if (empty($allEntries)) {
+            // Fallback to current Buddhist year if table is empty
+            return ['year' => date('Y') + 543, 'term' => '1'];
+        }
+
+        usort($allEntries, function($a, $b) {
+            list($termA, $yearA) = explode('/', $a['schyear_year']);
+            list($termB, $yearB) = explode('/', $b['schyear_year']);
+
+            if ($yearB != $yearA) {
+                return $yearB <=> $yearA; // Sort by year descending
+            }
+            return $termB <=> $termA; // Then by term descending
+        });
+
+        $latestEntry = $allEntries[0]['schyear_year'];
+        $parts = explode('/', $latestEntry);
+        
+        $term = $parts[0] ?? '1';
+        $year = $parts[1] ?? date('Y') + 543;
+
+        return ['year' => $year, 'term' => $term];
+    }
+
+    public function getAssessmentStatusForClass($className, $academicYear, $term)
+    {
+        // Get all student IDs for the class from the register table
+        $db = db_connect();
+        $studentIdsQuery = $db->table('tb_register')
+                                ->select('StudentID')
+                                ->where('RegisterClass', 'ม.'.$className)
+                                ->where('SUBSTRING(RegisterYear, 3, 4)', $academicYear)
+                                ->distinct()
+                                ->get()
+                                ->getResultArray();
+
+        if (empty($studentIdsQuery)) {
+            return ['total' => 0, 'assessed' => 0];
+        }
+        $studentIds = array_column($studentIdsQuery, 'StudentID');
+        $totalStudents = count($studentIds);
+
+        // Count how many of these students have at least one entry in the detail table
+        $assessedCount = $this->db->table('tb_evalu_raw_detail') // Changed table
+                                  ->whereIn('StudentID', $studentIds)      // Changed column
+                                  ->where('AcademicYear', $academicYear)
+                                  ->where('Term', $term)
+                                  ->distinct(true)
+                                  ->countAll('StudentID');                 // Changed column
+
+        return ['total' => $totalStudents, 'assessed' => $assessedCount];
+    }
+
     public function getGradeLevelHead(string $grade, string $academicYear)
     {
         $db = db_connect();

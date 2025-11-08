@@ -21,7 +21,7 @@
         <div class="col-md-12">
             <div class="card" id="report-card">
                 <div class="card-header">
-                    <h3 class="card-title">รายงานสรุปผลการประเมิน</h3>
+                    <h3 class="card-title"><i class="fas fa-chart-bar"></i> รายงานสรุปผลการประเมิน</h3>
                     <div class="card-tools">
                         <a href="<?= base_url('teacher/reading_assessment/print_report/' . $className) ?>" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-print"></i> พิมพ์รายงาน</a>
                     </div>
@@ -74,7 +74,7 @@
                             </table>
                         </div>
                     <?php else : ?>
-                        <p>ไม่พบข้อมูลตัวชี้วัดการประเมิน</p>
+                        <div class="alert alert-warning"><i class="fas fa-info-circle"></i> ไม่พบข้อมูลตัวชี้วัดการประเมิน</div>
                     <?php endif; ?>
                 </div>
             </div>
@@ -88,10 +88,10 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">ประเมินการอ่าน คิดวิเคราะห์ และเขียน - ชั้นเรียน <?= esc($className) ?></h3>
+                        <h3 class="card-title"><i class="fas fa-edit"></i> ประเมินการอ่าน คิดวิเคราะห์ และเขียน - ชั้นเรียน <?= esc($className) ?></h3>
                         <div class="card-tools">
-                            <button type="submit" class="btn btn-primary">บันทึกข้อมูล</button>
-                            <a href="<?= base_url('teacher/reading_assessment') ?>" class="btn btn-sm btn-secondary">กลับไปหน้ารวม</a>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> บันทึกข้อมูล</button>
+                            <a href="<?= base_url('teacher/reading_assessment') ?>" class="btn btn-sm btn-secondary"><i class="fas fa-arrow-left"></i> กลับไปหน้ารวม</a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -148,11 +148,11 @@
                                 </table>
                             </div>
                         <?php else : ?>
-                            <p>ไม่พบข้อมูลนักเรียนในชั้นเรียนนี้</p>
+                            <div class="alert alert-warning"><i class="fas fa-info-circle"></i> ไม่พบข้อมูลนักเรียนในชั้นเรียนนี้</div>
                         <?php endif; ?>
                     </div>
                     <div class="card-footer">
-                        <button type="submit" class="btn btn-primary">บันทึกข้อมูล</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> บันทึกข้อมูล</button>
                     </div>
                 </div>
             </div>

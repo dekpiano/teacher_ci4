@@ -4,7 +4,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>  <?= $this->renderSection('title') ?> | ระบบงานครู สกจ.9</title>
+    <title> <?= $this->renderSection('title') ?> | ระบบงานครู สกจ.9</title>
     <!--begin::Accessibility Meta Tags-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
     <meta name="color-scheme" content="light dark" />
@@ -37,15 +37,30 @@
     .nav-link p,
     .info-box-text,
     .info-box-number,
-    h1, h2, h3, h4, h5, h6,
-    p, div, span,
-    input, textarea, select, button,
-    .form-control, .btn,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    div,
+    span,
+    input,
+    textarea,
+    select,
+    button,
+    .form-control,
+    .btn,
     .breadcrumb-item {
         font-family: 'Sarabun', sans-serif;
     }
-    a.info-box-link { text-decoration: none; color: inherit; }
-</style>
+
+    a.info-box-link {
+        text-decoration: none;
+        color: inherit;
+    }
+    </style>
     <!--end::Fonts-->
     <!--begin::Third Party Plugin(OverlayScrollbars)-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css"
@@ -56,7 +71,9 @@
         crossorigin="anonymous" />
     <!--end::Third Party Plugin(Bootstrap Icons)-->
     <!--begin::Required Plugin(AdminLTE)-->
-    <link rel="stylesheet" href="<?=base_url()?>assets/adminlte/dist/css/adminlte.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc3/dist/css/adminlte.min.css"
+        crossorigin="anonymous" />
+    <!-- <link rel="stylesheet" href="<?=base_url()?>assets/adminlte/dist/css/adminlte.css" /> -->
     <!--end::Required Plugin(AdminLTE)-->
     <!-- apexcharts -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css"
@@ -98,25 +115,26 @@
                     <!--begin::User Menu Dropdown-->
                     <li class="nav-item dropdown user-menu">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <img src="https://personnel.skj.ac.th/uploads/admin/Personnal/<?= session()->get('person_img')?>" class="user-image rounded-circle shadow"
-                                alt="Image" />
+                            <img src="https://personnel.skj.ac.th/uploads/admin/Personnal/<?= session()->get('person_img')?>"
+                                class="user-image rounded-circle shadow" alt="Image" />
                             <span class="d-none d-md-inline">ครู<?= session()->get('fullname')?></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                             <!--begin::User Image-->
                             <li class="user-header text-bg-primary">
-                                <img src="https://personnel.skj.ac.th/uploads/admin/Personnal/<?= session()->get('person_img')?>" class="rounded-circle shadow"
-                                    alt="User Image" />
+                                <img src="https://personnel.skj.ac.th/uploads/admin/Personnal/<?= session()->get('person_img')?>"
+                                    class="rounded-circle shadow" alt="User Image" />
                                 <p>
                                     ครู<?= session()->get('fullname')?>
                                     <small>กำลังใช้งาน</small>
                                 </p>
-                            </li>                           
+                            </li>
                             <!--end::Menu Body-->
                             <!--begin::Menu Footer-->
                             <li class="user-footer">
-                                <a href="#" class="btn btn-default btn-flat">Profile</a>
-                                <a href="<?=base_url()?>logout" class="btn btn-default btn-flat float-end">Sign out</a>
+                                <a href="#" class="btn btn-default btn-flat"><i class="fas fa-user"></i> Profile</a>
+                                <a href="<?=base_url()?>logout" class="btn btn-default btn-flat float-end"><i
+                                        class="fas fa-sign-out-alt"></i> Sign out</a>
                             </li>
                             <!--end::Menu Footer-->
                         </ul>
@@ -291,7 +309,9 @@
     </script>
     <!--end::Required Plugin(Bootstrap 5)-->
     <!--begin::Required Plugin(AdminLTE)-->
-    <script src="<?=base_url()?>assets/adminlte/dist/js/adminlte.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc3/dist/js/adminlte.min.js" crossorigin="anonymous">
+    </script>
+    <!-- <script src="<?=base_url()?>assets/adminlte/dist/js/adminlte.js"></script> -->
     <!--end::Required Plugin(AdminLTE)-->
     <!--begin::OverlayScrollbars Configure-->
     <script>
@@ -321,34 +341,35 @@
     <!-- OPTIONAL SCRIPTS -->
     <?= $this->renderSection('scripts') ?>
     <script>
-        $(function() {
-            var current_url = window.location.href;
+    $(function() {
+        var current_url = window.location.href;
 
-            // Normalize current_url: remove trailing slash unless it's the root itself
-            if (current_url.endsWith('/') && current_url.length > (window.location.origin + '/').length) {
-                current_url = current_url.slice(0, -1);
+        // Normalize current_url: remove trailing slash unless it's the root itself
+        if (current_url.endsWith('/') && current_url.length > (window.location.origin + '/').length) {
+            current_url = current_url.slice(0, -1);
+        }
+
+        $(".sidebar-menu .nav-link").each(function() {
+            var link_href = this.href;
+
+            // Normalize link_href: remove trailing slash unless it's the root itself
+            if (link_href.endsWith('/') && link_href.length > (window.location.origin + '/').length) {
+                link_href = link_href.slice(0, -1);
             }
 
-            $(".sidebar-menu .nav-link").each(function() {
-                var link_href = this.href;
-
-                // Normalize link_href: remove trailing slash unless it's the root itself
-                if (link_href.endsWith('/') && link_href.length > (window.location.origin + '/').length) {
-                    link_href = link_href.slice(0, -1);
+            // Check if the current URL exactly matches the link's href
+            // OR if the current URL starts with the link's href AND the link's href is not just the base URL
+            if (current_url === link_href || (current_url.startsWith(link_href) && link_href !==
+                    '<?=base_url();?>' && link_href.length > 1)) {
+                $(this).addClass("active");
+                var treeview = $(this).closest(".nav-treeview");
+                if (treeview.length) {
+                    treeview.parent(".nav-item").addClass("menu-open");
+                    treeview.parent(".nav-item").children(".nav-link").addClass("active");
                 }
-
-                // Check if the current URL exactly matches the link's href
-                // OR if the current URL starts with the link's href AND the link's href is not just the base URL
-                if (current_url === link_href || (current_url.startsWith(link_href) && link_href !== '<?=base_url();?>' && link_href.length > 1)) {
-                    $(this).addClass("active");
-                    var treeview = $(this).closest(".nav-treeview");
-                    if (treeview.length) {
-                        treeview.parent(".nav-item").addClass("menu-open");
-                        treeview.parent(".nav-item").children(".nav-link").addClass("active");
-                    }
-                }
-            });
+            }
         });
+    });
     </script>
 </body>
 <!--end::Body-->

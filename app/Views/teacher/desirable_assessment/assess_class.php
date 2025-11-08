@@ -56,7 +56,7 @@
         <div class="col-md-12">
             <div class="card" id="report-card">
                 <div class="card-header">
-                    <h3 class="card-title">รายงานสรุปผลการประเมิน (ภาพรวมทั้งห้อง)</h3>
+                    <h3 class="card-title"><i class="fas fa-chart-bar"></i> รายงานสรุปผลการประเมิน (ภาพรวมทั้งห้อง)</h3>
                     <div class="card-tools">
                         <a href="<?= base_url('teacher/desirable_assessment/print_report/' . $className) ?>" target="_blank" class="btn btn-sm btn-primary">
                             <i class="fas fa-print"></i> พิมพ์รายงานสรุป
@@ -107,7 +107,7 @@
                             </tbody>
                         </table>
                     <?php else: ?>
-                        <div class="alert alert-warning text-center">ยังไม่มีนักเรียนที่ได้รับการประเมิน</div>
+                        <div class="alert alert-warning text-center"><i class="fas fa-info-circle"></i> ยังไม่มีนักเรียนที่ได้รับการประเมิน</div>
                     <?php endif; ?>
                 </div>
             </div>
@@ -122,10 +122,10 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">ประเมินคุณลักษณะอันพึงประสงค์ ภาคเรียนที่ <?= esc($term) ?> ปีการศึกษา <?= esc($academicYear) ?> - ชั้นเรียน <?= esc($className) ?></h3>
+                        <h3 class="card-title"><i class="fas fa-edit"></i> ประเมินคุณลักษณะอันพึงประสงค์ ภาคเรียนที่ <?= esc($term) ?> ปีการศึกษา <?= esc($academicYear) ?> - ชั้นเรียน <?= esc($className) ?></h3>
                         <div class="card-tools">
-                            <button type="submit" class="btn btn-primary">บันทึกข้อมูล</button>
-                            <a href="<?= base_url('teacher/desirable_assessment') ?>" class="btn btn-sm btn-secondary">กลับ</a>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> บันทึกข้อมูล</button>
+                            <a href="<?= base_url('teacher/desirable_assessment') ?>" class="btn btn-sm btn-secondary"><i class="fas fa-arrow-left"></i> กลับ</a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -217,7 +217,7 @@
                         <?php endif; ?>
                     </div>
                     <div class="card-footer">
-                        <button type="submit" class="btn btn-primary">บันทึกข้อมูล</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> บันทึกข้อมูล</button>
                     </div>
                 </div>
             </div>

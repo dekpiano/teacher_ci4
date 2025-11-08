@@ -21,13 +21,22 @@ class ReadingAssessmentController extends BaseController
     public function index()
     {
         $model = new \App\Models\ReadingAssessmentModel();
-        $academicYear = '2568'; // Current academic year
+        $latestYearTerm = $model->getLatestSchoolYear();
+        $academicYear = $latestYearTerm['year'];
+        $term = $latestYearTerm['term'];
 
         $teacherClasses = $model->getTeacherClasses($this->teacherId, $academicYear);
 
+        // Add status to each class
+        foreach ($teacherClasses as &$class) { // Use reference to modify array directly
+            $status = $model->getAssessmentStatusForClass($class['Reg_Class'], $academicYear, $term);
+            $class['status'] = $status;
+        }
+
         $data = [
             'teacherClasses' => $teacherClasses,
-            'academicYear' => $academicYear
+            'academicYear' => $academicYear,
+            'title' => 'แบบประเมินการอ่าน คิดวิเคราะห์ และเขียน'
         ];
 
         return view('teacher/reading_assessment/index', $data);
