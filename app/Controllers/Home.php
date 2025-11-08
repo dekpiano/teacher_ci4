@@ -18,7 +18,37 @@ class Home extends BaseController
         $db_personnel = db_connect('personnel');
         $db_affairs = db_connect('affairs');
 
-        // Fetch data like in the old controller
+        // --- Get Latest Year/Term ---
+        $latestYear = null;
+        $allEntries = $db->table('tb_schoolyear')->select('schyear_year')->get()->getResultArray();
+        if (!empty($allEntries)) {
+            usort($allEntries, function($a, $b) {
+                list($termA, $yearA) = explode('/', $a['schyear_year']);
+                list($termB, $yearB) = explode('/', $b['schyear_year']);
+                if ($yearB != $yearA) {
+                    return $yearB <=> $yearA;
+                }
+                return $termB <=> $termA;
+            });
+            $latestEntry = $allEntries[0]['schyear_year'];
+            $parts = explode('/', $latestEntry);
+            $latestYear = $parts[1] ?? date('Y') + 543;
+        } else {
+            $latestYear = date('Y') + 543; // Fallback
+        }
+
+        // --- Get Homeroom Class ---
+        $homeroomClass = null;
+        if ($latestYear) {
+            $homeroomClass = $db->table('tb_regclass')
+                                ->select('Reg_Class')
+                                ->where('class_teacher', $session->get('person_id'))
+                                ->where('Reg_Year', $latestYear)
+                                ->get()
+                                ->getRow();
+        }
+
+        // Fetch other data
         $CheckHomeVisitManager = $db_affairs->table('tb_homevisit_setting')
                                             ->where('homevisit_set_id', 1)
                                             ->get()
@@ -26,7 +56,6 @@ class Home extends BaseController
 
         $OnOff = $db->table('tb_send_plan_setup')->get()->getResult();
 
-        // The old controller used 'login_id', the new Login controller sets 'person_id'. Using 'person_id'.
         $teacher = $db_personnel->table('tb_personnel')
                                 ->select('pers_id, pers_img')
                                 ->where('pers_id', $session->get('person_id'))
@@ -38,7 +67,8 @@ class Home extends BaseController
             'title'                 => 'หน้าแรก',
             'CheckHomeVisitManager' => $CheckHomeVisitManager,
             'OnOff'                 => $OnOff,
-            'teacher'               => $teacher
+            'teacher'               => $teacher,
+            'homeroomClass'         => $homeroomClass
         ];
 
         // Load the view, which will in turn use the main layout

@@ -178,31 +178,6 @@
                         </li>
                         <li class="nav-header">งานวิชาการ</li>
 
-
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-clipboard-check"></i>
-                                <p>
-                                    งานประเมินนักเรียน
-                                    <i class="nav-arrow bi bi-chevron-right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="<?= base_url('teacher/reading_assessment') ?>" class="nav-link">
-                                        <i class="nav-icon bi bi-book-half"></i>
-                                        <p>แบบประเมินอ่านคิดวิเคราะห์</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="<?= base_url('teacher/desirable_assessment') ?>" class="nav-link">
-                                        <i class="nav-icon bi bi-check2-circle"></i>
-                                        <p>คุณลักษณะอันพึงประสงค์</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-
                         <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon bi bi-file-earmark-ruled-fill"></i>
@@ -258,6 +233,32 @@
                                 </li>
                             </ul>
                         </li>
+                        
+
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon bi bi-clipboard-check"></i>
+                                <p>
+                                    งานประเมินนักเรียน
+                                    <i class="nav-arrow bi bi-chevron-right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="<?= base_url('teacher/reading_assessment') ?>" class="nav-link">
+                                        <i class="nav-icon bi bi-book-half"></i>
+                                        <p>แบบประเมินอ่านคิดวิเคราะห์</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="<?= base_url('teacher/desirable_assessment') ?>" class="nav-link">
+                                        <i class="nav-icon bi bi-check2-circle"></i>
+                                        <p>คุณลักษณะอันพึงประสงค์</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
                         <li class="nav-item">
                             <a href="./generate/theme.html" class="nav-link">
                                 <i class="nav-icon bi bi-award-fill"></i>
@@ -341,35 +342,48 @@
     <!-- OPTIONAL SCRIPTS -->
     <?= $this->renderSection('scripts') ?>
     <script>
-    $(function() {
-        var current_url = window.location.href;
-
-        // Normalize current_url: remove trailing slash unless it's the root itself
-        if (current_url.endsWith('/') && current_url.length > (window.location.origin + '/').length) {
-            current_url = current_url.slice(0, -1);
-        }
-
-        $(".sidebar-menu .nav-link").each(function() {
-            var link_href = this.href;
-
-            // Normalize link_href: remove trailing slash unless it's the root itself
-            if (link_href.endsWith('/') && link_href.length > (window.location.origin + '/').length) {
-                link_href = link_href.slice(0, -1);
-            }
-
-            // Check if the current URL exactly matches the link's href
-            // OR if the current URL starts with the link's href AND the link's href is not just the base URL
-            if (current_url === link_href || (current_url.startsWith(link_href) && link_href !==
-                    '<?=base_url();?>' && link_href.length > 1)) {
-                $(this).addClass("active");
-                var treeview = $(this).closest(".nav-treeview");
-                if (treeview.length) {
-                    treeview.parent(".nav-item").addClass("menu-open");
-                    treeview.parent(".nav-item").children(".nav-link").addClass("active");
+            $(function() {
+                var current_url = window.location.href;
+    
+                // Normalize current_url: remove trailing slash unless it's the root itself
+                if (current_url.endsWith('/') && current_url.length > (window.location.origin + '/').length) {
+                    current_url = current_url.slice(0, -1);
                 }
-            }
-        });
-    });
+    
+                $(".sidebar-menu .nav-link").each(function() {
+                    var link_href = this.href;
+    
+                    // Normalize link_href: remove trailing slash unless it's the root itself
+                    if (link_href.endsWith('/') && link_href.length > (window.location.origin + '/').length) {
+                        link_href = link_href.slice(0, -1);
+                    }
+    
+                    var is_active = false;
+                    // Check if the current URL exactly matches the link's href
+                    // OR if the current URL starts with the link's href AND the link's href is not just the base URL
+                    if (current_url === link_href || (current_url.startsWith(link_href) && link_href !== '<?=base_url();?>' && link_href.length > 1)) {
+                        is_active = true;
+                    }
+    
+                                    // Special case for save-score-add page to activate the save-score-normal menu
+                                    if (current_url.includes('assessment/save-score-add') && link_href.includes('assessment/save-score-normal')) {
+                                        is_active = true;
+                                    }
+                    
+                                    // Special case for save-score-repeat-add page to activate the save-score-repeat menu
+                                    if (current_url.includes('assessment/save-score-repeat-add') && link_href.includes('assessment/save-score-repeat')) {
+                                        is_active = true;
+                                    }
+                    
+                                    if (is_active) {
+                                        $(this).addClass("active");
+                                        var treeview = $(this).closest(".nav-treeview");                        if (treeview.length) {
+                            treeview.parent(".nav-item").addClass("menu-open");
+                            treeview.parent(".nav-item").children(".nav-link").addClass("active");
+                        }
+                    }
+                });
+            });
     </script>
 </body>
 <!--end::Body-->
