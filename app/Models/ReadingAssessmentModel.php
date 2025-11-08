@@ -29,29 +29,13 @@ class ReadingAssessmentModel extends Model
 
     public function getStudentsByHomeroomClass(string $className, string $academicYear)
     {
-        $db = db_connect(); // default database
-
-        // First, get the list of student IDs from the register table
-        $studentIdsQuery = $db->table('tb_register')
-                                ->select('StudentID')
-                                ->where('RegisterClass', 'ม.'.$className)
-                                ->where('SUBSTRING(RegisterYear, 3, 4)', $academicYear)
-                                ->distinct()
-                                ->get()
-                                ->getResultArray();
-
-        if (empty($studentIdsQuery)) {
-            return [];
-        }
-
-        $studentIds = array_column($studentIdsQuery, 'StudentID');
-
-        // Now, get the student details for those IDs
+        $db = db_connect();
         return $db->table('tb_students')
-                    ->whereIn('StudentID', $studentIds)
-                    ->orderBy('StudentNumber', 'ASC')
-                    ->get()
-                    ->getResultArray();
+            ->where('StudentClass', 'ม.'.$className)
+            ->where('StudentStatus', '1/ปกติ')
+            ->orderBy('StudentNumber', 'ASC')
+            ->get()
+            ->getResultArray();
     }
 
     public function getAssessmentItems()
