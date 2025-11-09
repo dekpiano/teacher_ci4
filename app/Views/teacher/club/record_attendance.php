@@ -1,0 +1,73 @@
+<?= $this->extend('teacher/layout/main') ?>
+
+<?= $this->section('title') ?>
+<?= esc($title ?? 'บันทึกการเข้าเรียน') ?>
+<?= $this->endSection() ?>
+
+<?= $this->section('content') ?>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><?= esc($title ?? 'บันทึกการเข้าเรียน') ?></h3>
+                </div>
+                <div class="card-body">
+                    <form action="<?= site_url('club/saveAttendance/' . $club->club_id . '/' . $schedule->schedule_id) ?>" method="post">
+                        <?= csrf_field() ?>
+                        <?php if (!empty($members) && is_array($members)): ?>
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;">#</th>
+                                        <th>รหัสนักเรียน</th>
+                                        <th>ชื่อ-นามสกุล</th>
+                                        <th>ชั้น</th>
+                                        <th>เลขที่</th>
+                                        <th style="width: 150px;">สถานะการเข้าเรียน</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php $i = 1; ?>
+                                    <?php foreach ($members as $member): ?>
+                                        <tr>
+                                            <td><?= $i++ ?></td>
+                                            <td><?= esc($member->StudentID) ?></td>
+                                            <td><?= esc($member->StudentPrefix . $member->StudentFirstName . ' ' . $member->StudentLastName) ?></td>
+                                            <td><?= esc($member->StudentClass) ?></td>
+                                            <td><?= esc($member->StudentNumber) ?></td>
+                                            <td>
+                                                <?php
+                                                    $currentStatus = $existingAttendance[$member->StudentID] ?? 'มา';
+                                                ?>
+                                                <select class="form-control" name="attendance[<?= esc($member->StudentID) ?>]">
+                                                    <option value="มา" <?= $currentStatus === 'มา' ? 'selected' : '' ?>>มา</option>
+                                                    <option value="ขาด" <?= $currentStatus === 'ขาด' ? 'selected' : '' ?>>ขาด</option>
+                                                    <option value="ลาป่วย" <?= $currentStatus === 'ลาป่วย' ? 'selected' : '' ?>>ลาป่วย</option>
+                                                    <option value="ลากิจ" <?= $currentStatus === 'ลากิจ' ? 'selected' : '' ?>>ลากิจ</option>
+                                                    <option value="กิจกรรม" <?= $currentStatus === 'กิจกรรม' ? 'selected' : '' ?>>กิจกรรม</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">บันทึกการเข้าเรียน</button>
+                                <a href="<?= site_url('club/schedule/' . $club->club_id) ?>" class="btn btn-secondary">ย้อนกลับ</a>
+                            </div>
+                        <?php else: ?>
+                            <div class="alert alert-info">
+                                ไม่พบสมาชิกในชุมนุมนี้ ไม่สามารถบันทึกการเข้าเรียนได้
+                            </div>
+                            <a href="<?= site_url('club/schedule/' . $club->club_id) ?>" class="btn btn-secondary">ย้อนกลับ</a>
+                        <?php endif; ?>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?= $this->endSection() ?>

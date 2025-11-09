@@ -136,9 +136,9 @@
                             <!--end::Menu Body-->
                             <!--begin::Menu Footer-->
                             <li class="user-footer">
-                                <a href="#" class="btn btn-default btn-flat"><i class="fas fa-user"></i> Profile</a>
+                                <a href="#" class="btn btn-default btn-flat"><i class="bi bi-person-circle"></i> Profile</a>
                                 <a href="<?=base_url()?>logout" class="btn btn-default btn-flat float-end"><i
-                                        class="fas fa-sign-out-alt"></i> Sign out</a>
+                                        class="bi bi-box-arrow-right"></i> Sign out</a>
                             </li>
                             <!--end::Menu Footer-->
                         </ul>
@@ -181,6 +181,13 @@
                             </a>
                         </li>
                         <li class="nav-header">งานวิชาการ</li>
+
+                        <li class="nav-item">
+                            <a href="<?= base_url('club') ?>" class="nav-link">
+                                <i class="nav-icon bi bi-people-fill"></i>
+                                <p>ชุมนุม</p>
+                            </a>
+                        </li>
 
                         <li class="nav-item">
                             <a href="#" class="nav-link">
@@ -276,7 +283,38 @@
             <!--end::Sidebar Wrapper-->
         </aside>
 
-        <?= $this->renderSection('content') ?>
+        <!--begin::Content Wrapper-->
+        <main class="app-main">
+            <!--begin::Content Header-->
+            <div class="app-content-header">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h3 class="mb-0"><?= esc($title ?? 'หน้าหลัก') ?></h3>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-end">
+                                <li class="breadcrumb-item"><a href="<?= base_url() ?>">หน้าหลัก</a></li>
+                                <?php if (strpos(current_url(), 'club') !== false): ?>
+                                    <li class="breadcrumb-item"><a href="<?= base_url('club') ?>">ชุมนุม</a></li>
+                                <?php endif; ?>
+                                <li class="breadcrumb-item active" aria-current="page"><?= esc($title ?? 'หน้าหลัก') ?></li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end::Content Header-->
+
+            <!--begin::Content-->
+            <div class="app-content">
+                <div class="container-fluid">
+                    <?= $this->renderSection('content') ?>
+                </div>
+            </div>
+            <!--end::Content-->
+        </main>
+        <!--end::Content Wrapper-->
 
         <!--begin::Footer-->
         <footer class="app-footer">
@@ -357,6 +395,25 @@
     <!-- OPTIONAL SCRIPTS -->
     <?= $this->renderSection('scripts') ?>
         <script>
+        $(function() {
+            <?php if (session()->getFlashdata('success')): ?>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'สำเร็จ!',
+                    text: '<?= session()->getFlashdata('success') ?>',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            <?php endif; ?>
+            <?php if (session()->getFlashdata('error')): ?>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ผิดพลาด!',
+                    text: '<?= session()->getFlashdata('error') ?>'
+                });
+            <?php endif; ?>
+        });
+
         (function($) { // Wrap in IIFE
             $(function() {
                 var current_url = window.location.href;

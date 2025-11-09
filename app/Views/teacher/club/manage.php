@@ -1,0 +1,210 @@
+<?= $this->extend('teacher/layout/main') ?>
+
+<?= $this->section('title') ?>
+<?= esc($title ?? 'จัดการชุมนุม') ?>
+<?= $this->endSection() ?>
+
+<?= $this->section('content') ?>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><?= esc($title ?? 'จัดการชุมนุม') ?></h3>
+                    <div class="card-tools">
+                        <a href="<?= site_url('club/schedule/' . $club->club_id) ?>" class="btn btn-success btn-sm me-2">
+                            <i class="bi bi-calendar-event"></i> จัดการตารางกิจกรรม
+                        </a>
+                        <a href="<?= site_url('club/activities/' . $club->club_id) ?>" class="btn btn-info btn-sm me-2">
+                            <i class="bi bi-bar-chart-line"></i> รายงานกิจกรรม
+                        </a>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editClubModal">
+                            <i class="bi bi-pencil-square"></i> แก้ไขข้อมูลชุมนุม
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <?php if (isset($club)): ?>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>ชื่อชุมนุม:</strong> <?= esc($club->club_name) ?></p>
+                                <p><strong>คำอธิบาย:</strong> <?= esc($club->club_description) ?></p>
+                                <p><strong>จำนวนรับสูงสุด:</strong> <?= esc($club->club_max_participants) ?></p>
+                                <div><strong>สถานะ:</strong>
+                                    <?php if ($club->club_status === 'open'): ?>
+                                        <div class="alert alert-success py-1 px-2 d-inline-block">เปิดรับสมัคร</div>
+                                    <?php else: ?>
+                                        <div class="alert alert-danger py-1 px-2 d-inline-block">ปิดรับสมัคร</div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>ปีการศึกษา:</strong> <?= esc($club->club_year) ?></p>
+                                <p><strong>ภาคเรียน:</strong> <?= esc($club->club_trem) ?></p>
+                                <p><strong>วันที่ก่อตั้ง:</strong> <?= esc($club->club_established_date) ?></p>
+                            </div>
+                        </div>
+
+                        <h4 class="mt-4">สมาชิกในชุมนุม</h4>
+                        <?php if (!empty($members) && is_array($members)): ?>
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;">#</th>
+                                        <th>รหัสนักเรียน</th>
+                                        <th>ชื่อ-นามสกุล</th>
+                                        <th>ชั้น</th>
+                                        <th>เลขที่</th>
+                                        <th>บทบาท</th>
+                                        <th style="width: 200px;">จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php $i = 1; ?>
+                                    <?php foreach ($members as $member): ?>
+                                        <tr>
+                                            <td><?= $i++ ?></td>
+                                            <td><?= esc($member->StudentID) ?></td>
+                                            <td><?= esc($member->StudentPrefix . $member->StudentFirstName . ' ' . $member->StudentLastName) ?></td>
+                                            <td><?= esc($member->StudentClass) ?></td>
+                                            <td><?= esc($member->StudentNumber) ?></td>
+                                            <td><?= esc($member->member_role) ?></td>
+                                            <td>
+                                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#assignRoleModal"
+                                                        data-studentid="<?= esc($member->StudentID) ?>" data-currentrole="<?= esc($member->member_role) ?>">
+                                                    <i class="bi bi-person-badge"></i> กำหนดบทบาท
+                                                </button>
+                                                <form action="<?= site_url('club/removeMember/' . $club->club_id . '/' . $member->StudentID) ?>" method="post" class="d-inline remove-member-form">
+                                                    <?= csrf_field() ?>
+                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                        <i class="bi bi-trash"></i> ลบ
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else: ?>
+                            <div class="alert alert-info">
+                                ไม่พบสมาชิกในชุมนุมนี้
+                            </div>
+                        <?php endif; ?>
+
+                    <?php else: ?>
+                        <div class="alert alert-danger">
+                            ไม่พบข้อมูลชุมนุม
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Club Modal -->
+<div class="modal fade" id="editClubModal" tabindex="-1" role="dialog" aria-labelledby="editClubModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="<?= site_url('club/update/' . $club->club_id) ?>" method="post">
+                <?= csrf_field() ?>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editClubModalLabel">แก้ไขข้อมูลชุมนุม</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="club_name">ชื่อชุมนุม</label>
+                        <input type="text" class="form-control" id="club_name" name="club_name" value="<?= esc($club->club_name) ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="club_description">คำอธิบายชุมนุม</label>
+                        <textarea class="form-control" id="club_description" name="club_description" rows="3"><?= esc($club->club_description) ?></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="club_max_participants">จำนวนรับสูงสุด (คน)</label>
+                        <input type="number" class="form-control" id="club_max_participants" name="club_max_participants" value="<?= esc($club->club_max_participants) ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="club_status">สถานะชุมนุม</label>
+                        <select class="form-control" id="club_status" name="club_status">
+                            <option value="open" <?= $club->club_status === 'open' ? 'selected' : '' ?>>เปิดรับสมัคร</option>
+                            <option value="closed" <?= $club->club_status === 'closed' ? 'selected' : '' ?>>ปิดรับสมัคร</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary">บันทึกการเปลี่ยนแปลง</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Role Modal -->
+<div class="modal fade" id="assignRoleModal" tabindex="-1" role="dialog" aria-labelledby="assignRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="<?= site_url('club/updateMemberRole/' . $club->club_id) ?>" method="post">
+                <?= csrf_field() ?>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="assignRoleModalLabel">กำหนดบทบาทสมาชิก</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="student_id" id="modal_student_id">
+                    <div class="form-group">
+                        <label for="member_role">บทบาท</label>
+                        <select class="form-control" id="member_role" name="member_role">
+                            <option value="Member">สมาชิก</option>
+                            <option value="Leader">หัวหน้า</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary">บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>                                        <?= $this->endSection() ?>
+                                        
+                                        <?= $this->section('scripts') ?>
+                                        <script>
+                                            $(document).ready(function() {
+                                                // Handle Assign Role Modal data population
+                                                $('#assignRoleModal').on('show.bs.modal', function (event) {
+                                                    var button = $(event.relatedTarget); // Button that triggered the modal
+                                                    var studentId = button.data('studentid'); // Extract info from data-* attributes
+                                                    var currentRole = button.data('currentrole');
+                                        
+                                                    var modal = $(this);
+                                                    modal.find('#modal_student_id').val(studentId);
+                                                    modal.find('#member_role').val(currentRole);
+                                                });
+                                        
+                                                // Handle Remove Member confirmation
+                                                $('.remove-member-form').submit(function(e) {
+                                                    e.preventDefault(); // Prevent default form submission
+                                                    var form = this;
+                                                    Swal.fire({
+                                                        title: 'คุณแน่ใจหรือไม่?',
+                                                        text: "คุณต้องการลบสมาชิกนี้ออกจากชุมนุม!",
+                                                        icon: 'warning',
+                                                        showCancelButton: true,
+                                                        confirmButtonColor: '#3085d6',
+                                                        cancelButtonColor: '#d33',
+                                                        confirmButtonText: 'ใช่, ลบเลย!',
+                                                        cancelButtonText: 'ยกเลิก'
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            form.submit(); // Submit the form if confirmed
+                                                        }
+                                                    });
+                                                });
+                                            });
+                                        </script>
+                                        <?= $this->endSection() ?>

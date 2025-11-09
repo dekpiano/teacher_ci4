@@ -25,6 +25,28 @@ $routes->get('login/googleCallback', 'Login::googleCallback');
         $routes->get('dashboard/(:any)', 'HomeroomController::dashboard/$1');
     });
 
+    // Club Routes
+    $routes->group('club', static function ($routes) {
+        $routes->get('', 'ClubController::index');
+        $routes->post('create', 'ClubController::create');
+        $routes->post('update/(:num)', 'ClubController::update/$1');
+        $routes->post('updateMemberRole/(:num)', 'ClubController::updateMemberRole/$1');
+        $routes->post('removeMember/(:num)/(:any)', 'ClubController::removeMember/$1/$2');
+        $routes->get('manage/(:num)', 'ClubController::manage/$1');
+
+        // Attendance Routes
+        $routes->get('schedule/(:num)', 'ClubController::showSchedule/$1');
+        $routes->post('createSchedule/(:num)', 'ClubController::createSchedule/$1');
+        $routes->get('recordAttendance/(:num)/(:num)', 'ClubController::recordAttendance/$1/$2');
+        $routes->post('saveAttendance/(:num)/(:num)', 'ClubController::saveAttendance/$1/$2');
+
+        // Activity Routes
+        $routes->get('activities/(:num)', 'ClubController::showActivities/$1');
+        $routes->post('createActivity/(:num)', 'ClubController::createActivity/$1');
+        $routes->post('updateActivity/(:num)/(:num)', 'ClubController::updateActivity/$1/$2');
+        $routes->post('deleteActivity/(:num)/(:num)', 'ClubController::deleteActivity/$1/$2');
+    });
+
     // Assessment Routes
     $routes->group('assessment', static function ($routes) {
         $routes->get('', 'AssessmentController::index');
