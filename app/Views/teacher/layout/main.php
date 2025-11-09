@@ -82,6 +82,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.min.css">
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <!-- DataTables Buttons CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+    <!-- FullCalendar CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/main.min.css' rel='stylesheet' />
 </head>
 
 <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
@@ -233,7 +237,7 @@
                                 </li>
                             </ul>
                         </li>
-                        
+
 
                         <li class="nav-item">
                             <a href="#" class="nav-link">
@@ -339,52 +343,69 @@
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <!-- DataTables Buttons JS -->
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
+    <!-- FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js'></script>
     <!-- OPTIONAL SCRIPTS -->
     <?= $this->renderSection('scripts') ?>
-    <script>
+        <script>
+        (function($) { // Wrap in IIFE
             $(function() {
                 var current_url = window.location.href;
-    
+        
                 // Normalize current_url: remove trailing slash unless it's the root itself
                 if (current_url.endsWith('/') && current_url.length > (window.location.origin + '/').length) {
                     current_url = current_url.slice(0, -1);
                 }
-    
+        
                 $(".sidebar-menu .nav-link").each(function() {
                     var link_href = this.href;
-    
+        
                     // Normalize link_href: remove trailing slash unless it's the root itself
                     if (link_href.endsWith('/') && link_href.length > (window.location.origin + '/').length) {
                         link_href = link_href.slice(0, -1);
                     }
-    
+        
                     var is_active = false;
                     // Check if the current URL exactly matches the link's href
                     // OR if the current URL starts with the link's href AND the link's href is not just the base URL
-                    if (current_url === link_href || (current_url.startsWith(link_href) && link_href !== '<?=base_url();?>' && link_href.length > 1)) {
+                    if (current_url === link_href || (current_url.startsWith(link_href) && link_href !==
+                            '<?=base_url();?>' && link_href.length > 1)) {
                         is_active = true;
                     }
-    
-                                    // Special case for save-score-add page to activate the save-score-normal menu
-                                    if (current_url.includes('assessment/save-score-add') && link_href.includes('assessment/save-score-normal')) {
-                                        is_active = true;
-                                    }
-                    
-                                    // Special case for save-score-repeat-add page to activate the save-score-repeat menu
-                                    if (current_url.includes('assessment/save-score-repeat-add') && link_href.includes('assessment/save-score-repeat')) {
-                                        is_active = true;
-                                    }
-                    
-                                    if (is_active) {
-                                        $(this).addClass("active");
-                                        var treeview = $(this).closest(".nav-treeview");                        if (treeview.length) {
+        
+                    // Special case for save-score-add page to activate the save-score-normal menu
+                    if (current_url.includes('assessment/save-score-add') && link_href.includes(
+                            'assessment/save-score-normal')) {
+                        is_active = true;
+                    }
+        
+                    // Special case for save-score-repeat-add page to activate the save-score-repeat menu
+                    if (current_url.includes('assessment/save-score-repeat-add') && link_href.includes(
+                            'assessment/save-score-repeat')) {
+                        is_active = true;
+                    }
+        
+                    if (is_active) {
+                        $(this).addClass("active");
+                        var treeview = $(this).closest(".nav-treeview");
+                        if (treeview.length) {
                             treeview.parent(".nav-item").addClass("menu-open");
                             treeview.parent(".nav-item").children(".nav-link").addClass("active");
                         }
                     }
                 });
             });
-    </script>
+        })(jQuery); // Pass jQuery to the IIFE
+        </script>
 </body>
 <!--end::Body-->
 
