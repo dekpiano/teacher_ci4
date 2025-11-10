@@ -1,4 +1,3 @@
-
 # Gemini CLI Context and Rules
 
 This document provides context and rules for the Gemini CLI to ensure that UX/UI design and other tasks are performed consistently and in accordance with project conventions.
@@ -96,7 +95,7 @@ Based on the controllers and views, the application appears to have the followin
 
 ## 4. UX/UI Design Rules
 
-- **Template:** The application uses the AdminLTE template. All new UI components should be consistent with the AdminLTE style.
+- **Template:** The application uses the **Sneat Bootstrap 5 HTML Admin Template**. All new UI components should be consistent with the Sneat style.
 - **Responsiveness:** The UI should be responsive and work on all screen sizes.
 - **Clarity:** The UI should be clear and easy to understand.
 - **Consistency:** The UI should be consistent across the entire application.
@@ -117,7 +116,7 @@ Based on the controllers and views, the application appears to have the followin
 
 ### Views
 
-- **Template:** Use the AdminLTE template for all views.
+- **Template:** Use the **Sneat** template for all views. The main layout file is `app/Views/teacher/layout/main.php`.
 - **Data Display:** Use the `esc()` function to escape all data that is displayed in the view.
 - **Partials:** Use partials for reusable view components, such as headers, footers, and sidebars.
 
@@ -127,13 +126,13 @@ Based on the controllers and views, the application appears to have the followin
 - **Named Routes:** Use named routes for all web routes.
 - **Route Groups:** Use route groups to organize related routes.
 
-## 6. AdminLTE v4.0.0-rc3 DESIGN PRINCIPLES
+## 6. Sneat Bootstrap 5 HTML Admin Template - Design Principles
 
+- **Bootstrap 5 Foundation:** Built on the latest Bootstrap 5 framework, ensuring a mobile-first, responsive, and modern component-based structure.
+- **Modern & Clean Design:** Provides a clean, modern, and intuitive user interface that enhances user experience.
 - **Responsiveness:** The template is fully responsive, adapting to various screen resolutions from mobile devices to large desktops.
-- **Bootstrap 5 Foundation:** It is based on the Bootstrap 5 framework and its JavaScript plugins, leveraging Bootstrap’s mobile-first, component-based, and responsive design philosophy.
-- **High Customizability:** AdminLTE is designed to be highly customizable and easy to use, with SCSS employed to enhance code customizability.
-- **Cross-Platform Compatibility and Robust Deployment:** A significant focus of this release candidate is on resolving critical production deployment issues and ensuring consistent behavior across development and production environments. This includes intelligent relative path calculation for assets, proper handling of RTL (Right-to-Left) CSS, and reliable image loading in diverse deployment scenarios.
-- **Modernization:** The codebase has undergone a complete modernization, incorporating the latest tooling, dependencies (such as updated TypeScript, ESLint, and Prettier), and best practices.
-- **Accessibility:** AdminLTE v4 aims for full accessibility, complying with WCAG 2.1 AA standards.
-- **Clean Code and Maintainability:** The template features carefully commented JS, SCSS, and HTML files, and efforts have been made to remove runtime path fixes that caused console errors, contributing to cleaner and more maintainable code.
-- **Enhanced User Experience (UX):** Improvements such as full-width navigation links for better clickable areas and correctly displayed sidebar navigation with proper spacing indicate a focus on improving the overall user experience.
+- **Developer-Friendly:** The code is well-structured, making it easy to customize and extend. It includes a logical file and folder structure.
+- **Customization:** Highly customizable using SASS variables for easy theming and style adjustments.
+- **Rich Components:** Comes with a rich set of pre-built components, cards, forms, tables, and UI elements that can be readily used.
+- **Iconography:** Primarily uses **Boxicons** for a consistent and rich set of icons. The project also integrates **Bootstrap Icons**.
+- **Cross-Browser Compatibility:** Ensures consistent performance and appearance across modern web browsers.

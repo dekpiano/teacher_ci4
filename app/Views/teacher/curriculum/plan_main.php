@@ -6,24 +6,9 @@
 
 <?= $this->section('content') ?>
 
-<main class="app-main">
-    <div class="app-content-header">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-6">
-                    <h3 class="mb-0">แผนการสอน</h3>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-end">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">แผนการสอน</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="app-content">
-        <div class="container-fluid">
+
+
+
             <?php
             $onOffSetting = $OnOff[0] ?? null;
             $is_system_on = false;
@@ -38,13 +23,19 @@
             ?>
 
             <?php if($is_system_on): ?>
-            <div class="alert alert-success">
-                <strong>แจ้งเตือน!</strong> ระบบเปิดให้ส่งงาน
-                <strong> (สิ้นสุด: <?= $deadline ? thai_date_and_time(strtotime($deadline)) : '-' ?>)</strong>
+            <div class="alert alert-success d-flex align-items-center" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <div>
+                    <strong>แจ้งเตือน!</strong> ระบบเปิดให้ส่งงาน
+                    <strong> (สิ้นสุด: <?= $deadline ? thai_date_and_time(strtotime($deadline)) : '-' ?>)</strong>
+                </div>
             </div>
             <?php else: ?>
-            <div class="alert alert-danger">
-                <strong>แจ้งเตือน!</strong> ขณะนี้ระบบปิดรับส่งแผนการสอน
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <div>
+                    <strong>แจ้งเตือน!</strong> ขณะนี้ระบบปิดรับส่งแผนการสอน
+                </div>
             </div>
             <?php endif; ?>
 
@@ -99,81 +90,9 @@
             }
             ?>
 
-            <!-- Dashboard Section -->
-            <div class="row">
-                <!-- Countdown -->
-                <div class="col-lg-12 mb-4">
-                    <div class="card <?= $is_system_on ? 'bg-success' : 'bg-danger'; ?> text-white h-100">
-                        <div class="card-body text-center d-flex flex-column justify-content-center">
-                             <h5 class="card-title">กำหนดส่งแผนการสอน</h5>
-                            <?php if ($is_system_on && $deadline): ?>
-                                <div id="countdown-timer" data-deadline="<?= esc($deadline) ?>" style="font-size: 2rem; font-weight: bold;"></div>
-                            <?php else: ?>
-                                <h3>ระบบปิดรับการส่งแผนแล้ว</h3>
-                            <?php endif; ?>
-                            <div class="small mt-2">สิ้นสุด: <?= $deadline ? thai_date_and_time(strtotime($deadline)) : '-'; ?></div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Overall Summary -->
-                <!-- <div class="col-lg-7 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="mb-0">สรุปภาพรวม (ปีการศึกษา <?= esc($year); ?>/<?= esc($term); ?>)</h5>
-                        </div>
-                        <div class="card-body">
-                        <div class="row text-center">
-                                <div class="col">
-                                    <div class="h2 font-weight-bold"><?= esc($total_plans) ?></div>
-                                    <div class="text-muted small">ทั้งหมด</div>
-                                </div>
-                                <div class="col">
-                                    <div class="h2 font-weight-bold text-info"><?= esc($submitted_count) ?></div>
-                                    <div class="text-muted small">ส่งแล้ว</div>
-                                </div>
-                                <div class="col">
-                                    <div class="h2 font-weight-bold text-success"><?= esc($dept_head_approved_count) ?></div>
-                                    <div class="text-muted small">หน.สาระฯ ผ่าน</div>
-                                </div>
-                                <div class="col">
-                                    <div class="h2 font-weight-bold text-primary"><?= esc($curriculum_head_approved_count) ?></div>
-                                    <div class="text-muted small">หน.หลักสูตรฯ ผ่าน</div>
-                                </div>
-                                <div class="col">
-                                    <div class="h2 font-weight-bold text-danger"><?= esc($revision_count) ?></div>
-                                    <div class="text-muted small">รอแก้ไข</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
-            </div>
+            
 
-            <!-- Status by Plan Type -->
-            <!-- <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">สถานะตามประเภทของแผน</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <?php foreach($typeplan_map_for_dashboard as $db_val => $display_val): ?>
-                            <div class="col-lg col-md-4 col-sm-6 mb-3">
-                                <strong><?= esc($display_val) ?></strong>
-                                <div class="progress" style="height: 20px;">
-                                    <?php
-                                        $total_subjects_for_type = count($planNew);
-                                        $submitted_for_type = $plan_type_submitted_count[$db_val] ?? 0;
-                                        $percentage = $total_subjects_for_type > 0 ? ($submitted_for_type / $total_subjects_for_type) * 100 : 0;
-                                    ?>
-                                    <div class="progress-bar font-weight-bold" role="progressbar" style="width: <?= esc($percentage) ?>%;" aria-valuenow="<?= esc($percentage) ?>" aria-valuemin="0" aria-valuemax="100">
-                                        <?= esc($submitted_for_type) ?>/<?= esc($total_subjects_for_type) ?>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            </div> -->
+            
 
             <hr>
 
@@ -216,89 +135,102 @@
                                     <small class="">(ชั้น ม.<?= esc($v_planNew->seplan_gradelevel) ?> | <?= esc($v_planNew->seplan_typesubject) ?>)</small>
                                 </h5>
                             </div>
-                            <ul class="list-group list-group-flush">
-                                <?php foreach ($typeplan_map as $db_val => $display_val) : ?>
-                                    <?php
-                                    $lookupKey = $v_planNew->seplan_coursecode . '|' . $db_val . '|' . $v_planNew->seplan_year . '|' . $v_planNew->seplan_term;
-                                    $v_plan = $planData[$lookupKey] ?? null;
-                                    ?>
-                                    <li class="list-group-item justify-content-between align-items-center" data-typeplan="<?= esc($db_val) ?>"
-                                        style="<?php
-                                            // If it's the main subject, show all document types
-                                            if (($v_planNew->seplan_is_main_subject ?? 0) == 1) {
-                                                echo 'display: flex;';
-                                            } else {
-                                                // If it's not the main subject, only show 'โครงการสอน'
-                                                echo ($db_val === 'โครงการสอน') ? 'display: flex;' : 'display: none !important;';
-                                            }
-                                        ?>">
-                                        <div>
-                                            <strong><?= esc($display_val) ?></strong>
-                                            <div class="d-flex align-items-center small text-muted mt-1">
-                                            <?php if ($v_plan && !empty($v_plan->seplan_file)) : ?>
-                                                <span class="badge bg-success">ส่งแล้ว</span>
-                                            <?php else: ?>
-                                                <span class="badge bg-danger">ยังไม่ส่ง</span>
-                                            <?php endif; ?>
-                                            <?php if ($v_plan) : ?>
-                                                <span class="ms-3">หน.กลุ่มสาระฯ:
-                                                <?php
-                                                    if ($v_plan->seplan_status1 == 'ผ่าน') {
-                                                        echo '<span class="badge bg-success">ผ่าน</span>';
-                                                    } elseif ($v_plan->seplan_status1 == 'ไม่ผ่าน') {
-                                                        echo '<span class="badge bg-danger" title="' . esc($v_plan->seplan_comment1) . '">ไม่ผ่าน</span>';
-                                                    } else {
-                                                        echo '<span class="badge bg-warning">รอตรวจ</span>';
-                                                    }
-                                                ?>
-                                                </span>
-                                                <span class="ms-3">หน.หลักสูตรฯ:
-                                                <?php
-                                                    if ($v_plan->seplan_status2 == 'ผ่าน') {
-                                                        echo '<span class="badge bg-success">ผ่าน</span>';
-                                                    } elseif ($v_plan->seplan_status2 == 'ไม่ผ่าน') {
-                                                        echo '<span class="badge bg-danger" title="' . esc($v_plan->seplan_comment2) . '">ไม่ผ่าน</span>';
-                                                    } else {
-                                                        echo '<span class="badge bg-warning">รอตรวจ</span>';
-                                                    }
-                                                ?>
-                                                </span>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
-                                        <div class="btn-group">
-                                            <?php if ($v_plan && $v_plan->seplan_file) : ?>
-                                                <?php
-                                                $file_ext = strtolower(pathinfo($v_plan->seplan_file, PATHINFO_EXTENSION));
-                                                $file_icon = 'bi-file-earmark';
-                                                if ($file_ext == 'pdf') $file_icon = 'bi-file-earmark-pdf-fill text-danger';
-                                                elseif (in_array($file_ext, ['doc', 'docx'])) $file_icon = 'bi-file-earmark-word-fill text-primary';
-                                                ?>
-                                                <a target="_blank" href="<?= env('upload.server.baseurl') . $v_plan->seplan_year . '/' . $v_plan->seplan_term . '/' . rawurlencode($v_plan->seplan_namesubject) . '/' . rawurlencode($v_plan->seplan_file) ?>" class="btn btn-sm btn-outline-secondary download-plan-btn" title="ดาวน์โหลด: <?= esc($v_plan->seplan_file) ?>"><i class="bi <?= esc($file_icon) ?>"></i></a>
-                                            <?php endif; ?>
+                            <div class="table-responsive text-nowrap">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ประเภทเอกสาร</th>
+                                            <th>สถานะส่ง</th>
+                                            <th>หน.กลุ่มสาระฯ</th>
+                                            <th>หน.หลักสูตรฯ</th>
+                                            <th>จัดการ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-border-bottom-0">
+                                        <?php foreach ($typeplan_map as $db_val => $display_val) : ?>
                                             <?php
-                                            $button_class = ($v_plan && $v_plan->seplan_file) ? 'btn-warning' : 'btn-danger';
+                                            $lookupKey = $v_planNew->seplan_coursecode . '|' . $db_val . '|' . $v_planNew->seplan_year . '|' . $v_planNew->seplan_term;
+                                            $v_plan = $planData[$lookupKey] ?? null;
                                             ?>
-                                            <button class="btn btn-sm <?= $button_class ?> Model_update" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#ModalUpdatePlan"
-                                                data-seplan-id="<?= esc($v_plan->seplan_ID ?? '') ?>"
-                                                data-seplan-coursecode="<?= esc($v_planNew->seplan_coursecode) ?>"
-                                                data-seplan-typeplan="<?= esc($db_val) ?>"
-                                                data-seplan-sendcomment="<?= esc($v_plan->seplan_sendcomment ?? '') ?>">
-                                                <i class="bi bi-upload"></i> <?= $v_plan && $v_plan->seplan_file ? 'แก้ไข' : 'เพิ่ม' ?>
-                                            </button>
-                                        </div>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
+                                            <tr data-typeplan="<?= esc($db_val) ?>"
+                                                style="<?php
+                                                    // If it's the main subject, show all document types
+                                                    if (($v_planNew->seplan_is_main_subject ?? 0) == 1) {
+                                                        echo ''; // No inline style needed, it will be visible by default
+                                                    } else {
+                                                        // If it's not the main subject, only show 'โครงการสอน'
+                                                        echo ($db_val === 'โครงการสอน') ? '' : 'display: none !important;';
+                                                    }
+                                                ?>">
+                                                <td><strong><?= esc($display_val) ?></strong></td>
+                                                <td>
+                                                    <?php if ($v_plan && !empty($v_plan->seplan_file)) : ?>
+                                                        <span class="badge bg-success">ส่งแล้ว</span>
+                                                    <?php else: ?>
+                                                        <span class="badge bg-danger">ยังไม่ส่ง</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td>
+                                                    <?php if ($v_plan) : ?>
+                                                        <?php
+                                                            if ($v_plan->seplan_status1 == 'ผ่าน') {
+                                                                echo '<span class="badge bg-success">ผ่าน</span>';
+                                                            } elseif ($v_plan->seplan_status1 == 'ไม่ผ่าน') {
+                                                                echo '<span class="badge bg-danger" title="' . esc($v_plan->seplan_comment1) . '">ไม่ผ่าน</span>';
+                                                            } else {
+                                                                echo '<span class="badge bg-warning">รอตรวจ</span>';
+                                                            }
+                                                        ?>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td>
+                                                    <?php if ($v_plan) : ?>
+                                                        <?php
+                                                            if ($v_plan->seplan_status2 == 'ผ่าน') {
+                                                                echo '<span class="badge bg-success">ผ่าน</span>';
+                                                            } elseif ($v_plan->seplan_status2 == 'ไม่ผ่าน') {
+                                                                echo '<span class="badge bg-danger" title="' . esc($v_plan->seplan_comment2) . '">ไม่ผ่าน</span>';
+                                                            } else {
+                                                                echo '<span class="badge bg-warning">รอตรวจ</span>';
+                                                            }
+                                                        ?>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <?php if ($v_plan && $v_plan->seplan_file) : ?>
+                                                            <?php
+                                                            $file_ext = strtolower(pathinfo($v_plan->seplan_file, PATHINFO_EXTENSION));
+                                                            $file_icon = 'bi-file-earmark';
+                                                            if ($file_ext == 'pdf') $file_icon = 'bi-file-earmark-pdf-fill text-danger';
+                                                            elseif (in_array($file_ext, ['doc', 'docx'])) $file_icon = 'bi-file-earmark-word-fill text-primary';
+                                                            ?>
+                                                            <a target="_blank" href="<?= env('upload.server.baseurl') . $v_plan->seplan_year . '/' . $v_plan->seplan_term . '/' . rawurlencode($v_plan->seplan_namesubject) . '/' . rawurlencode($v_plan->seplan_file) ?>" class="btn btn-sm btn-outline-secondary download-plan-btn" title="ดาวน์โหลด: <?= esc($v_plan->seplan_file) ?>"><i class="bi <?= esc($file_icon) ?>"></i></a>
+                                                        <?php endif; ?>
+                                                        <?php
+                                                        $button_class = ($v_plan && $v_plan->seplan_file) ? 'btn-warning' : 'btn-danger';
+                                                        ?>
+                                                        <button class="btn btn-sm <?= $button_class ?> Model_update" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#ModalUpdatePlan"
+                                                            data-seplan-id="<?= esc($v_plan->seplan_ID ?? '') ?>"
+                                                            data-seplan-coursecode="<?= esc($v_planNew->seplan_coursecode) ?>"
+                                                            data-seplan-typeplan="<?= esc($db_val) ?>"
+                                                            data-seplan-sendcomment="<?= esc($v_plan->seplan_sendcomment ?? '') ?>">
+                                                            <i class="bi bi-upload"></i> <?= $v_plan && $v_plan->seplan_file ? 'แก้ไข' : 'เพิ่ม' ?>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
             </div>
-        </div>
-    </div>
-</main>
+
 
 <!-- Modal Update Plan -->
 <div class="modal fade" id="ModalUpdatePlan" tabindex="-1" aria-labelledby="ModalUpdatePlanLabel" aria-hidden="true">
@@ -425,14 +357,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // สำหรับวิชาหลัก ให้แสดงเอกสารทุกประเภท
                 listItems.forEach(item => {
-                    item.style.display = 'flex';
+                    item.style.display = ''; // Revert to default display
                 });
 
             } else {
                 // สำหรับวิชาที่ไม่ใช่วิชาหลัก ให้แสดงเฉพาะ 'โครงการสอน'
                 listItems.forEach(item => {
                     if (item.dataset.typeplan === 'โครงการสอน') {
-                        item.style.display = 'flex';
+                        item.style.display = ''; // Revert to default display
                     } else {
                         item.style.display = 'none';
                     }

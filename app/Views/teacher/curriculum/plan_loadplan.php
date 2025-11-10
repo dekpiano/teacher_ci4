@@ -6,31 +6,21 @@
 
 <?= $this->section('content') ?>
 
-<main class="app-main">
-    <div class="app-content-header">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-6">
-                    <h3 class="mb-0"><?= esc($title ?? '') ?></h3>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-end">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page"><?= esc($title ?? '') ?></li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="app-content">
+
+
+
         <div class="container-fluid">
 
             <?php  $typeplan = array('แบบตรวจแผนการจัดการเรียนรู้','บันทึกตรวจใช้แผน','โครงการสอน','แผนการสอนหน้าเดียว','บันทึกหลังสอน'); ?>
-            <div class="card p-3">
-                <div cass="card-body">
-                    <div class="d-flex justify-content-center align-items-center">
-                        <div class="mr-2">
-                            <select name="SelTeacher" id="SelTeacher" class="form-select w-auto">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">ตัวกรอง</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-5">
+                            <label for="SelTeacher" class="form-label">เลือกครูผู้สอน</label>
+                            <select name="SelTeacher" id="SelTeacher" class="form-select">
                                 <option value="All">กรุณาเลือกครูผู้สอน</option>
                                 <?php foreach ($SelTeacher as $v_SelTeacher): ?>
                                 <option <?= ($CheckTeach == $v_SelTeacher->pers_id) ? "selected":"" ?> value="<?= esc($v_SelTeacher->pers_id) ?>">
@@ -39,8 +29,9 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="mr-2">                      
-                            <select name="CheckYear" id="CheckYear" class="form-select w-auto">
+                        <div class="col-md-5">
+                            <label for="CheckYear" class="form-label">ปีการศึกษา</label>
+                            <select name="CheckYear" id="CheckYear" class="form-select">
                                 <?php foreach ($CheckYear as $v_CheckYear): ?>
                                 <option
                                     <?= ($current_year == $v_CheckYear->seplan_year && $current_term == $v_CheckYear->seplan_term) ? "selected":"" ?>
@@ -49,8 +40,10 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="mr-2"> 
-                        <button type="button" id="SearchPlan" class="btn btn-primary"> ค้นหาแผน</button>
+                        <div class="col-md-2">
+                            <button type="button" id="SearchPlan" class="btn btn-primary w-100">
+                                <i class="bi bi-search me-1"></i> ค้นหา
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -59,7 +52,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover" id="tb_plan">
+                        <table class="table table-striped table-hover" id="tb_plan">
                             <thead>
                                 <tr>
                                     <th scope="col">ปีการศึกษา</th>
@@ -139,7 +132,7 @@
                                             <i class="bi <?= $iconClass ?> h4"></i>
                                         </a>
                                         <?php else: ?>
-                                        <span class="badge badge-danger h6 text-white">ยังไม่ส่ง</span>
+                                        <span class="badge bg-label-danger">ยังไม่ส่ง</span>
                                         <?php endif; ?>
                                     </td>
                                     <?php endforeach; ?>
@@ -161,9 +154,7 @@
             <?php endif; ?>
 
 
-        </div>
-    </div>
-</main>
+
 
 <?= $this->endSection() ?>
 

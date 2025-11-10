@@ -6,47 +6,29 @@
 
 <?= $this->section('content') ?>
 
-<main class="app-main">
-    <div class="app-content-header">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-6">
-                    <h3 class="mb-0"><?= esc($title ?? '') ?><?= esc($lean[0]->lear_namethai ?? '') ?></h3>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-end">
-                        <li class="breadcrumb-item"><a href="<?= site_url('curriculum/check-plan') ?>">กลุ่มสาระ</a></li>
-                        <li class="breadcrumb-item"><a href="<?= site_url('curriculum/check-plan-lear/' . esc($lean[0]->lear_id ?? '')) ?>"><?= esc($lean[0]->lear_namethai ?? '') ?></a></li>
-                        <li class="breadcrumb-item active"><?= esc($planNew[0]->pers_prefix ?? '') ?><?= esc($planNew[0]->pers_firstname ?? '') ?> <?= esc($planNew[0]->pers_lastname ?? '') ?></li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="app-content">
-        <div class="container-fluid">
-            <div class="articles card">
-                <div class="card-header d-flex align-items-center justify-content-between">
-                    <h4 class="h3">ส่งแผนของ <?= esc($planNew[0]->pers_prefix ?? '') ?><?= esc($planNew[0]->pers_firstname ?? '') ?> <?= esc($planNew[0]->pers_lastname ?? '') ?> </h4>
-                    <div class="mr-2">                      
-                            <select name="CheckYearCheckPlan" id="CheckYearCheckPlan" class="form-control w-auto">
-                                <?php foreach ($CheckYear as $v_CheckYear): ?>
-                                <option
-                                    <?= (service('uri')->getSegment(5) == $v_CheckYear->seplan_year && service('uri')->getSegment(6) == $v_CheckYear->seplan_term) ? "selected":"" ?>
-                                    value="<?= esc($v_CheckYear->seplan_year.'/'.$v_CheckYear->seplan_term) ?>">
-                                    <?= esc($v_CheckYear->seplan_term.'/'.$v_CheckYear->seplan_year) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                </div>
-                
-            </div>
 
+
+
+        <div class="container-fluid">
             <?php  $typeplan = array('บันทึกตรวจใช้แผน','แบบตรวจแผนการจัดการเรียนรู้','โครงการสอน','แผนการสอนหน้าเดียว','บันทึกหลังสอน'); ?>
             <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="card-title mb-0">ส่งแผนของ <?= esc($planNew[0]->pers_prefix ?? '') ?><?= esc($planNew[0]->pers_firstname ?? '') ?> <?= esc($planNew[0]->pers_lastname ?? '') ?></h5>
+                    <div class="d-flex align-items-center">
+                        <label for="CheckYearCheckPlan" class="form-label me-2 mb-0">ปีการศึกษา:</label>
+                        <select name="CheckYearCheckPlan" id="CheckYearCheckPlan" class="form-select w-auto">
+                            <?php foreach ($CheckYear as $v_CheckYear): ?>
+                            <option
+                                <?= (service('uri')->getSegment(5) == $v_CheckYear->seplan_year && service('uri')->getSegment(6) == $v_CheckYear->seplan_term) ? "selected":"" ?>
+                                value="<?= esc($v_CheckYear->seplan_year.'/'.$v_CheckYear->seplan_term) ?>">
+                                <?= esc($v_CheckYear->seplan_term.'/'.$v_CheckYear->seplan_year) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="tb_checkplan" class="table table-hover" style="width:100%">
+                        <table id="tb_checkplan" class="table table-striped table-hover" style="width:100%">
                             <thead>
                                 <tr>
                                     <th class="w-auto">ปีการศึกษา</th>
@@ -82,77 +64,73 @@
                                     ?>
                                     <td>
                                         <?php if($found_plan && $found_plan->seplan_file == null): ?>
-                                    <span class="badge badge-danger h6 text-white">ยังไม่ส่ง</span>
+                                    <span class="badge bg-label-danger">ยังไม่ส่ง</span>
                                     <?php elseif($found_plan && $found_plan->seplan_file != null): ?>
-                                    <span class="badge badge-success h6 text-white">ส่งแล้ว</span>
+                                    <span class="badge bg-label-success">ส่งแล้ว</span>
                                     <a href="<?= base_url('uploads/academic/course/plan/' . esc($found_plan->seplan_year) . '/' . esc($found_plan->seplan_term) . '/' . esc($found_plan->seplan_namesubject) . '/' . esc($found_plan->seplan_file)) ?>"
-                                        target="_blank" rel="noopener noreferrer">
-                                        <span class="badge badge-primary h6 text-white"><i class="bi bi-eye-fill"
-                                                aria-hidden="true" data-toggle="popover" data-trigger="hover"
-                                                data-content="เปิดดู" data-placement="top"></i></span>
+                                        target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-icon item-edit">
+                                        <i class="bi bi-eye-fill"></i>
                                     </a>
                                     <?php else: ?>
-                                    <span class="badge badge-secondary h6 text-white">ไม่มีข้อมูล</span>
+                                    <span class="badge bg-label-secondary">ไม่มีข้อมูล</span>
                                     <?php endif; ?>
 
                                     <br>
                                     <small><b>ผู้ส่ง :</b> <?= esc($found_plan ? $found_plan->seplan_sendcomment : '-') ?></small> <br>
-                                    <small><b>หน.ก : </b>
-                                        <?php 
-                                        $textColor1="";
-                                        if($found_plan && $found_plan->seplan_status1 == "ผ่าน"){
-                                            $textColor1="text-success";
-                                        }elseif($found_plan && $found_plan->seplan_status1 == "ไม่ผ่าน"){
-                                            $textColor1="text-danger";
-                                        }
-                                        ?>
-                                        <?php if(session('person_id') == 'pers_014' && session('pers_learning') != ($IDlear ?? '')): // This logic needs to be re-evaluated for CI4 roles ?>
-                                        <span class="<?= esc($textColor1) ?>"> <?= esc($found_plan ? $found_plan->seplan_status1 : 'รอตรวจ') ?></span>
-                                        <?php else: ?>
-                                        <select id="seplan_status1" name="seplan_status1"
-                                            data-planId="<?= esc($found_plan ? $found_plan->seplan_ID : '') ?>"
-                                            class="bgC<?= esc($found_plan ? $found_plan->seplan_ID : '') ?> seplan_status1 <?= esc($textColor1) ?> ">
-                                            <option <?= ($found_plan && $found_plan->seplan_status1 == "รอตรวจ") ? 'selected' : ''?>
-                                                value="รอตรวจ">รอตรวจ</option>
-                                            <option <?= ($found_plan && $found_plan->seplan_status1 == "ผ่าน") ? 'selected' : ''?>
-                                                value="ผ่าน">ผ่าน</option>
-                                            <option <?= ($found_plan && $found_plan->seplan_status1 == "ไม่ผ่าน") ? 'selected' : ''?>
-                                                value="ไม่ผ่าน">ไม่ผ่าน</option>
-                                        </select>
-                                        <div class="IDCom0<?= esc($found_plan ? $found_plan->seplan_ID : '') ?> TbShowComment1">
-                                            <?= ($found_plan && $found_plan->seplan_status1 == "ไม่ผ่าน") ? '<a href="#" class="show_comment1" data-toggle="modal" data-planId="' . esc($found_plan->seplan_ID) . '" data-target="#addcomment1">หมายเหตุ</a>' : ''?>
-                                        </div>
-                                       
-                                        <?php endif; ?>
-                                    </small>
-                                    <br>
-                                    <small><b>หน.ง : </b>
-                                        <?php 
-                                        $textColor2="";
-                                        if($found_plan && $found_plan->seplan_status2 == "ผ่าน"){
-                                            $textColor2="text-success";
-                                        }elseif($found_plan && $found_plan->seplan_status2 == "ไม่ผ่าน"){
-                                            $textColor2="text-danger";
-                                        }
-                                        ?>
-                                        <?php if(session('person_id') == 'pers_051'):?>
-                                        <select id="seplan_status2" name="seplan_status2"
-                                            planId="<?= esc($found_plan ? $found_plan->seplan_ID : '') ?>"
-                                            class="bgCC<?= esc($found_plan ? $found_plan->seplan_ID : '') ?>  seplan_status2 <?= esc($textColor2) ?>">
-                                            <option <?= ($found_plan && $found_plan->seplan_status2 == "รอตรวจ") ? 'selected' : ''?>
-                                                value="รอตรวจ">รอตรวจ</option>
-                                            <option <?= ($found_plan && $found_plan->seplan_status2 == "ผ่าน") ? 'selected' : ''?>
-                                                value="ผ่าน">ผ่าน</option>
-                                            <option <?= ($found_plan && $found_plan->seplan_status2 == "ไม่ผ่าน") ? 'selected' : ''?>
-                                                value="ไม่ผ่าน">ไม่ผ่าน</option>
-                                        </select>
-                                        <div class="IDCom<?= esc($found_plan ? $found_plan->seplan_ID : '') ?> TbShowComment2">
-                                            <?= ($found_plan && $found_plan->seplan_status2 == "ไม่ผ่าน") ? '<a href="#" class="show_comment2" data-toggle="modal" data-planId="' . esc($found_plan->seplan_ID) . '" data-target="#addcomment2">หมายเหตุ</a>' : ''?>
-                                        </div>
-                                        <?php else: echo esc($found_plan ? $found_plan->seplan_status2 : 'รอตรวจ'); ?>
-                                        <?php endif; ?>
-                                    </small>
-                                </td>
+                                                                            <div class="d-flex align-items-center">
+                                                                                <small class="me-2"><b>หน.ก : </b></small>
+                                                                                <?php 
+                                                                                $status_class_1 = '';
+                                                                                if($found_plan && $found_plan->seplan_status1 == "ผ่าน"){
+                                                                                    $status_class_1 = 'bg-label-success';
+                                                                                }elseif($found_plan && $found_plan->seplan_status1 == "ไม่ผ่าน"){
+                                                                                    $status_class_1 = 'bg-label-danger';
+                                                                                } else {
+                                                                                    $status_class_1 = 'bg-label-warning';
+                                                                                }
+                                                                                ?>
+                                                                                <?php if(session('person_id') == 'pers_014' && session('pers_learning') != ($IDlear ?? '')): // This logic needs to be re-evaluated for CI4 roles ?>
+                                                                                <span class="badge <?= esc($status_class_1) ?>"> <?= esc($found_plan ? $found_plan->seplan_status1 : 'รอตรวจ') ?></span>
+                                                                                <?php else: ?>
+                                                                                <select name="seplan_status1"
+                                                                                    data-planId="<?= esc($found_plan ? $found_plan->seplan_ID : '') ?>"
+                                                                                    class="form-select form-select-sm seplan_status1 <?= esc($status_class_1) ?>">
+                                                                                    <option value="รอตรวจ" <?= ($found_plan && $found_plan->seplan_status1 == "รอตรวจ") ? 'selected' : ''?>>รอตรวจ</option>
+                                                                                    <option value="ผ่าน" <?= ($found_plan && $found_plan->seplan_status1 == "ผ่าน") ? 'selected' : ''?>>ผ่าน</option>
+                                                                                    <option value="ไม่ผ่าน" <?= ($found_plan && $found_plan->seplan_status1 == "ไม่ผ่าน") ? 'selected' : ''?>>ไม่ผ่าน</option>
+                                                                                </select>
+                                                                                <div class="IDCom0<?= esc($found_plan ? $found_plan->seplan_ID : '') ?> TbShowComment1 ms-2">
+                                                                                    <?= ($found_plan && $found_plan->seplan_status1 == "ไม่ผ่าน") ? '<a href="#" class="show_comment1" data-bs-toggle="modal" data-planId="' . esc($found_plan->seplan_ID) . '" data-bs-target="#addcomment1">หมายเหตุ</a>' : ''?>
+                                                                                </div>
+                                                                                <?php endif; ?>
+                                                                            </div>                                    <br>
+                                                                            <div class="d-flex align-items-center">
+                                                                                <small class="me-2"><b>หน.ง : </b></small>
+                                                                                <?php 
+                                                                                $status_class_2 = '';
+                                                                                if($found_plan && $found_plan->seplan_status2 == "ผ่าน"){
+                                                                                    $status_class_2 = 'bg-label-success';
+                                                                                }elseif($found_plan && $found_plan->seplan_status2 == "ไม่ผ่าน"){
+                                                                                    $status_class_2 = 'bg-label-danger';
+                                                                                } else {
+                                                                                    $status_class_2 = 'bg-label-warning';
+                                                                                }
+                                                                                ?>
+                                                                                <?php if(session('person_id') == 'pers_051'):?>
+                                                                                <select name="seplan_status2"
+                                                                                    data-planId="<?= esc($found_plan ? $found_plan->seplan_ID : '') ?>"
+                                                                                    class="form-select form-select-sm seplan_status2 <?= esc($status_class_2) ?>">
+                                                                                    <option value="รอตรวจ" <?= ($found_plan && $found_plan->seplan_status2 == "รอตรวจ") ? 'selected' : ''?>>รอตรวจ</option>
+                                                                                    <option value="ผ่าน" <?= ($found_plan && $found_plan->seplan_status2 == "ผ่าน") ? 'selected' : ''?>>ผ่าน</option>
+                                                                                    <option value="ไม่ผ่าน" <?= ($found_plan && $found_plan->seplan_status2 == "ไม่ผ่าน") ? 'selected' : ''?>>ไม่ผ่าน</option>
+                                                                                </select>
+                                                                                <div class="IDCom<?= esc($found_plan ? $found_plan->seplan_ID : '') ?> TbShowComment2 ms-2">
+                                                                                    <?= ($found_plan && $found_plan->seplan_status2 == "ไม่ผ่าน") ? '<a href="#" class="show_comment2" data-bs-toggle="modal" data-planId="' . esc($found_plan->seplan_ID) . '" data-bs-target="#addcomment2">หมายเหตุ</a>' : ''?>
+                                                                                </div>
+                                                                                <?php else: ?>
+                                                                                    <span class="badge <?= esc($status_class_2) ?>"><?= esc($found_plan ? $found_plan->seplan_status2 : 'รอตรวจ') ?></span>
+                                                                                <?php endif; ?>
+                                                                            </div>                                </td>
                             </tr>
                             <?php  endforeach; ?>
                         </tbody>
@@ -162,9 +140,7 @@
         </div>
 
 
-    </div>
-</section>
-
+    
 <div id="addcomment1" tabindex="-1" aria-labelledby="exampleModalLabel" class="modal fade text-left" aria-hidden="true"
     style="display: none;">
     <div role="document" class="modal-dialog">

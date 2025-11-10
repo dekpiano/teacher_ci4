@@ -1,83 +1,57 @@
 <!doctype html>
-<html lang="en">
-<!--begin::Head-->
+
+<html lang="en" class="layout-menu-fixed layout-compact">
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title> <?= $this->renderSection('title') ?> | ระบบงานครู สกจ.9</title>
-    <!--begin::Accessibility Meta Tags-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
-    <!--end::Accessibility Meta Tags-->
-    <!--begin::Primary Meta Tags-->
-    <meta name="title" content="ระบบงานครู สกจ.9" />
-    <meta name="author" content="Dekpiano" />
-    <meta name="description"
-        content="ระบบบริหารจัดการข้อมูลสำหรับครู โรงเรียนสวนกุหลาบวิทยาลัย (จิรประวัติ) นครสวรรค์ ช่วยในการจัดการงานวิชาการ งานวัดผล และงานหลักสูตร" />
-    <meta name="keywords"
-        content="ระบบงานครู, สกจ.9, โรงเรียนสวนกุหลาบวิทยาลัย (จิรประวัติ) นครสวรรค์, งานวิชาการ, งานวัดผล, งานหลักสูตร, ครู, การศึกษา" />
-    <!--end::Primary Meta Tags-->
-    <!--begin::Accessibility Features-->
-    <!-- Skip links will be dynamically added by accessibility.js -->
-    <meta name="supported-color-schemes" content="light dark" />
-    <link href="https://skj.ac.th/uploads/logoSchool/LogoSKJ_4.png" rel="icon">
-    <link rel="preload" href="<?=base_url()?>assets/adminlte/dist/css/adminlte.css" as="style" />
-    <!--end::Accessibility Features-->
-    <!--begin::Fonts-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
-        integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q=" crossorigin="anonymous" media="print"
-        onload="this.media='all'" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-    body,
-    .nav-link p,
-    .info-box-text,
-    .info-box-number,
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6,
-    p,
-    div,
-    span,
-    input,
-    textarea,
-    select,
-    button,
-    .form-control,
-    .btn,
-    .breadcrumb-item {
-        font-family: 'Sarabun', sans-serif;
-    }
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    a.info-box-link {
-        text-decoration: none;
-        color: inherit;
-    }
+    <title><?= $this->renderSection('title') ?> | ระบบงานครู สกจ.9</title>
+
+    <meta name="description" content="ระบบบริหารจัดการข้อมูลสำหรับครู โรงเรียนสวนกุหลาบวิทยาลัย (จิรประวัติ) นครสวรรค์ ช่วยในการจัดการงานวิชาการ งานวัดผล และงานหลักสูตร" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="https://skj.ac.th/uploads/logoSchool/LogoSKJ_4.png" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=K2D:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" crossorigin="anonymous" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="<?= base_url('public/assets/sneat/vendor/css/core.css') ?>" />
+    <link rel="stylesheet" href="<?= base_url('public/assets/sneat/css/demo.css') ?>" />
+    <link rel="stylesheet" href="<?= base_url('public/assets/sneat/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') ?>" />
+    <link rel="stylesheet" href="<?= base_url('public/assets/sneat/vendor/libs/apex-charts/apex-charts.css') ?>" />
+
+    <style>
+        body,
+        .menu-link,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        div,
+        span,
+        input,
+        textarea,
+        select,
+        button,
+        .form-control,
+        .btn,
+        .breadcrumb-item {
+            font-family: 'K2D', sans-serif;
+        }
     </style>
-    <!--end::Fonts-->
-    <!--begin::Third Party Plugin(OverlayScrollbars)-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css"
-        crossorigin="anonymous" />
-    <!--end::Third Party Plugin(OverlayScrollbars)-->
-    <!--begin::Third Party Plugin(Bootstrap Icons)-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
-        crossorigin="anonymous" />
-    <!--end::Third Party Plugin(Bootstrap Icons)-->
-    <!--begin::Required Plugin(AdminLTE)-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc3/dist/css/adminlte.min.css"
-        crossorigin="anonymous" />
-    <!-- <link rel="stylesheet" href="<?=base_url()?>assets/adminlte/dist/css/adminlte.css" /> -->
-    <!--end::Required Plugin(AdminLTE)-->
-    <!-- apexcharts -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css"
-        integrity="sha256-4MX+61mt9NVvvuPjUWdUdyfZfxSB1/Rf9WtqRHgG5S0=" crossorigin="anonymous" />
+
+    <!-- Helpers -->
+    <script src="<?= base_url('public/assets/sneat/vendor/js/helpers.js') ?>"></script>
+    <script src="<?= base_url('public/assets/sneat/js/config.js') ?>"></script>
+
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.min.css">
     <!-- DataTables CSS -->
@@ -86,298 +60,265 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
     <!-- FullCalendar CSS -->
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/main.min.css' rel='stylesheet' />
+
 </head>
 
-<body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
-    <!--begin::App Wrapper-->
-    <!--begin::App Wrapper-->
-    <div class="app-wrapper">
-        <!--begin::Header-->
-        <nav class="app-header navbar navbar-expand bg-body">
-            <!--begin::Container-->
-            <div class="container-fluid">
-                <!--begin::Start Navbar Links-->
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
-                            <i class="bi bi-list"></i>
-                        </a>
-                    </li>
-                    <li class="nav-item d-none d-md-block"><a href="<?=base_url();?>" class="nav-link">หน้าแรก</a></li>
-                </ul>
-                <!--end::Start Navbar Links-->
-                <!--begin::End Navbar Links-->
-                <ul class="navbar-nav ms-auto">
-                    <!--begin::Navbar Search-->
-                    <li class="nav-item">
-                        <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-                            <i class="bi bi-search"></i>
-                        </a>
-                    </li>
-                    <!--end::Navbar Search-->
+<body>
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+        <div class="layout-container">
+            <!-- Menu -->
+            <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+                <div class="app-brand demo">
+                    <a href="<?= base_url() ?>" class="app-brand-link">
+                        <span class="app-brand-logo demo">
+                            <img src="https://skj.ac.th/uploads/logoSchool/LogoSKJ_4.png" alt="LogoSKJ_4" style="height: 35px;" />
+                        </span>
+                        <span class="app-brand-text demo menu-text fw-bold ms-2">สกจ.9</span>
+                    </a>
 
-                    <!--begin::User Menu Dropdown-->
-                    <li class="nav-item dropdown user-menu">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <img src="https://personnel.skj.ac.th/uploads/admin/Personnal/<?= session()->get('person_img')?>"
-                                class="user-image rounded-circle shadow" alt="Image" />
-                            <span class="d-none d-md-inline">ครู<?= session()->get('fullname')?></span>
+                    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+                        <i class="bx bx-chevron-left bx-sm align-middle"></i>
+                    </a>
+                </div>
+
+                <div class="menu-inner-shadow"></div>
+
+                <ul class="menu-inner py-1">
+                    <li class="menu-item">
+                        <a href="<?= base_url(); ?>" class="menu-link">
+                            <i class="menu-icon tf-icons bi bi-house-door-fill"></i>
+                            <div data-i18n="Analytics">หน้าหลัก</div>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                            <!--begin::User Image-->
-                            <li class="user-header text-bg-primary">
-                                <img src="https://personnel.skj.ac.th/uploads/admin/Personnal/<?= session()->get('person_img')?>"
-                                    class="rounded-circle shadow" alt="User Image" />
-                                <p>
-                                    ครู<?= session()->get('fullname')?>
-                                    <small>กำลังใช้งาน</small>
-                                </p>
+                    </li>
+
+                    <li class="menu-header small text-uppercase">
+                        <span class="menu-header-text">งานวิชาการ</span>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="<?= base_url('club') ?>" class="menu-link">
+                            <i class="menu-icon tf-icons bi bi-people-fill"></i>
+                            <div data-i18n="Club">ชุมนุม</div>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bi bi-file-earmark-ruled-fill"></i>
+                            <div data-i18n="Layouts">งานวัดผล</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="<?= base_url('assessment/save-score-normal') ?>" class="menu-link" data-active-paths="assessment/save-score-add">
+                                    <div data-i18n="Save Score Normal">บันทึกผลการเรียน(ปกติ)</div>
+                                </a>
                             </li>
-                            <!--end::Menu Body-->
-                            <!--begin::Menu Footer-->
-                            <li class="user-footer">
-                                <a href="#" class="btn btn-default btn-flat"><i class="bi bi-person-circle"></i> Profile</a>
-                                <a href="<?=base_url()?>logout" class="btn btn-default btn-flat float-end"><i
-                                        class="bi bi-box-arrow-right"></i> Sign out</a>
+                            <li class="menu-item">
+                                <a href="<?= base_url('assessment/save-score-repeat') ?>" class="menu-link">
+                                    <div data-i18n="Save Score Repeat">บันทึกผลการเรียน(ซ้ำ)</div>
+                                </a>
                             </li>
-                            <!--end::Menu Footer-->
                         </ul>
                     </li>
-                    <!--end::User Menu Dropdown-->
+
+                    <li class="menu-item">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bi bi-book-fill"></i>
+                            <div data-i18n="Layouts">งานหลักสูตร</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="<?= base_url('curriculum/SendPlan') ?>" class="menu-link" data-active-paths="curriculum/,curriculum/SendPlan">
+                                    <div data-i18n="Send Plan">ส่งแผนการสอน</div>
+                                </a>
+                            </li>
+                            <?php if (session()->get('pers_groupleade') !== null && session()->get('pers_groupleade') !== '') : ?>
+                                <li class="menu-item">
+                                    <a href="<?= base_url('curriculum/check-plan-head') ?>" class="menu-link" data-active-paths="curriculum/check-plan-head,curriculum/check-plan-head-detail">
+                                        <div data-i18n="Check Plan">ตรวจแผน (หน.กลุ่มสาระ)</div>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+                            <li class="menu-item">
+                                <a href="<?= base_url('curriculum/download-plan') ?>" class="menu-link">
+                                    <div data-i18n="Download Plan">ดาวโหลดแผน</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bi bi-clipboard-check"></i>
+                            <div data-i18n="Layouts">งานประเมินนักเรียน</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="<?= base_url('teacher/reading_assessment') ?>" class="menu-link">
+                                    <div data-i18n="Reading Assessment">แบบประเมินอ่านคิดวิเคราะห์</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="<?= base_url('teacher/desirable_assessment') ?>" class="menu-link">
+                                    <div data-i18n="Desirable Assessment">คุณลักษณะอันพึงประสงค์</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <i class="menu-icon tf-icons bi bi-award-fill"></i>
+                            <div data-i18n="Quality Assurance">งานประกันคุณภาพ</div>
+                        </a>
+                    </li>
                 </ul>
-                <!--end::End Navbar Links-->
-            </div>
-            <!--end::Container-->
-        </nav>
-        <!--end::Header-->
-        <!--begin::Sidebar-->
-        <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
-            <!--begin::Sidebar Brand-->
-            <div class="sidebar-brand">
-                <!--begin::Brand Link-->
-                <a href="<?=base_url();?>" class="brand-link">
-                    <!--begin::Brand Image-->
-                    <img src="https://skj.ac.th/uploads/logoSchool/LogoSKJ_4.png" alt="LogoSKJ_4"
-                        class="brand-image opacity-75 shadow" />
-                    <!--end::Brand Image-->
-                    <!--begin::Brand Text-->
-                    <span class="brand-text fw-light">ระบบงานครู สกจ.9</span>
-                    <!--end::Brand Text-->
-                </a>
-                <!--end::Brand Link-->
-            </div>
-            <!--end::Sidebar Brand-->
-            <!--begin::Sidebar Wrapper-->
-            <div class="sidebar-wrapper">
-                <nav class="mt-2">
-                    <!--begin::Sidebar Menu-->
-                    <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="navigation"
-                        aria-label="Main navigation" data-accordion="false" id="navigation">
-                        <!-- <li class="nav-header">ทั่วไป</li> -->
-                        <li class="nav-item">
-                            <a href="<?=base_url();?>" class="nav-link">
-                                <i class="nav-icon bi bi-house-door-fill"></i>
-                                <p>หน้าหลัก</p>
-                            </a>
-                        </li>
-                        <li class="nav-header">งานวิชาการ</li>
+            </aside>
+            <!-- / Menu -->
 
-                        <li class="nav-item">
-                            <a href="<?= base_url('club') ?>" class="nav-link">
-                                <i class="nav-icon bi bi-people-fill"></i>
-                                <p>ชุมนุม</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-file-earmark-ruled-fill"></i>
-                                <p>
-                                    งานวัดผล
-                                    <i class="nav-arrow bi bi-chevron-right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item ">
-                                    <a href="<?= base_url('assessment/save-score-normal') ?>" class="nav-link">
-                                        <i class="nav-icon bi bi-journal-text"></i>
-                                        <p>บันทึกผลการเรียน(ปกติ)</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="<?= base_url('assessment/save-score-repeat') ?>" class="nav-link">
-                                        <i class="nav-icon bi bi-arrow-repeat"></i>
-                                        <p>บันทึกผลการเรียน(ซ้ำ)</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-book-fill"></i>
-                                <p>
-                                    งานหลักสูตร
-                                    <i class="nav-arrow bi bi-chevron-right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="<?= base_url('curriculum/SendPlan') ?>" class="nav-link">
-                                        <i class="nav-icon bi bi-cloud-arrow-up-fill"></i>
-                                        <p>ส่งแผนการสอน </p>
-                                    </a>
-                                </li>
-                                <?php if (session()->get('pers_groupleade') !== null && session()->get('pers_groupleade') !== ''): ?>
-                                <li class="nav-item">
-                                    <a href="<?= base_url('curriculum/check-plan-head') ?>" class="nav-link">
-                                        <i class="nav-icon bi bi-check-circle-fill"></i>
-                                        <p>ตรวจแผน (หน.กลุ่มสาระ)</p>
-                                    </a>
-                                </li>
-                                <?php endif; ?>
-                                <li class="nav-item">
-                                    <a href="<?= base_url('curriculum/download-plan') ?>" class="nav-link">
-                                        <i class="nav-icon bi bi-cloud-arrow-down-fill"></i>
-                                        <p>ดาวโหลดแผน</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-
-
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-clipboard-check"></i>
-                                <p>
-                                    งานประเมินนักเรียน
-                                    <i class="nav-arrow bi bi-chevron-right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="<?= base_url('teacher/reading_assessment') ?>" class="nav-link">
-                                        <i class="nav-icon bi bi-book-half"></i>
-                                        <p>แบบประเมินอ่านคิดวิเคราะห์</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="<?= base_url('teacher/desirable_assessment') ?>" class="nav-link">
-                                        <i class="nav-icon bi bi-check2-circle"></i>
-                                        <p>คุณลักษณะอันพึงประสงค์</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="./generate/theme.html" class="nav-link">
-                                <i class="nav-icon bi bi-award-fill"></i>
-                                <p>งานประกันคุณภาพ</p>
-                            </a>
-                        </li>
-                    </ul>
-                    <!--end::Sidebar Menu-->
-                </nav>
-            </div>
-            <!--end::Sidebar Wrapper-->
-        </aside>
-
-        <!--begin::Content Wrapper-->
-        <main class="app-main">
-            <!--begin::Content Header-->
-            <div class="app-content-header">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <h3 class="mb-0"><?= esc($title ?? 'หน้าหลัก') ?></h3>
-                        </div>
-                        <div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-end">
-                                <li class="breadcrumb-item"><a href="<?= base_url() ?>">หน้าหลัก</a></li>
-                                <?php if (strpos(current_url(), 'club') !== false): ?>
-                                    <li class="breadcrumb-item"><a href="<?= base_url('club') ?>">ชุมนุม</a></li>
-                                <?php endif; ?>
-                                <li class="breadcrumb-item active" aria-current="page"><?= esc($title ?? 'หน้าหลัก') ?></li>
-                            </ol>
-                        </div>
+            <!-- Layout container -->
+            <div class="layout-page">
+                <!-- Navbar -->
+                <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                        <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                            <i class="bx bx-menu bx-sm"></i>
+                        </a>
                     </div>
-                </div>
-            </div>
-            <!--end::Content Header-->
 
-            <!--begin::Content-->
-            <div class="app-content">
-                <div class="container-fluid">
-                    <?= $this->renderSection('content') ?>
-                </div>
-            </div>
-            <!--end::Content-->
-        </main>
-        <!--end::Content Wrapper-->
+                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+                        <!-- Search -->
+                        <div class="navbar-nav align-items-center">
+                            <div class="nav-item d-flex align-items-center">
+                                <i class="bx bx-search fs-4 lh-0"></i>
+                                <input type="text" class="form-control border-0 shadow-none" placeholder="Search..." aria-label="Search..." />
+                            </div>
+                        </div>
+                        <!-- /Search -->
 
-        <!--begin::Footer-->
-        <footer class="app-footer">
-            <!--begin::To the end-->
-            <!-- <div class="float-end d-none d-sm-inline">Anything you want</div> -->
-            <!--end::To the end-->
-            <!--begin::Copyright-->
-            <strong>
-                Copyright &copy; 2025&nbsp;
-                <a href="https://facebook.com/dekpiano" class="text-decoration-none">Dekpiano</a>.
-            </strong>
-            ผู้พัฒนาระบบ
-            <!--end::Copyright-->
-        </footer>
-        <!--end::Footer-->
+                        <ul class="navbar-nav flex-row align-items-center ms-auto">
+                            <!-- User -->
+                            <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                                    <div class="avatar avatar-online">
+                                        <img src="https://personnel.skj.ac.th/uploads/admin/Personnal/<?= session()->get('person_img') ?>" alt class="w-px-40 h-auto rounded-circle" />
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <div class="d-flex">
+                                                <div class="flex-shrink-0 me-3">
+                                                    <div class="avatar avatar-online">
+                                                        <img src="https://personnel.skj.ac.th/uploads/admin/Personnal/<?= session()->get('person_img') ?>" alt class="w-px-40 h-auto rounded-circle" />
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <span class="fw-semibold d-block">ครู<?= session()->get('fullname') ?></span>
+                                                    <small class="text-muted">กำลังใช้งาน</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown-divider"></div>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <i class="bx bx-user me-2"></i>
+                                            <span class="align-middle">My Profile</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown-divider"></div>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="<?= base_url('logout') ?>">
+                                            <i class="bx bx-power-off me-2"></i>
+                                            <span class="align-middle">Log Out</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!--/ User -->
+                        </ul>
+                    </div>
+                </nav>
+                <!-- / Navbar -->
+
+                <!-- Content wrapper -->
+                <div class="content-wrapper">
+                    <!-- Content -->
+                    <div class="container-xxl flex-grow-1 container-p-y">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0"><?= esc($title ?? 'หน้าหลัก') ?></h5>
+                                            <nav aria-label="breadcrumb">
+                                                <ol class="breadcrumb mb-0">
+                                                    <li class="breadcrumb-item"><a href="<?= base_url() ?>">หน้าหลัก</a></li>
+                                                    <?php if (strpos(current_url(), 'club') !== false) : ?>
+                                                        <li class="breadcrumb-item"><a href="<?= base_url('club') ?>">ชุมนุม</a></li>
+                                                    <?php endif; ?>
+                                                    <li class="breadcrumb-item active" aria-current="page"><?= esc($title ?? 'หน้าหลัก') ?></li>
+                                                </ol>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?= $this->renderSection('content') ?>
+                    </div>
+                    <!-- / Content -->
+
+                    <!-- Footer -->
+                    <footer class="content-footer footer bg-footer-theme">
+                        <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+                            <div class="mb-2 mb-md-0">
+                                <strong>
+                                    Copyright &copy; 2025
+                                    <a href="https://facebook.com/dekpiano" target="_blank" class="footer-link fw-bolder">Dekpiano</a>.
+                                </strong>
+                                ผู้พัฒนาระบบ
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- / Footer -->
+
+                    <div class="content-backdrop fade"></div>
+                </div>
+                <!-- Content wrapper -->
+            </div>
+            <!-- / Layout page -->
+        </div>
+
+        <!-- Overlay -->
+        <div class="layout-overlay layout-menu-toggle"></div>
     </div>
+    <!-- / Layout wrapper -->
 
-    <!--end::App Wrapper-->
-    <!--begin::Script-->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- Core JS -->
+    <script src="<?= base_url('public/assets/sneat/vendor/libs/jquery/jquery.js') ?>"></script>
+    <script src="<?= base_url('public/assets/sneat/vendor/libs/popper/popper.js') ?>"></script>
+    <script src="<?= base_url('public/assets/sneat/vendor/js/bootstrap.js') ?>"></script>
+    <script src="<?= base_url('public/assets/sneat/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') ?>"></script>
+    <script src="<?= base_url('public/assets/sneat/vendor/js/menu.js') ?>"></script>
+
+    <!-- Vendors JS -->
+    <script src="<?= base_url('public/assets/sneat/vendor/libs/apex-charts/apexcharts.js') ?>"></script>
+
+    <!-- Main JS -->
+    <script src="<?= base_url('public/assets/sneat/js/main.js') ?>"></script>
+
+    <!-- Page JS -->
+    <script src="<?= base_url('public/assets/sneat/js/dashboards-analytics.js') ?>"></script>
+
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
-    <!-- jQuery UI JS -->
-    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
-    <!--begin::Third Party Plugin(OverlayScrollbars)-->
-    <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
-        crossorigin="anonymous"></script>
-    <!--end::Third Party Plugin(OverlayScrollbars)-->
-    <!--begin::Required Plugin(popperjs for Bootstrap 5)-->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous">
-    </script>
-    <!--end::Required Plugin(popperjs for Bootstrap 5)-->
-    <!--begin::Required Plugin(Bootstrap 5)-->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js" crossorigin="anonymous">
-    </script>
-    <!--end::Required Plugin(Bootstrap 5)-->
-    <!--begin::Required Plugin(AdminLTE)-->
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc3/dist/js/adminlte.min.js" crossorigin="anonymous">
-    </script>
-    <!-- <script src="<?=base_url()?>assets/adminlte/dist/js/adminlte.js"></script> -->
-    <!--end::Required Plugin(AdminLTE)-->
-    <!--begin::OverlayScrollbars Configure-->
-    <script>
-    const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
-    const Default = {
-        scrollbarTheme: 'os-theme-light',
-        scrollbarAutoHide: 'leave',
-        scrollbarClickScroll: true,
-    };
-    document.addEventListener('DOMContentLoaded', function() {
-        const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
-        if (sidebarWrapper && OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined) {
-            OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
-                scrollbars: {
-                    theme: Default.scrollbarTheme,
-                    autoHide: Default.scrollbarAutoHide,
-                    clickScroll: Default.scrollbarClickScroll,
-                },
-            });
-        }
-    });
-    </script>
-    <!--end::OverlayScrollbars Configure-->
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
@@ -392,11 +333,12 @@
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
     <!-- FullCalendar JS -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js'></script>
-    <!-- OPTIONAL SCRIPTS -->
+
     <?= $this->renderSection('scripts') ?>
-        <script>
+
+    <script>
         $(function() {
-            <?php if (session()->getFlashdata('success')): ?>
+            <?php if (session()->getFlashdata('success')) : ?>
                 Swal.fire({
                     icon: 'success',
                     title: 'สำเร็จ!',
@@ -405,7 +347,7 @@
                     timer: 1500
                 });
             <?php endif; ?>
-            <?php if (session()->getFlashdata('error')): ?>
+            <?php if (session()->getFlashdata('error')) : ?>
                 Swal.fire({
                     icon: 'error',
                     title: 'ผิดพลาด!',
@@ -414,56 +356,82 @@
             <?php endif; ?>
         });
 
-        (function($) { // Wrap in IIFE
-            $(function() {
-                var current_url = window.location.href;
-        
-                // Normalize current_url: remove trailing slash unless it's the root itself
-                if (current_url.endsWith('/') && current_url.length > (window.location.origin + '/').length) {
-                    current_url = current_url.slice(0, -1);
-                }
-        
-                $(".sidebar-menu .nav-link").each(function() {
-                    var link_href = this.href;
-        
-                    // Normalize link_href: remove trailing slash unless it's the root itself
-                    if (link_href.endsWith('/') && link_href.length > (window.location.origin + '/').length) {
-                        link_href = link_href.slice(0, -1);
+        // Active menu
+        $(function() {
+            var currentUrl = window.location.href.split('?')[0].split('#')[0];
+            if (currentUrl.endsWith('/')) {
+                currentUrl = currentUrl.slice(0, -1);
+            }
+
+            function activateMenu() {
+                var bestMatch = null;
+                var bestMatchLength = 0;
+
+                $('.menu-inner .menu-item a').each(function() {
+                    var link = $(this);
+                    var linkHref = link.attr('href');
+
+                    // Ignore links that are just placeholders or JS toggles
+                    if (!linkHref || linkHref === '#' || linkHref.startsWith('javascript:')) {
+                        return; // continue to next iteration
                     }
-        
-                    var is_active = false;
-                    // Check if the current URL exactly matches the link's href
-                    // OR if the current URL starts with the link's href AND the link's href is not just the base URL
-                    if (current_url === link_href || (current_url.startsWith(link_href) && link_href !==
-                            '<?=base_url();?>' && link_href.length > 1)) {
-                        is_active = true;
+
+                    // Resolve the link's full URL properly
+                    var linkUrl = new URL(linkHref, document.baseURI).href.split('?')[0].split('#')[0];
+                    if (linkUrl.endsWith('/')) {
+                        linkUrl = linkUrl.slice(0, -1);
                     }
-        
-                    // Special case for save-score-add page to activate the save-score-normal menu
-                    if (current_url.includes('assessment/save-score-add') && link_href.includes(
-                            'assessment/save-score-normal')) {
-                        is_active = true;
-                    }
-        
-                    // Special case for save-score-repeat-add page to activate the save-score-repeat menu
-                    if (current_url.includes('assessment/save-score-repeat-add') && link_href.includes(
-                            'assessment/save-score-repeat')) {
-                        is_active = true;
-                    }
-        
-                    if (is_active) {
-                        $(this).addClass("active");
-                        var treeview = $(this).closest(".nav-treeview");
-                        if (treeview.length) {
-                            treeview.parent(".nav-item").addClass("menu-open");
-                            treeview.parent(".nav-item").children(".nav-link").addClass("active");
+
+                    // Check if the current URL starts with the link URL (longest prefix match)
+                    if (currentUrl.startsWith(linkUrl)) {
+                        if (linkUrl.length > bestMatchLength) {
+                            bestMatch = link;
+                            bestMatchLength = linkUrl.length;
                         }
                     }
                 });
-            });
-        })(jQuery); // Pass jQuery to the IIFE
-        </script>
+
+                // If no direct match, check for data-active-paths
+                if (!bestMatch) {
+                    $('.menu-inner .menu-item a').each(function() {
+                        var link = $(this);
+                        var activePaths = link.data('active-paths'); // Get data-active-paths attribute
+
+                        if (activePaths) {
+                            var paths = activePaths.split(','); // Split multiple paths if any
+                            for (var i = 0; i < paths.length; i++) {
+                                var path = paths[i].trim();
+                                if (currentUrl.includes(path)) { // Check if currentUrl contains the path segment
+                                    bestMatch = link;
+                                    break;
+                                }
+                            }
+                        }
+                        if (bestMatch) return false; // Break outer loop if match found
+                    });
+                }
+
+
+                if (bestMatch) {
+                    // Remove active class from any other menu item to avoid duplicates
+                    $('.menu-inner .menu-item.active').removeClass('active');
+                    $('.menu-inner .menu-item.open').removeClass('open');
+                    
+                    // Add active class to the best matching link's li
+                    bestMatch.closest('.menu-item').addClass('active');
+
+                    // If it's in a sub-menu, open the parent tree
+                    var parentSub = bestMatch.closest('.menu-sub');
+                    if (parentSub.length) {
+                        parentSub.closest('.menu-item').addClass('open active');
+                    }
+                }
+            }
+
+            activateMenu();
+        });
+    </script>
+
 </body>
-<!--end::Body-->
 
 </html>

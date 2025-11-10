@@ -177,13 +177,12 @@ class DesirableAssessmentModel extends Model
 
     public function getAssessmentStatusForClass($className, $academicYear, $term)
     {
-        // Get all student IDs for the class
+        // Get all student IDs for the class from the tb_students table
         $db = db_connect();
-        $studentIdsQuery = $db->table('tb_register')
+        $studentIdsQuery = $db->table('tb_students')
                                 ->select('StudentID')
-                                ->where('RegisterClass', 'ม.'.$className)
-                                ->where('SUBSTRING(RegisterYear, 3, 4)', $academicYear)
-                                ->distinct()
+                                ->where('StudentClass', 'ม.'.$className)
+                                ->where('StudentStatus', '1/ปกติ') // To count only active students
                                 ->get()
                                 ->getResultArray();
 
@@ -195,11 +194,12 @@ class DesirableAssessmentModel extends Model
 
         // Count how many of these students have at least one entry in the detail table
         $assessedCount = $this->db->table('tb_evalu_desirable_detail')
+                                  ->select('student_id')
                                   ->whereIn('student_id', $studentIds)
                                   ->where('academic_year', $academicYear)
                                   ->where('term', $term)
-                                  ->distinct(true)
-                                  ->countAll('student_id');
+                                  ->distinct()
+                                  ->countAllResults();
 
         return ['total' => $totalStudents, 'assessed' => $assessedCount];
     }

@@ -27,12 +27,12 @@ class DesirableAssessmentController extends BaseController
 
         $teacherClasses = $model->getTeacherClasses($this->teacherId, $academicYear);
 
+        
         // Add status to each class
         foreach ($teacherClasses as &$class) { // Use reference to modify array directly
             $status = $model->getAssessmentStatusForClass($class['Reg_Class'], $academicYear, $term);
             $class['status'] = $status;
         }
-
         $data = [
             'teacherClasses' => $teacherClasses,
             'academicYear' => $academicYear,

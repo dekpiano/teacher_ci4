@@ -1,133 +1,148 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบงานครู SKJ | สวนกุหลาบวิทยาลัย (จิรประวัติ) นครสวรรค์</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="robots" content="all,follow">
-    <!-- Bootstrap CSS (Bootstrap 5 CDN)-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <!-- Font Awesome CSS (Font Awesome 6 CDN)-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Fontastic Custom icon font-->
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/fontastic.css">
-    <!-- Google fonts - Poppins -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sarabun:300,400,700">
-    <!-- theme stylesheet-->
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/style.default.css" id="theme-stylesheet">
+<html
+  lang="th"
+  class="light-style layout-wide customizer-hide"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="<?= base_url('public/assets/sneat/') ?>"
+  data-template="vertical-menu-template-free">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <!-- Favicon-->
-    <link rel="shortcut icon" href="https://skj.ac.th/uploads/logo/LogoSKJ_4.png">
-    <!-- Tweaks for older IEs-->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+    <title>เข้าสู่ระบบ | ระบบบริหารจัดการงานวิชาการ</title>
 
-</head>
+    <meta name="description" content="" />
 
-<body style="font-family:Sarabun; background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="<?= base_url('public/assets/sneat/img/favicon/favicon.ico') ?>" />
 
-    <div class="d-flex justify-content-center align-items-center vh-100">
-        <div class="card shadow-lg p-4" style="width: 25rem;">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=K2D:wght@400;500;700&display=swap"
+      rel="stylesheet" />
+
+    <link rel="stylesheet" href="<?= base_url('public/assets/sneat/vendor/fonts/boxicons.css') ?>" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="<?= base_url('public/assets/sneat/vendor/css/core.css') ?>" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="<?= base_url('public/assets/sneat/vendor/css/theme-default.css') ?>" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="<?= base_url('public/assets/sneat/css/demo.css') ?>" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="<?= base_url('public/assets/sneat/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') ?>" />
+
+    <!-- Page CSS -->
+    <!-- Page -->
+    <link rel="stylesheet" href="<?= base_url('public/assets/sneat/vendor/css/pages/page-auth.css') ?>" />
+
+    <style>
+      body, h1, h2, h3, h4, h5, h6, p, div, span, input, textarea, select, button, .form-control, .btn {
+        font-family: 'K2D', sans-serif;
+      }
+      .btn-google {
+        background-color: #DB4437 !important;
+        color: white !important;
+      }
+    </style>
+
+    <!-- Helpers -->
+    <script src="<?= base_url('public/assets/sneat/vendor/js/helpers.js') ?>"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="<?= base_url('public/assets/sneat/js/config.js') ?>"></script>
+  </head>
+
+  <body>
+    <!-- Content -->
+
+    <div class="container-xxl">
+      <div class="authentication-wrapper authentication-basic container-p-y">
+        <div class="authentication-inner">
+          <!-- Register -->
+          <div class="card">
             <div class="card-body">
-                <div class="text-center mb-2">
-                    <img src="https://skj.ac.th/uploads/logoSchool/LogoSKJ_4.png" class="img-fluid" alt="" style="width: 5rem;">
-                </div>
-                
-                <h3 class="card-title text-center mb-4">เข้าสู่ระบบ งานครู SKJ</h3>
-                <!-- <form method="post" action="<?php echo site_url('login/authenticate'); ?>">
-                    <div class="form-floating mb-3">
-                        <input type="email" class="form-control" id="login-username" name="username" placeholder="ชื่อผู้ใช้งาน Email" required autocomplete="off">
-                        <label for="login-username">ชื่อผู้ใช้งาน Email</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="password" class="form-control" id="login-password" name="password" placeholder="รหัสผ่าน" required>
-                        <label for="login-password">รหัสผ่าน</label>
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-sign-in-alt"></i> Login</button>
-                    </div>
-                </form>
-                <hr class="my-4"> -->
-                <div class="d-grid gap-2">
-                    
-                    <a href="<?= $google_login_url ?>" class="btn btn-outline-danger btn-lg">
-                        <i class="fab fa-google"></i> Sign in with Google SKJ
-                    </a>
-                    <small class="text-center">ล็อกอินด้วย อีเมลโรงเรียนเท่านั้น @skj.ac.th</small>
-                </div>
-                <?php if (session()->getFlashdata('msg')) : ?>
-                    <div class="alert alert-danger text-center" role="alert">
-                        <?php echo session()->getFlashdata('msg'); ?>
-                    </div>
-                <?php endif; ?>
+              <!-- Logo -->
+                <div class="app-brand-logo d-flex justify-content-center">
+                    <img src="https://skj.ac.th/uploads/logoSchool/LogoSKJ_4.png" alt="LogoSKJ_4" style="height: 80px;" />
+                  </div>
+              <div class="app-brand justify-content-center">
+                <a href="index.html" class="app-brand-link gap-2">
+                 
+                  <span class="app-brand-text demo text-body fw-bolder">Teacher SKJ</span>
+                </a>
+              </div>
+              <!-- /Logo -->
+              <h5 class="mb-2 text-center">ยินดีต้อนรับสู่ระบบครู สกจ.9👋</h5>
+
+              <div id="alert-message" class="alert alert-danger" style="display: none;" role="alert"></div>
+
+
+              <div class="d-flex justify-content-center">
+                <a href="<?= $google_login_url ?>" class="btn btn-lg btn-google me-3 d-flex align-items-center">
+                  <i class="bx bxl-google me-2"></i>เข้าสู่ระบบด้วย Email โรงเรียน @skj.ac.th 
+                </a>
+              </div>
             </div>
+          </div>
+          <!-- /Register -->
         </div>
+      </div>
     </div>
 
-    <!-- JavaScript files-->
-    <script src="<?php echo base_url(); ?>assets/vendor/jquery/jquery.min.js"></script>
-    <!-- Bootstrap JS (Bootstrap 5 CDN)-->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="<?php echo base_url(); ?>assets/vendor/jquery.cookie/jquery.cookie.js"> </script>
-    <script src="<?php echo base_url(); ?>assets/vendor/chart.js/Chart.min.js"></script>
-    <script src="<?php echo base_url(); ?>assets/vendor/jquery-validation/jquery.validate.min.js"></script>
-    <!-- Main File-->
-    <script src="<?php echo base_url(); ?>assets/js/front.js"></script>
-    <script src="<?php echo base_url(); ?>assets/js/all.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
- 
+    <!-- / Content -->
+
+    <!-- Core JS -->
+    <!-- build:js public/assets/vendor/js/core.js -->
+
+    <script src="<?= base_url('public/assets/sneat/vendor/libs/jquery/jquery.js') ?>"></script>
+    <script src="<?= base_url('public/assets/sneat/vendor/libs/popper/popper.js') ?>"></script>
+    <script src="<?= base_url('public/assets/sneat/vendor/js/bootstrap.js') ?>"></script>
+    <script src="<?= base_url('public/assets/sneat/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') ?>"></script>
+    <script src="<?= base_url('public/assets/sneat/vendor/js/menu.js') ?>"></script>
+
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+
+    <!-- Main JS -->
+    <script src="<?= base_url('public/assets/sneat/js/main.js') ?>"></script>
+
+    <!-- Page JS -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const loginForm = document.querySelector('form');
-            loginForm.addEventListener('submit', function(event) {
-                event.preventDefault(); // Prevent default form submission
+    $(document).ready(function() {
+        $('#formAuthentication').on('submit', function(e) {
+            e.preventDefault();
 
-                const username = document.getElementById('login-username').value;
-                const password = document.getElementById('login-password').value;
+            var form = $(this);
+            var url = form.attr('action');
 
-                // Basic client-side validation
-                if (!username || !password) {
-                    Swal.fire("แจ้งเตือน", "กรุณากรอกชื่อผู้ใช้และรหัสผ่าน", "warning");
-                    return;
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(),
+                dataType: "json",
+                success: function(response) {
+                    if (response.success) {
+                        window.location.href = '<?= base_url('home') ?>';
+                    } else {
+                        $('#alert-message').text(response.message).show();
+                    }
+                },
+                error: function() {
+                    $('#alert-message').text('เกิดข้อผิดพลาดในการเชื่อมต่อ').show();
                 }
-
-                // Send AJAX request
-                fetch(loginForm.action, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'X-Requested-With': 'XMLHttpRequest' // Important for CodeIgniter's is_ajax_request()
-                        },
-                        body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log(data);
-                        if (data.success) {
-                            Swal.fire({
-                                title: "สำเร็จ!",
-                                text: data.message,
-                                icon: "success",
-                                timer: 1500,
-                                showConfirmButton: false
-                            }).then(() => {
-                                window.location.href = 'home'; // Redirect to home page
-                            });
-                        } else {
-                            Swal.fire("แจ้งเตือน", data.message, "error");
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        Swal.fire("แจ้งเตือน", "เกิดข้อผิดพลาดในการเชื่อมต่อ", "error");
-                    });
             });
         });
+    });
     </script>
-</body>
 
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+  </body>
 </html>

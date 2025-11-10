@@ -6,76 +6,50 @@
 
 <?= $this->section('content') ?>
 
-<main class="app-main">
-    <div class="app-content-header">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-6">
-                    <h3 class="mb-0"><?= esc($title ?? '') ?></h3>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-end">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page"><?= esc($title ?? '') ?></li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="app-content">
+
+
+
         <div class="container-fluid">
             <form class="needs-validation" novalidate id="form_insert_plan" action="<?= site_url('curriculum/insert-plan') ?>" method="post">
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="card">
-                            <div class="card-close">
-                                <div class="dropdown">
-                                    <button type="button" id="closeCard1" data-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false" class="dropdown-toggle"><i
-                                            class="bi bi-three-dots-vertical"></i></button>
-                                    <div aria-labelledby="closeCard1" class="dropdown-menu dropdown-menu-right has-shadow">
-                                        <a href="#" class="dropdown-item remove"> <i class="bi bi-x-lg"></i>Close</a><a
-                                            href="#" class="dropdown-item edit"> <i class="bi bi-gear-fill"></i>Edit</a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card-header d-flex align-items-center">
-                                <h3 class="h4">ข้อมูลเบื้องต้น</h3>
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">ข้อมูลเบื้องต้น</h5>
                             </div>
                             <div class="card-body">
-
-
-                                <div class="form-group">
-                                    <label class="form-control-label">ชื่อวิชา</label>
-                                    <input type="text" id="seplan_namesubject" name="seplan_namesubject" placeholder=""
+                                <div class="mb-3">
+                                    <label class="form-label" for="seplan_namesubject">ชื่อวิชา</label>
+                                    <input type="text" id="seplan_namesubject" name="seplan_namesubject" placeholder="เช่น วิทยาศาสตร์"
                                         class="form-control" required>
                                     <div class="invalid-feedback">กรุณากรอกชื่อวิชา</div>
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-control-label">รหัสวิชา</label>
-                                    <input type="text" id="seplan_coursecode" name="seplan_coursecode" placeholder=""
+                                <div class="mb-3">
+                                    <label class="form-label" for="seplan_coursecode">รหัสวิชา</label>
+                                    <input type="text" id="seplan_coursecode" name="seplan_coursecode" placeholder="เช่น ว21101"
                                         class="form-control" required>
                                     <div class="invalid-feedback">กรุณากรอกรหัสวิชา</div>
                                 </div>
 
-                                <div class="form-group">
-                                    <label class="form-control-label">ประเภทวิชา</label>
-                                    <div class="i-checks">
-                                        <input id="seplan_typesubject" name="seplan_typesubject" type="radio"
-                                            value="พื้นฐาน" class="radio-template" required>
-                                        <label for="seplan_typesubject">พื้นฐาน</label>
-                                        <input id="seplan_typesubject1" name="seplan_typesubject" type="radio"
-                                            value="เพิ่มเติม" class="radio-template ml-3" required>
-                                        <label for="seplan_typesubject1">เพิ่มเติม</label>
-                                        <div class="invalid-feedback">กรุณาเลือก</div>
+                                <div class="mb-3">
+                                    <label class="form-label">ประเภทวิชา</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="seplan_typesubject" id="seplan_typesubject_base" value="พื้นฐาน" required>
+                                            <label class="form-check-label" for="seplan_typesubject_base">พื้นฐาน</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="seplan_typesubject" id="seplan_typesubject_extra" value="เพิ่มเติม" required>
+                                            <label class="form-check-label" for="seplan_typesubject_extra">เพิ่มเติม</label>
+                                        </div>
                                     </div>
+                                    <div class="invalid-feedback d-block">กรุณาเลือกประเภทวิชา</div>
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-control-label">ระดับชั้น</label>
-                                    <select id="seplan_gradelevel" name="seplan_gradelevel" class="form-control mb-3"
+                                <div class="mb-3">
+                                    <label class="form-label" for="seplan_gradelevel">ระดับชั้น</label>
+                                    <select id="seplan_gradelevel" name="seplan_gradelevel" class="form-select"
                                         required>
-                                        <option value="">เลือก...</option>
+                                        <option value="" selected disabled>เลือก...</option>
                                         <option value="1">ม.1</option>
                                         <option value="2">ม.2</option>
                                         <option value="3">ม.3</option>
@@ -85,7 +59,6 @@
                                     </select>
                                     <div class="invalid-feedback">กรุณาเลือกระดับชั้น</div>
                                 </div>
-                            
                             </div>
                             <div class="col-12 text-center mb-4">
                         <?php if(isset($OnOff[0]) && $OnOff[0]->seplanset_status == "on"):?>
@@ -124,9 +97,7 @@
                     </div>
                    
             </form>
-        </div>
-    </div>
-</main>
+
 
 <?= $this->endSection() ?>
 

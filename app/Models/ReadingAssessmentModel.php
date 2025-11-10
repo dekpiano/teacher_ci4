@@ -147,13 +147,12 @@ class ReadingAssessmentModel extends Model
 
     public function getAssessmentStatusForClass($className, $academicYear, $term)
     {
-        // Get all student IDs for the class from the register table
+        // Get all student IDs for the class from the tb_students table
         $db = db_connect();
-        $studentIdsQuery = $db->table('tb_register')
+        $studentIdsQuery = $db->table('tb_students')
                                 ->select('StudentID')
-                                ->where('RegisterClass', 'ม.'.$className)
-                                ->where('SUBSTRING(RegisterYear, 3, 4)', $academicYear)
-                                ->distinct()
+                                ->where('StudentClass', 'ม.'.$className)
+                                ->where('StudentStatus', '1/ปกติ') // To count only active students
                                 ->get()
                                 ->getResultArray();
 
@@ -164,12 +163,12 @@ class ReadingAssessmentModel extends Model
         $totalStudents = count($studentIds);
 
         // Count how many of these students have at least one entry in the detail table
-        $assessedCount = $this->db->table('tb_evalu_raw_detail') // Changed table
-                                  ->whereIn('StudentID', $studentIds)      // Changed column
-                                  ->where('AcademicYear', $academicYear)
-                                  ->where('Term', $term)
-                                  ->distinct(true)
-                                  ->countAll('StudentID');                 // Changed column
+        $assessedCount = $this->db->table('tb_evalu_raw_detail')
+                                  ->select('StudentID')
+                                  ->whereIn('StudentID', $studentIds)
+                                  ->where('AcademicYear', ''.$academicYear.'/'.$term.'')
+                                  ->distinct()
+                                  ->countAllResults();
 
         return ['total' => $totalStudents, 'assessed' => $assessedCount];
     }
