@@ -74,7 +74,7 @@
                         <span class="app-brand-logo demo">
                             <img src="https://skj.ac.th/uploads/logoSchool/LogoSKJ_4.png" alt="LogoSKJ_4" style="height: 35px;" />
                         </span>
-                        <span class="app-brand-text demo menu-text fw-bold ms-2">สกจ.9</span>
+                        <span class="app-brand-text demo menu-text  ms-2">งานครู สกจ.9</span>
                     </a>
 
                     <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
@@ -84,95 +84,183 @@
 
                 <div class="menu-inner-shadow"></div>
 
+<?php
+    $currentUri = service('uri');
+    $currentPath = $currentUri->getPath();
+    $currentPath = trim($currentPath, '/');
+
+    // Function to check if a menu item is active
+    function isActiveMenuItem($href, $currentPath, $activePaths = '') {
+        $linkPath = trim(str_replace(base_url(), '', $href), '/');
+
+        // Direct match (most specific)
+        if ($currentPath === $linkPath) {
+            return true;
+        }
+
+        // data-active-paths match
+        if (!empty($activePaths)) {
+            $paths = explode(',', $activePaths);
+            foreach ($paths as $path) {
+                $path = trim($path, '/'); // Trim slashes from path for consistent comparison
+
+                // Option 1: Exact match of the path segment
+                if ($currentPath === $path) {
+                    return true;
+                }
+                // Option 2: Current path starts with the active path segment, followed by a slash
+                // This handles cases like 'curriculum/SendPlan' matching 'curriculum'
+                if (strpos($currentPath . '/', $path . '/') === 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    $menuItems = [
+        [
+            'label' => 'หน้าหลัก',
+            'icon' => 'bi-house-door-fill',
+            'href' => base_url(),
+            'active_paths' => 'home', // Assuming 'home' is the controller for the home page
+        ],
+        [
+            'type' => 'header',
+            'label' => 'งานวิชาการ',
+        ],
+        [
+            'label' => 'ชุมนุม',
+            'icon' => 'bi-people-fill',
+            'href' => base_url('club'),
+            'active_paths' => '',
+        ],
+        [
+            'label' => 'งานวัดผล',
+            'icon' => 'bi-file-earmark-ruled-fill',
+            'submenu' => [
+                [
+                    'label' => 'บันทึกผลการเรียน(ปกติ)',
+                    'href' => base_url('assessment/save-score-normal'),
+                    'active_paths' => 'assessment/save-score-add',
+                ],
+                [
+                    'label' => 'บันทึกผลการเรียน(ซ้ำ)',
+                    'href' => base_url('assessment/save-score-repeat'),
+                    'active_paths' => '',
+                ],
+            ],
+        ],
+        [
+            'label' => 'งานหลักสูตร',
+            'icon' => 'bi-book-fill',
+            'submenu' => [
+                [
+                    'label' => 'ส่งแผนการสอน',
+                    'href' => base_url('curriculum/SendPlan'),
+                    'active_paths' => 'curriculum/,curriculum/SendPlan',
+                ],
+                // Conditional menu item
+                (session()->get('pers_groupleade') !== null && session()->get('pers_groupleade') !== '') ? [
+                    'label' => 'ตรวจแผน (หน.กลุ่มสาระ)',
+                    'href' => base_url('curriculum/check-plan-head'),
+                    'active_paths' => 'curriculum/check-plan-head,curriculum/check-plan-head-detail',
+                ] : null,
+                [
+                    'label' => 'ดาวโหลดแผน',
+                    'href' => base_url('curriculum/download-plan'),
+                    'active_paths' => '',
+                ],
+            ],
+        ],
+        [
+            'label' => 'งานประเมินนักเรียน',
+            'icon' => 'bi-clipboard-check',
+            'submenu' => [
+                [
+                    'label' => 'แบบประเมินอ่านคิดวิเคราะห์',
+                    'href' => base_url('teacher/reading_assessment'),
+                    'active_paths' => '',
+                ],
+                [
+                    'label' => 'คุณลักษณะอันพึงประสงค์',
+                    'href' => base_url('teacher/desirable_assessment'),
+                    'active_paths' => '',
+                ],
+            ],
+        ],
+        [
+            'label' => 'งานประกันคุณภาพ',
+            'icon' => 'bi-award-fill',
+            'href' => '#',
+            'active_paths' => '',
+        ],
+    ];
+
+    // Filter out null items from conditional menu
+    $menuItems = array_filter($menuItems);
+
+    // Recursive function to render menu
+    function renderMenu($items, $currentPath) {
+        $html = '';
+        foreach ($items as $item) {
+            if (isset($item['type']) && $item['type'] === 'header') {
+                $html .= '<li class="menu-header small text-uppercase"><span class="menu-header-text">' . esc($item['label']) . '</span></li>';
+                continue;
+            }
+
+            $isActive = false;
+            $isParentActive = false;
+
+            if (isset($item['submenu'])) {
+                // Check if any submenu item is active
+                foreach ($item['submenu'] as $subItem) {
+                    // Ensure subItem is not null (from conditional rendering)
+                    if ($subItem && isActiveMenuItem($subItem['href'], $currentPath, $subItem['active_paths'])) {
+                        $isParentActive = true;
+                        break;
+                    }
+                }
+                $itemClass = 'menu-item ' . ($isParentActive ? 'open' : '');
+                $linkClass = 'menu-link menu-toggle';
+                $href = 'javascript:void(0);';
+            } else {
+                $isActive = isActiveMenuItem($item['href'], $currentPath, $item['active_paths']);
+                $itemClass = 'menu-item ' . ($isActive ? 'active' : '');
+                $linkClass = 'menu-link';
+                $href = esc($item['href']);
+            }
+
+            $html .= '<li class="' . $itemClass . '">';
+            $html .= '<a href="' . $href . '" class="' . $linkClass . '">';
+            if (isset($item['icon'])) {
+                $html .= '<i class="menu-icon tf-icons ' . esc($item['icon']) . '"></i>';
+            }
+            $html .= '<div data-i18n="' . esc($item['label']) . '">' . esc($item['label']) . '</div>';
+            $html .= '</a>';
+
+            if (isset($item['submenu'])) {
+                $html .= '<ul class="menu-sub">';
+                foreach ($item['submenu'] as $subItem) {
+                    // Ensure subItem is not null (from conditional rendering)
+                    if ($subItem) {
+                        $subIsActive = isActiveMenuItem($subItem['href'], $currentPath, $subItem['active_paths']);
+                        $html .= '<li class="menu-item ' . ($subIsActive ? 'active' : '') . '">';
+                        $html .= '<a href="' . esc($subItem['href']) . '" class="menu-link">';
+                        $html .= '<div data-i18n="' . esc($subItem['label']) . '">' . esc($subItem['label']) . '</div>';
+                        $html .= '</a>';
+                        $html .= '</li>';
+                    }
+                }
+                $html .= '</ul>';
+            }
+            $html .= '</li>';
+        }
+        return $html;
+    }
+?>
                 <ul class="menu-inner py-1">
-                    <li class="menu-item">
-                        <a href="<?= base_url(); ?>" class="menu-link">
-                            <i class="menu-icon tf-icons bi bi-house-door-fill"></i>
-                            <div data-i18n="Analytics">หน้าหลัก</div>
-                        </a>
-                    </li>
-
-                    <li class="menu-header small text-uppercase">
-                        <span class="menu-header-text">งานวิชาการ</span>
-                    </li>
-
-                    <li class="menu-item">
-                        <a href="<?= base_url('club') ?>" class="menu-link">
-                            <i class="menu-icon tf-icons bi bi-people-fill"></i>
-                            <div data-i18n="Club">ชุมนุม</div>
-                        </a>
-                    </li>
-
-                    <li class="menu-item">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bi bi-file-earmark-ruled-fill"></i>
-                            <div data-i18n="Layouts">งานวัดผล</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item">
-                                <a href="<?= base_url('assessment/save-score-normal') ?>" class="menu-link" data-active-paths="assessment/save-score-add">
-                                    <div data-i18n="Save Score Normal">บันทึกผลการเรียน(ปกติ)</div>
-                                </a>
-                            </li>
-                            <li class="menu-item">
-                                <a href="<?= base_url('assessment/save-score-repeat') ?>" class="menu-link">
-                                    <div data-i18n="Save Score Repeat">บันทึกผลการเรียน(ซ้ำ)</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <li class="menu-item">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bi bi-book-fill"></i>
-                            <div data-i18n="Layouts">งานหลักสูตร</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item">
-                                <a href="<?= base_url('curriculum/SendPlan') ?>" class="menu-link" data-active-paths="curriculum/,curriculum/SendPlan">
-                                    <div data-i18n="Send Plan">ส่งแผนการสอน</div>
-                                </a>
-                            </li>
-                            <?php if (session()->get('pers_groupleade') !== null && session()->get('pers_groupleade') !== '') : ?>
-                                <li class="menu-item">
-                                    <a href="<?= base_url('curriculum/check-plan-head') ?>" class="menu-link" data-active-paths="curriculum/check-plan-head,curriculum/check-plan-head-detail">
-                                        <div data-i18n="Check Plan">ตรวจแผน (หน.กลุ่มสาระ)</div>
-                                    </a>
-                                </li>
-                            <?php endif; ?>
-                            <li class="menu-item">
-                                <a href="<?= base_url('curriculum/download-plan') ?>" class="menu-link">
-                                    <div data-i18n="Download Plan">ดาวโหลดแผน</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <li class="menu-item">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bi bi-clipboard-check"></i>
-                            <div data-i18n="Layouts">งานประเมินนักเรียน</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item">
-                                <a href="<?= base_url('teacher/reading_assessment') ?>" class="menu-link">
-                                    <div data-i18n="Reading Assessment">แบบประเมินอ่านคิดวิเคราะห์</div>
-                                </a>
-                            </li>
-                            <li class="menu-item">
-                                <a href="<?= base_url('teacher/desirable_assessment') ?>" class="menu-link">
-                                    <div data-i18n="Desirable Assessment">คุณลักษณะอันพึงประสงค์</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <li class="menu-item">
-                        <a href="#" class="menu-link">
-                            <i class="menu-icon tf-icons bi bi-award-fill"></i>
-                            <div data-i18n="Quality Assurance">งานประกันคุณภาพ</div>
-                        </a>
-                    </li>
+                    <?= renderMenu($menuItems, $currentPath) ?>
                 </ul>
             </aside>
             <!-- / Menu -->
@@ -253,8 +341,8 @@
                     <div class="container-xxl flex-grow-1 container-p-y">
                         <div class="row">
                             <div class="col-12">
-                                <div class="card mb-4">
-                                    <div class="card-header">
+                              
+<!--                                     
                                         <div class="d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0"><?= esc($title ?? 'หน้าหลัก') ?></h5>
                                             <nav aria-label="breadcrumb">
@@ -266,9 +354,9 @@
                                                     <li class="breadcrumb-item active" aria-current="page"><?= esc($title ?? 'หน้าหลัก') ?></li>
                                                 </ol>
                                             </nav>
-                                        </div>
-                                    </div>
-                                </div>
+                                        </div> -->
+                                    
+                               
                             </div>
                         </div>
                         <?= $this->renderSection('content') ?>
@@ -356,80 +444,7 @@
             <?php endif; ?>
         });
 
-        // Active menu
-        $(function() {
-            var currentUrl = window.location.href.split('?')[0].split('#')[0];
-            if (currentUrl.endsWith('/')) {
-                currentUrl = currentUrl.slice(0, -1);
-            }
 
-            function activateMenu() {
-                var bestMatch = null;
-                var bestMatchLength = 0;
-
-                $('.menu-inner .menu-item a').each(function() {
-                    var link = $(this);
-                    var linkHref = link.attr('href');
-
-                    // Ignore links that are just placeholders or JS toggles
-                    if (!linkHref || linkHref === '#' || linkHref.startsWith('javascript:')) {
-                        return; // continue to next iteration
-                    }
-
-                    // Resolve the link's full URL properly
-                    var linkUrl = new URL(linkHref, document.baseURI).href.split('?')[0].split('#')[0];
-                    if (linkUrl.endsWith('/')) {
-                        linkUrl = linkUrl.slice(0, -1);
-                    }
-
-                    // Check if the current URL starts with the link URL (longest prefix match)
-                    if (currentUrl.startsWith(linkUrl)) {
-                        if (linkUrl.length > bestMatchLength) {
-                            bestMatch = link;
-                            bestMatchLength = linkUrl.length;
-                        }
-                    }
-                });
-
-                // If no direct match, check for data-active-paths
-                if (!bestMatch) {
-                    $('.menu-inner .menu-item a').each(function() {
-                        var link = $(this);
-                        var activePaths = link.data('active-paths'); // Get data-active-paths attribute
-
-                        if (activePaths) {
-                            var paths = activePaths.split(','); // Split multiple paths if any
-                            for (var i = 0; i < paths.length; i++) {
-                                var path = paths[i].trim();
-                                if (currentUrl.includes(path)) { // Check if currentUrl contains the path segment
-                                    bestMatch = link;
-                                    break;
-                                }
-                            }
-                        }
-                        if (bestMatch) return false; // Break outer loop if match found
-                    });
-                }
-
-
-                if (bestMatch) {
-                    // Remove active class from any other menu item to avoid duplicates
-                    $('.menu-inner .menu-item.active').removeClass('active');
-                    $('.menu-inner .menu-item.open').removeClass('open');
-                    
-                    // Add active class to the best matching link's li
-                    bestMatch.closest('.menu-item').addClass('active');
-
-                    // If it's in a sub-menu, open the parent tree
-                    var parentSub = bestMatch.closest('.menu-sub');
-                    if (parentSub.length) {
-                        parentSub.closest('.menu-item').addClass('open active');
-                    }
-                }
-            }
-
-            activateMenu();
-        });
     </script>
 
 </body>
