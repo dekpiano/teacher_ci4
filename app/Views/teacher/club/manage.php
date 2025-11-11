@@ -46,7 +46,7 @@
                             </div>
                         </div>
 
-                        <h4 class="mt-4">สมาชิกในชุมนุม</h4>
+                        <h4 class="mt-4">สมาชิกในชุมนุม (จำนวน: <?= !empty($members) ? count($members) : 0 ?> คน)</h4>
                         <?php if (!empty($members) && is_array($members)): ?>
                             <table class="table table-bordered table-hover">
                                 <thead>
@@ -114,24 +114,24 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="club_name" name="club_name" placeholder="ชื่อชุมนุม" value="<?= esc($club->club_name) ?>" required>
                         <label for="club_name">ชื่อชุมนุม</label>
-                        <input type="text" class="form-control" id="club_name" name="club_name" value="<?= esc($club->club_name) ?>" required>
                     </div>
-                    <div class="form-group">
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" id="club_description" name="club_description" placeholder="คำอธิบายชุมนุม" style="height: 100px"><?= esc($club->club_description) ?></textarea>
                         <label for="club_description">คำอธิบายชุมนุม</label>
-                        <textarea class="form-control" id="club_description" name="club_description" rows="3"><?= esc($club->club_description) ?></textarea>
                     </div>
-                    <div class="form-group">
+                    <div class="form-floating mb-3">
+                        <input type="number" class="form-control" id="club_max_participants" name="club_max_participants" placeholder="จำนวนรับสูงสุด (คน)" value="<?= esc($club->club_max_participants) ?>" required>
                         <label for="club_max_participants">จำนวนรับสูงสุด (คน)</label>
-                        <input type="number" class="form-control" id="club_max_participants" name="club_max_participants" value="<?= esc($club->club_max_participants) ?>" required>
                     </div>
-                    <div class="form-group">
-                        <label for="club_status">สถานะชุมนุม</label>
-                        <select class="form-control" id="club_status" name="club_status">
+                    <div class="form-floating">
+                        <select class="form-select" id="club_status" name="club_status">
                             <option value="open" <?= $club->club_status === 'open' ? 'selected' : '' ?>>เปิดรับสมัคร</option>
                             <option value="closed" <?= $club->club_status === 'closed' ? 'selected' : '' ?>>ปิดรับสมัคร</option>
                         </select>
+                        <label for="club_status">สถานะชุมนุม</label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -155,12 +155,12 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" name="student_id" id="modal_student_id">
-                    <div class="form-group">
-                        <label for="member_role">บทบาท</label>
-                        <select class="form-control" id="member_role" name="member_role">
+                    <div class="form-floating">
+                        <select class="form-select" id="member_role" name="member_role">
                             <option value="Member">สมาชิก</option>
                             <option value="Leader">หัวหน้า</option>
                         </select>
+                        <label for="member_role">บทบาท</label>
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -8,10 +8,31 @@ use CodeIgniter\Controller;
 class ClubController extends BaseController
 {
     protected $clubModel;
+    protected $currentAcademicYear;
+    protected $currentTerm;
 
     public function __construct()
     {
         $this->clubModel = new ClubModel();
+        $this->_loadAcademicYear();
+    }
+
+    private function _loadAcademicYear()
+    {
+        $db = db_connect();
+        $club_onoff = $db->table('tb_club_onoff')
+                         ->select('c_onoff_year, c_onoff_term')
+                         ->orderBy('c_onoff_id', 'DESC')
+                         ->get()
+                         ->getRow();
+        
+        if ($club_onoff) {
+            $this->currentAcademicYear = $club_onoff->c_onoff_year;
+            $this->currentTerm = $club_onoff->c_onoff_term;
+        } else {
+            $this->currentAcademicYear = null;
+            $this->currentTerm = null;
+        }
     }
 
     private function getTeacherId()
@@ -19,6 +40,15 @@ class ClubController extends BaseController
         $session = session();
         // Assuming 'person_id' is stored in the session after login
         return $session->get('person_id');
+    }
+
+    private function isClubAdvisor(string $teacherId, object $club): bool
+    {
+        if (!$club) {
+            return false;
+        }
+        $advisors = explode('|', $club->club_faculty_advisor);
+        return in_array($teacherId, $advisors);
     }
 
     public function index()
@@ -36,7 +66,21 @@ class ClubController extends BaseController
         }
 
         $data['title'] = "ชุมนุมที่ปรึกษา";
-        $data['clubs'] = $this->clubModel->getClubsByTeacher($teacherId);
+        $data['clubs'] = $this->clubModel->getClubsByTeacher($teacherId, $this->currentAcademicYear, $this->currentTerm);
+        $data['currentAcademicYear'] = $this->currentAcademicYear;
+        $data['currentTerm'] = $this->currentTerm;
+
+        // Check if the teacher has already created a club for the current year and term
+        $hasClubForCurrentYear = false;
+        if (!empty($data['clubs'])) {
+            foreach ($data['clubs'] as $club) {
+                if ($club->club_year == $this->currentAcademicYear && $club->club_trem == $this->currentTerm) {
+                    $hasClubForCurrentYear = true;
+                    break;
+                }
+            }
+        }
+        $data['hasClubForCurrentYear'] = $hasClubForCurrentYear;
 
         return view('teacher/club/index', $data);
     }
@@ -54,20 +98,13 @@ class ClubController extends BaseController
             return redirect()->to('login');
         }
 
-        // Get current school year and term
-        $db = db_connect();
-        $schoolYearResult = $db->table('tb_schoolyear')->select('schyear_year')->where('schyear_id', 1)->get()->getRow();
-        $yearParts = explode('/', $schoolYearResult->schyear_year);
-        $currentTerm = $yearParts[0];
-        $currentYear = $yearParts[1];
-
         $data = [
             'club_name' => $this->request->getPost('club_name'),
             'club_description' => $this->request->getPost('club_description'),
             'club_max_participants' => $this->request->getPost('club_max_participants'),
             'club_faculty_advisor' => $teacherId,
-            'club_year' => $currentYear,
-            'club_trem' => $currentTerm,
+            'club_year' => $this->currentAcademicYear,
+            'club_trem' => $this->currentTerm,
             'club_status' => 'open', // Default status
             'club_established_date' => date('Y-m-d'),
         ];
@@ -92,7 +129,7 @@ class ClubController extends BaseController
         $club = $this->clubModel->find($clubId);
 
         // Verify ownership
-        if (!$club || $club->club_faculty_advisor !== $teacherId) {
+        if (!$this->isClubAdvisor($teacherId, $club)) {
             session()->setFlashdata('error', 'ไม่พบชุมนุมหรือคุณไม่มีสิทธิ์แก้ไข');
             return redirect()->to('club');
         }
@@ -124,7 +161,7 @@ class ClubController extends BaseController
         $club = $this->clubModel->find($clubId);
 
         // Verify ownership
-        if (!$club || $club->club_faculty_advisor !== $teacherId) {
+        if (!$this->isClubAdvisor($teacherId, $club)) {
             session()->setFlashdata('error', 'ไม่พบชุมนุมหรือคุณไม่มีสิทธิ์จัดการชุมนุมนี้');
             return redirect()->to('club');
         }
@@ -151,7 +188,7 @@ class ClubController extends BaseController
         $teacherId = $this->getTeacherId();
         $club = $this->clubModel->find($clubId);
 
-        if (!$club || $club->club_faculty_advisor !== $teacherId) {
+        if (!$this->isClubAdvisor($teacherId, $club)) {
             session()->setFlashdata('error', 'ไม่พบชุมนุมหรือคุณไม่มีสิทธิ์จัดการชุมนุมนี้');
             return redirect()->to('club');
         }
@@ -180,7 +217,7 @@ class ClubController extends BaseController
 
         $club = $this->clubModel->find($clubId);
 
-        if (!$club || $club->club_faculty_advisor !== $teacherId) {
+        if (!$this->isClubAdvisor($teacherId, $club)) {
             session()->setFlashdata('error', 'ไม่พบชุมนุมหรือคุณไม่มีสิทธิ์จัดการชุมนุมนี้');
             return redirect()->to('club');
         }
@@ -204,14 +241,15 @@ class ClubController extends BaseController
         $teacherId = $this->getTeacherId();
         $club = $this->clubModel->find($clubId);
 
-        if (!$club || $club->club_faculty_advisor !== $teacherId) {
+        if (!$this->isClubAdvisor($teacherId, $club)) {
             session()->setFlashdata('error', 'ไม่พบชุมนุมหรือคุณไม่มีสิทธิ์จัดการชุมนุมนี้');
             return redirect()->to('club');
         }
 
         $data['title'] = "ตารางกิจกรรมชุมนุม: " . $club->club_name;
         $data['club'] = $club;
-        $data['schedules'] = $this->clubModel->getSchedulesByClub($clubId);
+        $year = $club->club_year . '/' . $club->club_trem;
+        $data['schedules'] = $this->clubModel->getSchedulesByYear($year);
 
         return view('teacher/club/schedule', $data);
     }
@@ -226,24 +264,16 @@ class ClubController extends BaseController
         $teacherId = $this->getTeacherId();
         $club = $this->clubModel->find($clubId);
 
-        if (!$club || $club->club_faculty_advisor !== $teacherId) {
+        if (!$this->isClubAdvisor($teacherId, $club)) {
             session()->setFlashdata('error', 'ไม่พบชุมนุมหรือคุณไม่มีสิทธิ์จัดการชุมนุมนี้');
             return redirect()->to('club');
         }
 
-        // Get current academic year and term
-        $db = db_connect();
-        $schoolYearResult = $db->table('tb_schoolyear')->select('schyear_year')->where('schyear_id', 1)->get()->getRow();
-        $yearParts = explode('/', $schoolYearResult->schyear_year);
-        $currentTerm = $yearParts[0];
-        $currentYear = $yearParts[1];
-
         $data = [
-            'club_id' => $clubId,
-            'schedule_date' => $this->request->getPost('schedule_date'),
-            'schedule_title' => $this->request->getPost('schedule_title'),
-            'academic_year' => $currentYear,
-            'term' => $currentTerm,
+            'tcs_academic_year' => $this->currentAcademicYear . '/' . $this->currentTerm,
+            'tcs_start_date' => $this->request->getPost('schedule_date'),
+            'tcs_week_number' => $this->request->getPost('schedule_title'),
+            'tcs_week_status' => 'เปิด',
         ];
 
         if ($this->clubModel->insertSchedule($data)) {
@@ -266,7 +296,7 @@ class ClubController extends BaseController
         $club = $this->clubModel->find($clubId);
         $schedule = $this->clubModel->findSchedule($scheduleId);
 
-        if (!$club || $club->club_faculty_advisor !== $teacherId || !$schedule || $schedule->club_id != $clubId) {
+        if (!$this->isClubAdvisor($teacherId, $club) || !$schedule || $schedule->club_id != $clubId) {
             session()->setFlashdata('error', 'ไม่พบข้อมูลหรือคุณไม่มีสิทธิ์จัดการ');
             return redirect()->to('club');
         }
@@ -298,7 +328,7 @@ class ClubController extends BaseController
         $club = $this->clubModel->find($clubId);
         $schedule = $this->clubModel->findSchedule($scheduleId);
 
-        if (!$club || $club->club_faculty_advisor !== $teacherId || !$schedule || $schedule->club_id != $clubId) {
+        if (!$this->isClubAdvisor($teacherId, $club) || !$schedule || $schedule->club_id != $clubId) {
             session()->setFlashdata('error', 'ไม่พบข้อมูลหรือคุณไม่มีสิทธิ์จัดการ');
             return redirect()->to('club');
         }
@@ -332,7 +362,7 @@ class ClubController extends BaseController
         $teacherId = $this->getTeacherId();
         $club = $this->clubModel->find($clubId);
 
-        if (!$club || $club->club_faculty_advisor !== $teacherId) {
+        if (!$this->isClubAdvisor($teacherId, $club)) {
             session()->setFlashdata('error', 'ไม่พบชุมนุมหรือคุณไม่มีสิทธิ์จัดการชุมนุมนี้');
             return redirect()->to('club');
         }
@@ -354,13 +384,13 @@ class ClubController extends BaseController
         $teacherId = $this->getTeacherId();
         $club = $this->clubModel->find($clubId);
 
-        if (!$club || $club->club_faculty_advisor !== $teacherId) {
+        if (!$this->isClubAdvisor($teacherId, $club)) {
             session()->setFlashdata('error', 'ไม่พบชุมนุมหรือคุณไม่มีสิทธิ์จัดการชุมนุมนี้');
             return redirect()->to('club');
         }
 
         $data = [
-            'club_id' => $clubId,
+            'act_club_id' => $clubId,
             'activity_date' => $this->request->getPost('activity_date'),
             'activity_title' => $this->request->getPost('activity_title'),
             'activity_description' => $this->request->getPost('activity_description'),
@@ -387,7 +417,7 @@ class ClubController extends BaseController
         $club = $this->clubModel->find($clubId);
         $activity = $this->clubModel->findActivity($activityId);
 
-        if (!$club || $club->club_faculty_advisor !== $teacherId || !$activity || $activity->club_id != $clubId) {
+        if (!$this->isClubAdvisor($teacherId, $club) || !$activity || $activity->club_id != $clubId) {
             session()->setFlashdata('error', 'ไม่พบข้อมูลหรือคุณไม่มีสิทธิ์จัดการ');
             return redirect()->to('club');
         }
@@ -410,7 +440,7 @@ class ClubController extends BaseController
         $club = $this->clubModel->find($clubId);
         $activity = $this->clubModel->findActivity($activityId);
 
-        if (!$club || $club->club_faculty_advisor !== $teacherId || !$activity || $activity->club_id != $clubId) {
+        if (!$this->isClubAdvisor($teacherId, $club) || !$activity || $activity->club_id != $clubId) {
             session()->setFlashdata('error', 'ไม่พบข้อมูลหรือคุณไม่มีสิทธิ์จัดการ');
             return redirect()->to('club');
         }
@@ -442,7 +472,7 @@ class ClubController extends BaseController
         $club = $this->clubModel->find($clubId);
         $activity = $this->clubModel->findActivity($activityId);
 
-        if (!$club || $club->club_faculty_advisor !== $teacherId || !$activity || $activity->club_id != $clubId) {
+        if (!$this->isClubAdvisor($teacherId, $club) || !$activity || $activity->club_id != $clubId) {
             session()->setFlashdata('error', 'ไม่พบข้อมูลหรือคุณไม่มีสิทธิ์จัดการ');
             return redirect()->to('club');
         }

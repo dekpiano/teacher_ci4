@@ -102,14 +102,19 @@
 
     // Function to check if a menu item is active
     function is_active_segment($expected_segments, $current_segments) {
-        // If no segments, it's the home page
+        // Home page check
         if (empty($expected_segments) && empty($current_segments)) {
             return 'active';
         }
-        // Compare segments
-        if (count($expected_segments) !== count($current_segments)) {
+        if (empty($expected_segments)) {
             return '';
         }
+
+        // Check if the current path starts with the expected path
+        if (count($current_segments) < count($expected_segments)) {
+            return '';
+        }
+
         for ($i = 0; $i < count($expected_segments); $i++) {
             if ($expected_segments[$i] !== $current_segments[$i]) {
                 return '';
@@ -146,7 +151,7 @@
                     <li class="menu-header small text-uppercase"><span class="menu-header-text">งานวิชาการ</span></li>
                     
                     <!-- งานวัดผล -->
-                    <li class="menu-item <?= is_open_segment([['assessment'], ['club']], $segments) ?>">
+                    <li class="menu-item <?= is_open_segment([['assessment']], $segments) ?>">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bi-file-earmark-ruled-fill"></i>
                             <div data-i18n="งานวัดผล">งานวัดผล</div>
@@ -160,11 +165,6 @@
                             <li class="menu-item <?= is_active_segment(['assessment', 'save-score-repeat'], $segments) ?>">
                                 <a href="<?= base_url('assessment/save-score-repeat') ?>" class="menu-link">
                                     <div data-i18n="บันทึกผลการเรียน(ซ้ำ)">บันทึกผลการเรียน(ซ้ำ)</div>
-                                </a>
-                            </li>
-                            <li class="menu-item <?= is_active_segment(['club'], $segments) ?>">
-                                <a href="<?= base_url('club') ?>" class="menu-link">
-                                    <div data-i18n="บันทึกชุมนุม">บันทึกชุมนุม</div>
                                 </a>
                             </li>
                         </ul>
@@ -212,6 +212,21 @@
                             <li class="menu-item <?= is_active_segment(['teacher', 'desirable_assessment'], $segments) ?>">
                                 <a href="<?= base_url('teacher/desirable_assessment') ?>" class="menu-link">
                                     <div data-i18n="คุณลักษณะอันพึงประสงค์">คุณลักษณะอันพึงประสงค์</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- งานพัฒนาผู้เรียน -->
+                    <li class="menu-item <?= is_open_segment([['club']], $segments) ?>">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bi-person-arms-up"></i>
+                            <div data-i18n="งานพัฒนาผู้เรียน">งานพัฒนาผู้เรียน</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item <?= is_active_segment(['club'], $segments) ?>">
+                                <a href="<?= base_url('club') ?>" class="menu-link">
+                                    <div data-i18n="บันทึกชุมนุม">บันทึกชุมนุม</div>
                                 </a>
                             </li>
                         </ul>

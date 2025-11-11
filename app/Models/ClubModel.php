@@ -27,10 +27,27 @@ class ClubModel extends Model
      * @param string $teacherId The ID of the teacher.
      * @return array An array of club objects.
      */
-    public function getClubsByTeacher(string $teacherId): array
+    public function getClubsByTeacher(string $teacherId, ?string $year = null, ?string $term = null): array
     {
-        return $this->where('club_faculty_advisor', $teacherId)
-                    ->findAll();
+        $builder = $this->select('tb_clubs.*, COUNT(tcm.member_student_id) AS member_count')
+                        ->join('tb_club_members tcm', 'tcm.member_club_id = tb_clubs.club_id', 'left')
+                        ->groupStart()
+                        ->where('club_faculty_advisor', $teacherId) // Exact match
+                        ->orLike('club_faculty_advisor', $teacherId . '|', 'after') // Starts with teacherId|
+                        ->orLike('club_faculty_advisor', '|' . $teacherId, 'before') // Ends with |teacherId
+                        ->orLike('club_faculty_advisor', '|' . $teacherId . '|', 'both') // Contains |teacherId|
+                        ->groupEnd();
+
+        if ($year) {
+            $builder->where('club_year', $year);
+        }
+        if ($term) {
+            $builder->where('club_trem', $term);
+        }
+        
+        $builder->groupBy('tb_clubs.club_id'); // Group by club_id to get correct counts
+
+        return $builder->findAll();
     }
 
     /**
@@ -43,8 +60,8 @@ class ClubModel extends Model
     {
         // First, get the student IDs and roles from the tb_club_members table.
         $member_data = $this->db->table('tb_club_members')
-                                     ->select('student_id, member_role')
-                                     ->where('club_id', $clubId)
+                                     ->select('member_student_id, member_role')
+                                     ->where('member_club_id', $clubId)
                                      ->get()
                                      ->getResultArray();
 
@@ -53,8 +70,8 @@ class ClubModel extends Model
         }
 
         // Extract just the student IDs into a simple array.
-        $studentCodes = array_column($member_data, 'student_id');
-        $memberRoles = array_column($member_data, 'member_role', 'student_id'); // Map student_id to member_role
+        $studentCodes = array_column($member_data, 'member_student_id');
+        $memberRoles = array_column($member_data, 'member_role', 'member_student_id'); // Map member_student_id to member_role
 
         // Now, fetch the student details from the tb_students table.
         $students = $this->db->table('tb_students')
@@ -84,8 +101,8 @@ class ClubModel extends Model
     public function updateMemberRole(int $clubId, string $studentId, string $newRole): bool
     {
         return $this->db->table('tb_club_members')
-                        ->where('club_id', $clubId)
-                        ->where('student_id', $studentId)
+                        ->where('member_club_id', $clubId)
+                        ->where('member_student_id', $studentId)
                         ->set('member_role', $newRole)
                         ->update();
     }
@@ -100,8 +117,8 @@ class ClubModel extends Model
     public function removeMember(int $clubId, string $studentId): bool
     {
         return $this->db->table('tb_club_members')
-                        ->where('club_id', $clubId)
-                        ->where('student_id', $studentId)
+                        ->where('member_club_id', $clubId)
+                        ->where('member_student_id', $studentId)
                         ->delete();
     }
 
@@ -113,10 +130,10 @@ class ClubModel extends Model
      * @param int $clubId The ID of the club.
      * @return array An array of schedule objects.
      */
-    public function getSchedulesByClub(int $clubId): array
+    public function getSchedulesByYear(string $year): array
     {
         return $this->db->table('tb_club_settings_schedule')
-                        ->where('club_id', $clubId)
+                        ->where('tcs_academic_year', $year)
                         ->get()
                         ->getResult();
     }
@@ -140,7 +157,7 @@ class ClubModel extends Model
      */
     public function findSchedule(int $scheduleId): ?object
     {
-        return $this->db->table('tb_club_settings_schedule')->where('schedule_id', $scheduleId)->get()->getRow();
+        return $this->db->table('tb_club_settings_schedule')->where('tcs_schedule_id', $scheduleId)->get()->getRow();
     }
 
     // --- ClubAttendanceModel methods ---
@@ -153,9 +170,11 @@ class ClubModel extends Model
      */
     public function getAttendanceBySchedule(int $scheduleId): array
     {
-        return $this->db->table('tb_club_record_activity')
-                                                    ->get()
-                                                    ->getResult();    }
+        return $this->db->table('tb_club_recoed_activity')
+                        ->where('trca_schedule_id', $scheduleId)
+                        ->get()
+                        ->getResult();
+    }
 
     /**
      * Fetches attendance status for a specific student in a specific schedule.
@@ -166,8 +185,9 @@ class ClubModel extends Model
      */
     public function getStudentAttendanceStatus(int $scheduleId, int $studentId): ?string
     {
-        $record = $this->db->table('tb_club_record_activity')
+        $record = $this->db->table('tb_club_recoed_activity')
                            ->where('schedule_id', $scheduleId)
+                           ->where('StudentID', $studentId)
                            ->get()->getRow();
         return $record->status ?? null;
     }
@@ -184,25 +204,25 @@ class ClubModel extends Model
     {
         $data = [
             'schedule_id' => $scheduleId,
-            'student_id' => $studentId,
+            'StudentID' => $studentId,
             'status' => $status,
             'recorded_at' => date('Y-m-d H:i:s')
         ];
 
         // Check if a record already exists for this student and schedule
-        $existingRecord = $this->db->table('tb_club_record_activity')
+        $existingRecord = $this->db->table('tb_club_recoed_activity')
                                    ->where('schedule_id', $scheduleId)
-                                   ->where('student_id', $studentId)
+                                   ->where('StudentID', $studentId)
                                    ->get()->getRow();
 
         if ($existingRecord) {
             // Update existing record
-            return $this->db->table('tb_club_record_activity')
+            return $this->db->table('tb_club_recoed_activity')
                             ->where('record_id', $existingRecord->record_id)
                             ->update($data);
         } else {
             // Insert new record
-            return $this->db->table('tb_club_record_activity')->insert($data);
+            return $this->db->table('tb_club_recoed_activity')->insert($data);
         }
     }
 
@@ -217,7 +237,7 @@ class ClubModel extends Model
     public function getActivitiesByClub(int $clubId): array
     {
         return $this->db->table('tb_club_activities')
-                        ->where('club_id', $clubId)
+                        ->where('act_club_id', $clubId)
                         ->orderBy('activity_date', 'DESC')
                         ->get()
                         ->getResult();
@@ -242,7 +262,7 @@ class ClubModel extends Model
      */
     public function findActivity(int $activityId): ?object
     {
-        return $this->db->table('tb_club_activities')->where('activity_id', $activityId)->get()->getRow();
+        return $this->db->table('tb_club_activities')->where('act_id', $activityId)->get()->getRow();
     }
 
     /**
@@ -255,7 +275,7 @@ class ClubModel extends Model
     public function updateActivity(int $activityId, array $data): bool
     {
         return $this->db->table('tb_club_activities')
-                        ->where('activity_id', $activityId)
+                        ->where('act_id', $activityId)
                         ->update($data);
     }
 
@@ -268,7 +288,7 @@ class ClubModel extends Model
     public function deleteActivity(int $activityId): bool
     {
         return $this->db->table('tb_club_activities')
-                        ->where('activity_id', $activityId)
+                        ->where('act_id', $activityId)
                         ->delete();
     }
 }

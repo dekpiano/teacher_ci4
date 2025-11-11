@@ -171,19 +171,11 @@
 								</div>
 								<div class="desc">บันทึกคะแนนและผลการเรียนของนักเรียนที่เรียนซ้ำ</div>
 							</a>
-							<a role="listitem" class="tile" href="<?= base_url('club') ?>" aria-label="ชุมนุม">
-								<div class="meta">
-									<div class="title">
-										<div class="icon"><i class="bi bi-people"></i></div>
-										<span>ชุมนุม</span>
-									</div>
-									<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
-								</div>
-								<div class="desc">จัดการข้อมูลชุมนุมและกิจกรรมต่างๆ</div>
-							</a>
 						</div>
 					</div>
 				</div>
+
+				
 
 				<!-- Student Assessment Card -->
 				<div class="card h-100">
@@ -267,7 +259,29 @@
 						</div>
 					</div>
 				</div>
-
+<!-- Student Development Card -->
+				<div class="card h-100">
+					<div class="card-header">
+						<h5 class="card-title mb-0 d-flex align-items-center">
+							<i class="bi bi-person-arms-up me-2"></i>
+							<span>งานพัฒนาผู้เรียน</span>
+						</h5>
+					</div>
+					<div class="card-body">
+						<div class="dashboard-grid" role="list">
+							<a role="listitem" class="tile" href="<?= base_url('club') ?>" aria-label="ชุมนุม">
+								<div class="meta">
+									<div class="title">
+										<div class="icon"><i class="bi bi-people"></i></div>
+										<span>บันทึกชุมนุม</span>
+									</div>
+									<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
+								</div>
+								<div class="desc">จัดการข้อมูลชุมนุมและกิจกรรมต่างๆ</div>
+							</a>
+						</div>
+					</div>
+				</div>
 
 			</div>
 		</div>

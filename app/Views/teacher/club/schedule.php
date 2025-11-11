@@ -69,13 +69,13 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="schedule_title">หัวข้อกิจกรรม</label>
+                    <div class="form-floating mb-3">
                         <input type="text" class="form-control" id="schedule_title" name="schedule_title" placeholder="เช่น กิจกรรมสัปดาห์ที่ 1" required>
+                        <label for="schedule_title">หัวข้อกิจกรรม</label>
                     </div>
-                    <div class="form-group">
-                        <label for="schedule_date">วันที่</label>
+                    <div class="form-floating">
                         <input type="date" class="form-control" id="schedule_date" name="schedule_date" value="<?= date('Y-m-d') ?>" required>
+                        <label for="schedule_date">วันที่</label>
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -6,54 +6,62 @@
 
 <?= $this->section('content') ?>
 
-<div class="container-fluid">
+<div class="">
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title"><?= esc($title ?? 'ชุมนุมที่ปรึกษา') ?></h3>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title">
+                        <?= esc($title ?? 'ชุมนุมที่ปรึกษา') ?>
+                        <?php if (isset($currentAcademicYear) && isset($currentTerm)): ?>
+                            <span class="text-muted fs-5 ms-2">(ปีการศึกษา <?= esc($currentAcademicYear) ?> ภาคเรียนที่ <?= esc($currentTerm) ?>)</span>
+                        <?php endif; ?>
+                    </h3>
                     <div class="card-tools">
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createClubModal">
-                            <i class="bi bi-plus"></i> สร้างชุมนุมใหม่
-                        </button>
+                        <?php if (isset($hasClubForCurrentYear) && $hasClubForCurrentYear): ?>
+                            <span class="text-muted fst-italic">คุณได้สร้างชุมนุมสำหรับภาคเรียนนี้แล้ว</span>
+                        <?php else: ?>
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createClubModal">
+                                <i class="bi bi-plus"></i> สร้างชุมนุมใหม่
+                            </button>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="card-body">
                     <?php if (!empty($clubs) && is_array($clubs)): ?>
-                        <table class="table table-bordered table-hover">
-                            <thead>
-                                <tr>
-                                    <th style="width: 50px;">#</th>
-                                    <th>ชื่อชุมนุม</th>
-                                    <th>คำอธิบาย</th>
-                                    <th style="width: 150px;">สถานะ</th>
-                                    <th style="width: 150px;">จัดการ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php $i = 1; ?>
-                                <?php foreach ($clubs as $club): ?>
-                                    <tr>
-                                        <td><?= $i++ ?></td>
-                                        <td><?= esc($club->club_name) ?></td>
-                                        <td><?= esc($club->club_description) ?></td>
-                                        <td class="text-center">
-                                            <?php $color =  $club->club_status === 'open' ? 'text-bg-success' : 'text-bg-danger' ?> 
-                                            <?php if ($club->club_status === 'open'): ?>
-                                               <span class="badge <?=$color?>"> เปิดรับสมัคร </span>
-                                            <?php else: ?>
-                                                ปิดรับสมัคร
-                                            <?php endif; ?>
-                                        </td>
-                                        <td>
-                                            <a href="<?= site_url('club/manage/' . $club->club_id) ?>" class="btn btn-info btn-sm">
-                                                <i class="bi bi-pencil-square"></i> จัดการ
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                        <div class="row g-4">
+                            <?php foreach ($clubs as $club): ?>
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="card h-100">
+                                        <div class="card-body d-flex flex-column">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h5 class="card-title mb-0"><?= esc($club->club_name) ?></h5>
+                                                <?php $color = $club->club_status === 'open' ? 'text-bg-success' : 'text-bg-danger' ?>
+                                                <span class="badge <?= $color ?> ms-2"><?= $club->club_status === 'open' ? 'เปิดรับสมัคร' : 'ปิดรับสมัคร' ?></span>
+                                            </div>
+                                            <p class="card-text text-muted small">
+                                                ปีการศึกษา <?= esc($club->club_year) ?> / <?= esc($club->club_trem) ?>
+                                            </p>
+                                            <ul class="list-group list-group-flush mb-3">
+                                                <li class="list-group-item d-flex justify-content-between align-items-center p-0 border-0">
+                                                    <small class="text-muted">จำนวนรับสูงสุด:</small>
+                                                    <small><?= esc($club->club_max_participants) ?> คน</small>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center p-0 border-0">
+                                                    <small class="text-muted">สมัครแล้ว:</small>
+                                                    <small><?= esc($club->member_count) ?> คน</small>
+                                                </li>
+                                            </ul>
+                                            <div class="mt-auto">
+                                                <a href="<?= site_url('club/manage/' . $club->club_id) ?>" class="btn btn-primary w-100">
+                                                    <i class="bi bi-gear-fill me-1"></i> จัดการชุมนุม
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
                     <?php else: ?>
                         <div class="alert alert-info">
                             ไม่พบชุมนุมที่คุณเป็นที่ปรึกษา
@@ -76,17 +84,17 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="club_name">ชื่อชุมนุม</label>
+                    <div class="form-floating mb-3">
                         <input type="text" class="form-control" id="club_name" name="club_name" placeholder="ระบุชื่อชุมนุม" required>
+                        <label for="club_name">ชื่อชุมนุม</label>
                     </div>
-                    <div class="form-group">
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" id="club_description" name="club_description" placeholder="ระบุคำอธิบายโดยย่อ" style="height: 100px"></textarea>
                         <label for="club_description">คำอธิบายชุมนุม</label>
-                        <textarea class="form-control" id="club_description" name="club_description" rows="3" placeholder="ระบุคำอธิบายโดยย่อ"></textarea>
                     </div>
-                    <div class="form-group">
+                    <div class="form-floating">
+                        <input type="number" class="form-control" id="club_max_participants" name="club_max_participants" placeholder="จำนวนรับสูงสุด (คน)" value="50" required>
                         <label for="club_max_participants">จำนวนรับสูงสุด (คน)</label>
-                        <input type="number" class="form-control" id="club_max_participants" name="club_max_participants" value="50" required>
                     </div>
                 </div>
                 <div class="modal-footer">
