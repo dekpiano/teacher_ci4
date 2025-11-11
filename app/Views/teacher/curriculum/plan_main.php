@@ -351,7 +351,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
                 if(cardHeader) {
                     cardHeader.classList.remove('bg-light');
-                    cardHeader.classList.add('bg-primary', 'text-white');
+                    cardHeader.classList.add('bg-primary');
+                    cardHeader.classList.add('text-white');
+                    cardTitle.classList.add('text-white');
                 }
                 cardTitle.insertAdjacentHTML('beforeend', ' <span class="badge bg-warning text-dark main-subject-badge">วิชาหลักการส่งแผน</span>');
 

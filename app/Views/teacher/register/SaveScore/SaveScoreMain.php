@@ -38,13 +38,13 @@
                                     </button>
                                 <?php else : ?>
                                     <a href="<?= base_url('assessment/save-score-add/' . $v_check_subject->RegisterYear . '/' . $v_check_subject->SubjectID . '/all') ?>" class="btn btn-primary btn-sm">
-                                        <i class="bi bi-pencil-square"></i> บันทึกผลการเรียน
+                                        <i class="bi bi-pencil-square"></i>  บันทึกผลการเรียน
                                     </a>
                                 <?php endif; ?>
                             </td>
                             <td>
                                 <button type="button" id="chcek_report" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#Modalprint" report-yaer="<?= $v_check_subject->RegisterYear ?>" report-subject="<?= $v_check_subject->SubjectID ?>">
-                                    <i class="bi bi-printer"></i> พิมพ์รายงาน
+                                    <i class="bi bi-printer"></i>  พิมพ์รายงาน
                                 </button>
                             </td>
                         </tr>

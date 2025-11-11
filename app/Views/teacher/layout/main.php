@@ -45,6 +45,17 @@
         .btn,
         .breadcrumb-item {
             font-family: 'K2D', sans-serif;
+            
+        }
+        body{
+            background-color: #696cff26 !important;
+        }
+        #layout-menu {
+            background-color: #696cff26 !important;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3e%3cpath fill='%23696cff' fill-opacity='0.3' d='M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,133.3C672,117,768,139,864,165.3C960,192,1056,224,1152,218.7C1248,213,1344,171,1392,149.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3e%3c/path%3e%3c/svg%3e");
+            background-position: bottom;
+            background-repeat: no-repeat;
+            background-size: 100%; /* Adjusted size */
         }
     </style>
 
@@ -86,181 +97,125 @@
 
 <?php
     $currentUri = service('uri');
-    $currentPath = $currentUri->getPath();
-    $currentPath = trim($currentPath, '/');
+    // Get all segments
+    $segments = $currentUri->getSegments();
 
     // Function to check if a menu item is active
-    function isActiveMenuItem($href, $currentPath, $activePaths = '') {
-        $linkPath = trim(str_replace(base_url(), '', $href), '/');
-
-        // Direct match (most specific)
-        if ($currentPath === $linkPath) {
-            return true;
+    function is_active_segment($expected_segments, $current_segments) {
+        // If no segments, it's the home page
+        if (empty($expected_segments) && empty($current_segments)) {
+            return 'active';
         }
-
-        // data-active-paths match
-        if (!empty($activePaths)) {
-            $paths = explode(',', $activePaths);
-            foreach ($paths as $path) {
-                $path = trim($path, '/'); // Trim slashes from path for consistent comparison
-
-                // Option 1: Exact match of the path segment
-                if ($currentPath === $path) {
-                    return true;
-                }
-                // Option 2: Current path starts with the active path segment, followed by a slash
-                // This handles cases like 'curriculum/SendPlan' matching 'curriculum'
-                if (strpos($currentPath . '/', $path . '/') === 0) {
-                    return true;
-                }
+        // Compare segments
+        if (count($expected_segments) !== count($current_segments)) {
+            return '';
+        }
+        for ($i = 0; $i < count($expected_segments); $i++) {
+            if ($expected_segments[$i] !== $current_segments[$i]) {
+                return '';
             }
         }
-        return false;
+        return 'active';
     }
 
-    $menuItems = [
-        [
-            'label' => 'หน้าหลัก',
-            'icon' => 'bi-house-door-fill',
-            'href' => base_url(),
-            'active_paths' => 'home', // Assuming 'home' is the controller for the home page
-        ],
-        [
-            'type' => 'header',
-            'label' => 'งานวิชาการ',
-        ],
-        [
-            'label' => 'ชุมนุม',
-            'icon' => 'bi-people-fill',
-            'href' => base_url('club'),
-            'active_paths' => '',
-        ],
-        [
-            'label' => 'งานวัดผล',
-            'icon' => 'bi-file-earmark-ruled-fill',
-            'submenu' => [
-                [
-                    'label' => 'บันทึกผลการเรียน(ปกติ)',
-                    'href' => base_url('assessment/save-score-normal'),
-                    'active_paths' => 'assessment/save-score-add',
-                ],
-                [
-                    'label' => 'บันทึกผลการเรียน(ซ้ำ)',
-                    'href' => base_url('assessment/save-score-repeat'),
-                    'active_paths' => '',
-                ],
-            ],
-        ],
-        [
-            'label' => 'งานหลักสูตร',
-            'icon' => 'bi-book-fill',
-            'submenu' => [
-                [
-                    'label' => 'ส่งแผนการสอน',
-                    'href' => base_url('curriculum/SendPlan'),
-                    'active_paths' => 'curriculum/,curriculum/SendPlan',
-                ],
-                // Conditional menu item
-                (session()->get('pers_groupleade') !== null && session()->get('pers_groupleade') !== '') ? [
-                    'label' => 'ตรวจแผน (หน.กลุ่มสาระ)',
-                    'href' => base_url('curriculum/check-plan-head'),
-                    'active_paths' => 'curriculum/check-plan-head,curriculum/check-plan-head-detail',
-                ] : null,
-                [
-                    'label' => 'ดาวโหลดแผน',
-                    'href' => base_url('curriculum/download-plan'),
-                    'active_paths' => '',
-                ],
-            ],
-        ],
-        [
-            'label' => 'งานประเมินนักเรียน',
-            'icon' => 'bi-clipboard-check',
-            'submenu' => [
-                [
-                    'label' => 'แบบประเมินอ่านคิดวิเคราะห์',
-                    'href' => base_url('teacher/reading_assessment'),
-                    'active_paths' => '',
-                ],
-                [
-                    'label' => 'คุณลักษณะอันพึงประสงค์',
-                    'href' => base_url('teacher/desirable_assessment'),
-                    'active_paths' => '',
-                ],
-            ],
-        ],
-        [
-            'label' => 'งานประกันคุณภาพ',
-            'icon' => 'bi-award-fill',
-            'href' => '#',
-            'active_paths' => '',
-        ],
-    ];
-
-    // Filter out null items from conditional menu
-    $menuItems = array_filter($menuItems);
-
-    // Recursive function to render menu
-    function renderMenu($items, $currentPath) {
-        $html = '';
-        foreach ($items as $item) {
-            if (isset($item['type']) && $item['type'] === 'header') {
-                $html .= '<li class="menu-header small text-uppercase"><span class="menu-header-text">' . esc($item['label']) . '</span></li>';
-                continue;
-            }
-
-            $isActive = false;
-            $isParentActive = false;
-
-            if (isset($item['submenu'])) {
-                // Check if any submenu item is active
-                foreach ($item['submenu'] as $subItem) {
-                    // Ensure subItem is not null (from conditional rendering)
-                    if ($subItem && isActiveMenuItem($subItem['href'], $currentPath, $subItem['active_paths'])) {
-                        $isParentActive = true;
-                        break;
-                    }
+    // Function to check if a parent menu item should be open
+    function is_open_segment($expected_parent_segments, $current_segments) {
+        foreach ($expected_parent_segments as $parent_segment_array) {
+            // Check if the current URI starts with the parent path
+            $match = true;
+            for ($i = 0; $i < count($parent_segment_array); $i++) {
+                if (!isset($current_segments[$i]) || $parent_segment_array[$i] !== $current_segments[$i]) {
+                    $match = false;
+                    break;
                 }
-                $itemClass = 'menu-item ' . ($isParentActive ? 'open' : '');
-                $linkClass = 'menu-link menu-toggle';
-                $href = 'javascript:void(0);';
-            } else {
-                $isActive = isActiveMenuItem($item['href'], $currentPath, $item['active_paths']);
-                $itemClass = 'menu-item ' . ($isActive ? 'active' : '');
-                $linkClass = 'menu-link';
-                $href = esc($item['href']);
             }
-
-            $html .= '<li class="' . $itemClass . '">';
-            $html .= '<a href="' . $href . '" class="' . $linkClass . '">';
-            if (isset($item['icon'])) {
-                $html .= '<i class="menu-icon tf-icons ' . esc($item['icon']) . '"></i>';
+            if ($match) {
+                return 'open active';
             }
-            $html .= '<div data-i18n="' . esc($item['label']) . '">' . esc($item['label']) . '</div>';
-            $html .= '</a>';
-
-            if (isset($item['submenu'])) {
-                $html .= '<ul class="menu-sub">';
-                foreach ($item['submenu'] as $subItem) {
-                    // Ensure subItem is not null (from conditional rendering)
-                    if ($subItem) {
-                        $subIsActive = isActiveMenuItem($subItem['href'], $currentPath, $subItem['active_paths']);
-                        $html .= '<li class="menu-item ' . ($subIsActive ? 'active' : '') . '">';
-                        $html .= '<a href="' . esc($subItem['href']) . '" class="menu-link">';
-                        $html .= '<div data-i18n="' . esc($subItem['label']) . '">' . esc($subItem['label']) . '</div>';
-                        $html .= '</a>';
-                        $html .= '</li>';
-                    }
-                }
-                $html .= '</ul>';
-            }
-            $html .= '</li>';
         }
-        return $html;
+        return '';
     }
 ?>
                 <ul class="menu-inner py-1">
-                    <?= renderMenu($menuItems, $currentPath) ?>
+                    <li class="menu-item <?= is_active_segment([], $segments) ?>">
+                        <a href="<?= base_url() ?>" class="menu-link">
+                            <i class="menu-icon tf-icons bi-house-door-fill"></i>
+                            <div data-i18n="หน้าหลัก">หน้าหลัก</div>
+                        </a>
+                    </li>
+                    <li class="menu-header small text-uppercase"><span class="menu-header-text">งานวิชาการ</span></li>
+                    
+                    <!-- งานวัดผล -->
+                    <li class="menu-item <?= is_open_segment([['assessment'], ['club']], $segments) ?>">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bi-file-earmark-ruled-fill"></i>
+                            <div data-i18n="งานวัดผล">งานวัดผล</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item <?= is_active_segment(['assessment', 'save-score-normal'], $segments) ?>">
+                                <a href="<?= base_url('assessment/save-score-normal') ?>" class="menu-link">
+                                    <div data-i18n="บันทึกผลการเรียน(ปกติ)">บันทึกผลการเรียน(ปกติ)</div>
+                                </a>
+                            </li>
+                            <li class="menu-item <?= is_active_segment(['assessment', 'save-score-repeat'], $segments) ?>">
+                                <a href="<?= base_url('assessment/save-score-repeat') ?>" class="menu-link">
+                                    <div data-i18n="บันทึกผลการเรียน(ซ้ำ)">บันทึกผลการเรียน(ซ้ำ)</div>
+                                </a>
+                            </li>
+                            <li class="menu-item <?= is_active_segment(['club'], $segments) ?>">
+                                <a href="<?= base_url('club') ?>" class="menu-link">
+                                    <div data-i18n="บันทึกชุมนุม">บันทึกชุมนุม</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- งานหลักสูตร -->
+                     <li class="menu-item <?= is_open_segment([['curriculum']], $segments) ?>">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bi-book-fill"></i>
+                            <div data-i18n="งานหลักสูตร">งานหลักสูตร</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item <?= is_active_segment(['curriculum', 'SendPlan'], $segments) ?>">
+                                <a href="<?= base_url('curriculum/SendPlan') ?>" class="menu-link">
+                                    <div data-i18n="ส่งแผนการสอน">ส่งแผนการสอน</div>
+                                </a>
+                            </li>
+                            <?php if (session()->get('pers_groupleade') !== null && session()->get('pers_groupleade') !== ''): ?>
+                            <li class="menu-item <?= is_active_segment(['curriculum', 'check-plan-head'], $segments) ?>">
+                                <a href="<?= base_url('curriculum/check-plan-head') ?>" class="menu-link">
+                                    <div data-i18n="ตรวจแผน (หน.กลุ่มสาระ)">ตรวจแผน (หน.กลุ่มสาระ)</div>
+                                </a>
+                            </li>
+                            <?php endif; ?>
+                            <li class="menu-item <?= is_active_segment(['curriculum', 'download-plan'], $segments) ?>">
+                                <a href="<?= base_url('curriculum/download-plan') ?>" class="menu-link">
+                                    <div data-i18n="ดาวโหลดแผน">ดาวโหลดแผน</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- งานประเมินนักเรียน -->
+                    <li class="menu-item <?= is_open_segment([['teacher', 'reading_assessment'], ['teacher', 'desirable_assessment']], $segments) ?>">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bi-clipboard-check"></i>
+                            <div data-i18n="งานประเมินนักเรียน">งานประเมินนักเรียน</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item <?= is_active_segment(['teacher', 'reading_assessment'], $segments) ?>">
+                                <a href="<?= base_url('teacher/reading_assessment') ?>" class="menu-link">
+                                    <div data-i18n="แบบประเมินอ่านคิดวิเคราะห์">แบบประเมินอ่านคิดวิเคราะห์</div>
+                                </a>
+                            </li>
+                            <li class="menu-item <?= is_active_segment(['teacher', 'desirable_assessment'], $segments) ?>">
+                                <a href="<?= base_url('teacher/desirable_assessment') ?>" class="menu-link">
+                                    <div data-i18n="คุณลักษณะอันพึงประสงค์">คุณลักษณะอันพึงประสงค์</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </aside>
             <!-- / Menu -->
@@ -349,7 +304,7 @@
                                                 <ol class="breadcrumb mb-0">
                                                     <li class="breadcrumb-item"><a href="<?= base_url() ?>">หน้าหลัก</a></li>
                                                     <?php if (strpos(current_url(), 'club') !== false) : ?>
-                                                        <li class="breadcrumb-item"><a href="<?= base_url('club') ?>">ชุมนุม</a></li>
+                                                        <li class="breadcrumb-item"><a href="<?= base_url('club') ?>">บันทึกชุมนุม</a></li>
                                                     <?php endif; ?>
                                                     <li class="breadcrumb-item active" aria-current="page"><?= esc($title ?? 'หน้าหลัก') ?></li>
                                                 </ol>
@@ -365,13 +320,15 @@
 
                     <!-- Footer -->
                     <footer class="content-footer footer bg-footer-theme">
-                        <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
-                            <div class="mb-2 mb-md-0">
-                                <strong>
-                                    Copyright &copy; 2025
-                                    <a href="https://facebook.com/dekpiano" target="_blank" class="footer-link fw-bolder">Dekpiano</a>.
-                                </strong>
-                                ผู้พัฒนาระบบ
+                        <div class="container-xxl">
+                            <div class="footer-container d-flex align-items-center justify-content-between py-2 flex-md-row flex-column">
+                                <div class="mb-2 mb-md-0">
+                                    <strong>ระบบบริหารจัดการข้อมูลสำหรับครู</strong> © <script>document.write(new Date().getFullYear())</script>
+                                    โรงเรียนสวนกุหลาบวิทยาลัย (จิรประวัติ) นครสวรรค์
+                                </div>
+                                <div>
+                                    พัฒนาโดย <a href="https://facebook.com/dekpiano" target="_blank" class="footer-link fw-bolder">Dekpiano</a>
+                                </div>
                             </div>
                         </div>
                     </footer>

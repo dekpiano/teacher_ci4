@@ -6,11 +6,10 @@
 
 <?= $this->section('content') ?>
 
-<main class="app-main">
-   
-<div class="app-content">
+
+
 	<!--begin::Container-->
-	<div class="container-fluid">
+	<div class="">
 
 		<style>
 			/* Minimal dashboard design (updated with category styles) */
@@ -20,6 +19,8 @@
 				--accent: #0d6efd;
 				--tile-border: rgba(0,0,0,0.06);
 				--radius: 10px;
+				--tile-hover-bg: rgba(230, 240, 255, 0.6); /* Pastel light blue background on hover */
+				--tile-hover-border: rgba(170, 200, 255, 0.8); /* Pastel light blue border on hover */
 			}
 			.dashboard-welcome{
 				display:flex;
@@ -60,7 +61,7 @@
 				border-radius:var(--radius);
 				border:1px solid var(--tile-border);
 				box-shadow:0 6px 18px rgba(22,27,34,0.03);
-				transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+				transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease, background-color .12s ease;
 				text-decoration:none;
 				color:inherit;
 				min-height:96px;
@@ -68,7 +69,8 @@
 			.tile:hover, .tile:focus{
 				transform:translateY(-4px);
 				box-shadow:0 12px 30px rgba(22,27,34,0.06);
-				border-color:rgba(13,110,253,0.12);
+				border-color:var(--tile-hover-border);
+				background-color:var(--tile-hover-bg);
 				text-decoration:none;
 			}
 			.tile .meta{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; }
@@ -115,10 +117,9 @@
 		</style>
 
 		<div class="row">
-			<div class="col-md-12">
-				<div class="card card-primary card-outline card-min">
+			<div class="col-12">
+				<div class="card">
 					<div class="card-body">
-						<!-- replaced welcome block with minimal layout -->
 						<div class="dashboard-welcome" role="region" aria-label="welcome">
 							<div class="avatar" aria-hidden="true"><i class="bi bi-person-fill"></i></div>
 							<div>
@@ -137,133 +138,136 @@
 		</div>
 
 		<!-- Categorized grids -->
-		<div class="row mt-3">
-			<div class="col-12">
-				<!-- Grading category (unchanged position) -->
-				<div class="category">
-					<div class="category-header">
-						<i class="bi bi-file-earmark-plus"></i>
-						<span class="label">งานวัดผล</span>
+		<div class="row g-4 mt-3">
+			<!-- Left Column -->
+			<div class="col-lg-6 d-flex flex-column gap-4">
+				<!-- Grading Card -->
+				<div class="card h-100">
+					<div class="card-header">
+						<h5 class="card-title mb-0 d-flex align-items-center">
+							<i class="bi bi-file-earmark-plus me-2"></i>
+							<span>งานวัดผล</span>
+						</h5>
 					</div>
-					<div class="dashboard-grid" role="list">
-						<a role="listitem" class="tile" href="<?= base_url('assessment/save-score-normal') ?>" aria-label="บันทึกผลการเรียน ปกติ">
-							<div class="meta">
-								<div class="title">
-									<div class="icon"><i class="bi bi-file-earmark-text"></i></div>
-									<span>บันทึกผลการเรียน (ปกติ)</span>
+					<div class="card-body">
+						<div class="dashboard-grid" role="list">
+							<a role="listitem" class="tile" href="<?= base_url('assessment/save-score-normal') ?>" aria-label="บันทึกผลการเรียน ปกติ">
+								<div class="meta">
+									<div class="title">
+										<div class="icon"><i class="bi bi-file-earmark-text"></i></div>
+										<span>บันทึกผลการเรียน (ปกติ)</span>
+									</div>
+									<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
 								</div>
-								<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
-							</div>
-							<div class="desc">บันทึกคะแนนและผลการเรียนของนักเรียนในรายวิชาปกติ</div>
-						</a>
-
-						<a role="listitem" class="tile" href="<?= base_url('assessment/save-score-repeat') ?>" aria-label="บันทึกผลการเรียน ซ้ำ">
-							<div class="meta">
-								<div class="title">
-									<div class="icon"><i class="bi bi-repeat"></i></div>
-									<span>บันทึกผลการเรียน (ซ้ำ)</span>
+								<div class="desc">บันทึกคะแนนและผลการเรียนของนักเรียนในรายวิชาปกติ</div>
+							</a>
+							<a role="listitem" class="tile" href="<?= base_url('assessment/save-score-repeat') ?>" aria-label="บันทึกผลการเรียน ซ้ำ">
+								<div class="meta">
+									<div class="title">
+										<div class="icon"><i class="bi bi-repeat"></i></div>
+										<span>บันทึกผลการเรียน (ซ้ำ)</span>
+									</div>
+									<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
 								</div>
-								<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
-							</div>
-							<div class="desc">บันทึกคะแนนและผลการเรียนของนักเรียนที่เรียนซ้ำ</div>
-						</a>
-					</div>
-				</div>
-
-				<!-- Curriculum category (keep here) -->
-				<div class="category">
-					<div class="category-header">
-						<i class="bi bi-book"></i>
-						<span class="label">งานหลักสูตร</span>
-					</div>
-					<div class="dashboard-grid" role="list">
-						<a role="listitem" class="tile" href="<?= base_url('curriculum/SendPlan') ?>" aria-label="ส่งแผนการสอน">
-							<div class="meta">
-								<div class="title">
-									<div class="icon"><i class="bi bi-cloud-upload"></i></div>
-									<span>ส่งแผนการสอน</span>
+								<div class="desc">บันทึกคะแนนและผลการเรียนของนักเรียนที่เรียนซ้ำ</div>
+							</a>
+							<a role="listitem" class="tile" href="<?= base_url('club') ?>" aria-label="ชุมนุม">
+								<div class="meta">
+									<div class="title">
+										<div class="icon"><i class="bi bi-people"></i></div>
+										<span>ชุมนุม</span>
+									</div>
+									<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
 								</div>
-								<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
-							</div>
-							<div class="desc">อัปโหลดและส่งแผนการสอนเพื่อขออนุมัติ</div>
-						</a>
-
-						<a role="listitem" class="tile" href="<?= base_url('curriculum/download-plan') ?>" aria-label="ดาวน์โหลดแผน">
-							<div class="meta">
-								<div class="title">
-									<div class="icon"><i class="bi bi-cloud-download"></i></div>
-									<span>ดาวน์โหลดแผน</span>
-								</div>
-								<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
-							</div>
-							<div class="desc">ดาวน์โหลดแผนการสอนที่ได้รับอนุมัติแล้ว</div>
-						</a>
-
-						<?php if (session()->get('pers_groupleade') !== null && session()->get('pers_groupleade') !== ''): ?>
-						<a role="listitem" class="tile" href="<?= base_url('curriculum/check-plan-head') ?>" aria-label="ตรวจแผน หน.กลุ่มสาระ">
-							<div class="meta">
-								<div class="title">
-									<div class="icon"><i class="bi bi-clipboard-check"></i></div>
-									<span>ตรวจแผน (หน.กลุ่มสาระ)</span>
-								</div>
-								<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
-							</div>
-							<div class="desc">ตรวจสอบและอนุมัติแผนการสอนของครูในกลุ่มสาระ</div>
-						</a>
-						<?php endif; ?>
+								<div class="desc">จัดการข้อมูลชุมนุมและกิจกรรมต่างๆ</div>
+							</a>
+						</div>
 					</div>
 				</div>
 
-				<!-- Assessment category (MOVED here, below Curriculum) -->
-				<div class="category">
-					<div class="category-header">
-						<i class="bi bi-clipboard-check"></i>
-						<span class="label">งานประเมินนักเรียน</span>
+				<!-- Student Assessment Card -->
+				<div class="card h-100">
+					<div class="card-header">
+						<h5 class="card-title mb-0 d-flex align-items-center">
+							<i class="bi bi-clipboard-check me-2"></i>
+							<span>งานประเมินนักเรียน</span>
+						</h5>
 					</div>
-					<div class="dashboard-grid" role="list">
-						<a role="listitem" class="tile" href="<?= base_url('teacher/reading_assessment') ?>" aria-label="แบบประเมินอ่านคิดวิเคราะห์">
-							<div class="meta">
-								<div class="title">
-									<div class="icon"><i class="bi bi-book-half"></i></div>
-									<span>แบบประเมินอ่านคิดวิเคราะห์</span>
+					<div class="card-body">
+						<div class="dashboard-grid" role="list">
+							<a role="listitem" class="tile" href="<?= base_url('teacher/reading_assessment') ?>" aria-label="แบบประเมินอ่านคิดวิเคราะห์">
+								<div class="meta">
+									<div class="title">
+										<div class="icon"><i class="bi bi-book-half"></i></div>
+										<span>แบบประเมินอ่านคิดวิเคราะห์</span>
+									</div>
+									<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
 								</div>
-								<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
-							</div>
-							<div class="desc">ประเมินความสามารถในการอ่าน คิดวิเคราะห์ และเขียนของนักเรียน</div>
-						</a>
+								<div class="desc">ประเมินความสามารถในการอ่าน คิดวิเคราะห์ และเขียนของนักเรียน</div>
+							</a>
+							<a role="listitem" class="tile" href="<?= base_url('teacher/desirable_assessment') ?>" aria-label="คุณลักษณะอันพึงประสงค์">
+								<div class="meta">
+									<div class="title">
+										<div class="icon"><i class="bi bi-check2-circle"></i></div>
+										<span>คุณลักษณะอันพึงประสงค์</span>
+									</div>
+									<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
+								</div>
+								<div class="desc">ประเมินคุณลักษณะอันพึงประสงค์ 8 ประการของนักเรียน</div>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
 
-						<a role="listitem" class="tile" href="<?= base_url('teacher/desirable_assessment') ?>" aria-label="คุณลักษณะอันพึงประสงค์">
-							<div class="meta">
-								<div class="title">
-									<div class="icon"><i class="bi bi-check2-circle"></i></div>
-									<span>คุณลักษณะอันพึงประสงค์</span>
+			<!-- Right Column -->
+			<div class="col-lg-6 d-flex flex-column gap-4">
+				<!-- Curriculum Card -->
+				<div class="card h-100">
+					<div class="card-header">
+						<h5 class="card-title mb-0 d-flex align-items-center">
+							<i class="bi bi-book me-2"></i>
+							<span>งานหลักสูตร</span>
+						</h5>
+					</div>
+					<div class="card-body">
+						<div class="dashboard-grid" role="list">
+							<a role="listitem" class="tile" href="<?= base_url('curriculum/SendPlan') ?>" aria-label="ส่งแผนการสอน">
+								<div class="meta">
+									<div class="title">
+										<div class="icon"><i class="bi bi-cloud-upload"></i></div>
+										<span>ส่งแผนการสอน</span>
+									</div>
+									<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
 								</div>
-								<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
-							</div>
-							<div class="desc">ประเมินคุณลักษณะอันพึงประสงค์ 8 ประการของนักเรียน</div>
-						</a>
+								<div class="desc">อัปโหลดและส่งแผนการสอนเพื่อขออนุมัติ</div>
+							</a>
+							<a role="listitem" class="tile" href="<?= base_url('curriculum/download-plan') ?>" aria-label="ดาวน์โหลดแผน">
+								<div class="meta">
+									<div class="title">
+										<div class="icon"><i class="bi bi-cloud-download"></i></div>
+										<span>ดาวน์โหลดแผน</span>
+									</div>
+									<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
+								</div>
+								<div class="desc">ดาวน์โหลดแผนการสอนที่ได้รับอนุมัติแล้ว</div>
+							</a>
+							<?php if (session()->get('pers_groupleade') !== null && session()->get('pers_groupleade') !== ''): ?>
+							<a role="listitem" class="tile" href="<?= base_url('curriculum/check-plan-head') ?>" aria-label="ตรวจแผน หน.กลุ่มสาระ">
+								<div class="meta">
+									<div class="title">
+										<div class="icon"><i class="bi bi-clipboard-check"></i></div>
+										<span>ตรวจแผน (หน.กลุ่มสาระ)</span>
+									</div>
+									<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
+								</div>
+								<div class="desc">ตรวจสอบและอนุมัติแผนการสอนของครูในกลุ่มสาระ</div>
+							</a>
+							<?php endif; ?>
+						</div>
 					</div>
 				</div>
 
-				<!-- Others category (unchanged) -->
-				<div class="category">
-					<div class="category-header">
-						<i class="bi bi-palette"></i>
-						<span class="label">งานประกันคุณภาพ</span>
-					</div>
-					<div class="dashboard-grid" role="list">
-						<a role="listitem" class="tile" href="#" aria-label="งานประกันคุณภาพ">
-							<div class="meta">
-								<div class="title">
-									<div class="icon"><i class="bi bi-shield-check"></i></div>
-									<span>งานประกันคุณภาพ</span>
-								</div>
-								<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
-							</div>
-							<div class="desc">จัดการข้อมูลและเอกสารที่เกี่ยวข้องกับงานประกันคุณภาพ</div>
-						</a>
-					</div>
-				</div>
 
 			</div>
 		</div>
@@ -272,9 +276,7 @@
 
 	</div>
 	<!--end::Container-->
-</div>
-<!--end::App Content-->
-</main>
+
 
 <?= $this->endSection() ?>
 
