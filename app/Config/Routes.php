@@ -37,6 +37,7 @@ $routes->get('login/googleCallback', 'Login::googleCallback');
         // Attendance Routes
         $routes->get('schedule/(:num)', 'ClubController::showSchedule/$1');
         $routes->post('createSchedule/(:num)', 'ClubController::createSchedule/$1');
+        $routes->post('saveActivity/(:num)', 'ClubController::saveActivity/$1'); // New route
         $routes->get('recordAttendance/(:num)/(:num)', 'ClubController::recordAttendance/$1/$2');
         $routes->post('saveAttendance/(:num)/(:num)', 'ClubController::saveAttendance/$1/$2');
 

@@ -6,42 +6,72 @@
 
 <?= $this->section('content') ?>
 
-<div class="container-fluid">
+<div class="">
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title"><?= esc($title ?? 'ตารางกิจกรรมชุมนุม') ?></h3>
-                    <div class="card-tools">
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createScheduleModal">
-                            <i class="bi bi-plus"></i> สร้างตารางกิจกรรมใหม่
-                        </button>
-                    </div>
                 </div>
                 <div class="card-body">
                     <?php if (!empty($schedules) && is_array($schedules)): ?>
                         <table class="table table-bordered table-hover">
                             <thead>
                                 <tr>
-                                    <th style="width: 50px;">#</th>
-                                    <th>หัวข้อกิจกรรม</th>
+                                   
+                                    <th>สัปดาห์ที่</th>
                                     <th>วันที่</th>
-                                    <th>ปีการศึกษา/ภาคเรียน</th>
-                                    <th style="width: 150px;">จัดการ</th>
+                                    <th>หัวข้อกิจกรรมที่บันทึกแล้ว</th>
+                                    <th>สถานะบันทึกเข้าเรียน</th>
+                                    <th style="width: 350px;">จัดการ</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php $i = 1; ?>
                                 <?php foreach ($schedules as $schedule): ?>
                                     <tr>
-                                        <td><?= $i++ ?></td>
-                                        <td><?= esc($schedule->schedule_title) ?></td>
-                                        <td><?= esc($schedule->schedule_date) ?></td>
-                                        <td><?= esc($schedule->academic_year) ?>/<?= esc($schedule->term) ?></td>
+                                        
+                                        <td><?= esc($schedule->tcs_week_number) ?></td>
                                         <td>
-                                            <a href="<?= site_url('club/recordAttendance/' . $club->club_id . '/' . $schedule->schedule_id) ?>" class="btn btn-info btn-sm">
-                                                <i class="bi bi-clipboard-check"></i> บันทึกการเข้าเรียน
-                                            </a>
+                                            <?php if ($schedule->tcs_start_date == '0000-00-00' || empty($schedule->tcs_start_date)): ?>
+                                                ผู้ดูแลยังไม่ได้กำหนดวัน
+                                            <?php else: ?>
+                                                <?= esc(date('d/m/Y', strtotime($schedule->tcs_start_date))) ?>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <?php if (!empty($schedule->act_name)): ?>
+                                                <span class="fw-bold"><?= esc($schedule->act_name) ?></span>
+                                            <?php else: ?>
+                                                <span class="text-muted fst-italic">ยังไม่ได้บันทึกกิจกรรม</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <?php if ($schedule->attendance_recorded): ?>
+                                                <span class="badge bg-success">บันทึกแล้ว</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-warning">ยังไม่บันทึก</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <?php $isDateNotSet = ($schedule->tcs_start_date == '0000-00-00' || empty($schedule->tcs_start_date)); ?>
+                                                <?php $isActivityNotRecorded = empty($schedule->act_name); ?>
+                                                <?php $isAttendanceDisabled = $isDateNotSet || $isActivityNotRecorded; ?>
+                                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#activityModal"
+                                                    data-date="<?= esc($schedule->tcs_start_date) ?>"
+                                                    data-name="<?= esc($schedule->act_name ?? '') ?>"
+                                                    data-description="<?= esc($schedule->act_description ?? '') ?>"
+                                                    data-location="<?= esc($schedule->act_location ?? '') ?>"
+                                                    data-start-time="<?= esc($schedule->act_start_time ?? '') ?>"
+                                                    data-end-time="<?= esc($schedule->act_end_time ?? '') ?>"
+                                                    <?= $isDateNotSet ? 'disabled' : '' ?>>
+                                                    <i class="bi bi-pencil-square"></i> บันทึก/แก้ไขกิจกรรม
+                                                </button>
+                                                <a href="<?= site_url('club/recordAttendance/' . $club->club_id . '/' . $schedule->tcs_schedule_id) ?>" class="btn btn-info btn-sm <?= $isAttendanceDisabled ? 'disabled' : '' ?>" <?= $isAttendanceDisabled ? 'style="pointer-events: none; opacity: 0.6;"' : '' ?>>
+                                                    <i class="bi bi-clipboard-check"></i> บันทึกการเข้าเรียน
+                                                </a>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -49,7 +79,7 @@
                         </table>
                     <?php else: ?>
                         <div class="alert alert-info">
-                            ไม่พบตารางกิจกรรมสำหรับชุมนุมนี้
+                            ไม่พบตารางกิจกรรมสำหรับชุมนุมนี้ (ผู้ดูแลระบบยังไม่ได้ตั้งค่า)
                         </div>
                     <?php endif; ?>
                 </div>
@@ -58,24 +88,39 @@
     </div>
 </div>
 
-<!-- Create Schedule Modal -->
-<div class="modal fade" id="createScheduleModal" tabindex="-1" role="dialog" aria-labelledby="createScheduleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<!-- Activity Modal -->
+<div class="modal fade" id="activityModal" tabindex="-1" role="dialog" aria-labelledby="activityModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <form action="<?= site_url('club/createSchedule/' . $club->club_id) ?>" method="post">
+            <form action="<?= site_url('club/saveActivity/' . $club->club_id) ?>" method="post" id="activityForm">
                 <?= csrf_field() ?>
+                <input type="hidden" name="activity_date" id="modal_activity_date">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createScheduleModalLabel">สร้างตารางกิจกรรมใหม่</h5>
+                    <h5 class="modal-title" id="activityModalLabel">บันทึกกิจกรรม</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="schedule_title" name="schedule_title" placeholder="เช่น กิจกรรมสัปดาห์ที่ 1" required>
-                        <label for="schedule_title">หัวข้อกิจกรรม</label>
+                    <div class="mb-3">
+                        <label for="modal_activity_name" class="form-label">ชื่อกิจกรรม <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="modal_activity_name" name="activity_name" placeholder="ระบุชื่อกิจกรรมที่ทำในวันนี้" required>
                     </div>
-                    <div class="form-floating">
-                        <input type="date" class="form-control" id="schedule_date" name="schedule_date" value="<?= date('Y-m-d') ?>" required>
-                        <label for="schedule_date">วันที่</label>
+                    <div class="mb-3">
+                        <label for="modal_activity_location" class="form-label">สถานที่จัดกิจกรรม</label>
+                        <input type="text" class="form-control" id="modal_activity_location" name="activity_location" placeholder="เช่น ห้อง 123, สนามฟุตบอล">
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="modal_activity_start_time" class="form-label">เวลาเริ่มกิจกรรม</label>
+                            <input type="time" class="form-control" id="modal_activity_start_time" name="activity_start_time">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="modal_activity_end_time" class="form-label">เวลาสิ้นสุดกิจกรรม</label>
+                            <input type="time" class="form-control" id="modal_activity_end_time" name="activity_end_time">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal_activity_description" class="form-label">รายละเอียดกิจกรรม</label>
+                        <textarea class="form-control" id="modal_activity_description" name="activity_description" rows="4"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -87,4 +132,47 @@
     </div>
 </div>
 
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    $(document).ready(function() {
+        $('#activityModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var date = button.data('date');
+            var name = button.data('name');
+            var description = button.data('description');
+            var location = button.data('location');
+            var startTime = button.data('start-time');
+            var endTime = button.data('end-time');
+
+            var modal = $(this);
+            modal.find('#modal_activity_date').val(date);
+            modal.find('#modal_activity_name').val(name);
+            modal.find('#modal_activity_description').val(description);
+            modal.find('#modal_activity_location').val(location);
+            modal.find('#modal_activity_start_time').val(startTime);
+            modal.find('#modal_activity_end_time').val(endTime);
+            
+            var formattedDate = new Date(date).toLocaleDateString('th-TH', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            modal.find('.modal-title').text('บันทึกกิจกรรมสำหรับวันที่ ' + formattedDate);
+        });
+
+        $('#activityForm').on('submit', function(event) {
+            var startTime = $('#modal_activity_start_time').val();
+            var endTime = $('#modal_activity_end_time').val();
+
+            if (!startTime || !endTime) {
+                var confirmProceed = confirm('ยังไม่ได้บันทึกเวลาเรียน คุณต้องการดำเนินการต่อหรือไม่?');
+                if (!confirmProceed) {
+                    event.preventDefault(); // Prevent form submission
+                }
+            }
+        });
+    });
+</script>
 <?= $this->endSection() ?>

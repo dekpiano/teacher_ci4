@@ -112,6 +112,7 @@ INSERT INTO `tb_club_members` (`member_id`, `member_student_id`, `member_club_id
 CREATE TABLE `tb_club_onoff` (
   `c_onoff_id` int(11) NOT NULL,
   `c_onoff_year` varchar(9) NOT NULL,
+  `c_onoff_term` int(1) NOT NULL,
   `c_onoff_regisstart` datetime NOT NULL,
   `c_onoff_regisend` datetime NOT NULL,
   `c_onoff_created_at` timestamp NOT NULL DEFAULT current_timestamp()
@@ -151,6 +152,7 @@ CREATE TABLE `tb_club_recoed_activity` (
 CREATE TABLE `tb_club_settings_schedule` (
   `tcs_schedule_id` int(11) NOT NULL COMMENT 'รหัสการกำหนด',
   `tcs_academic_year` varchar(9) NOT NULL COMMENT 'ปีการศึกษา ',
+  `tcs_academic_trem` int(1) NOT NULL DEFAULT 1,
   `tcs_start_date` date NOT NULL COMMENT 'วันที่เริ่มต้นเรียน',
   `tcs_week_number` int(11) NOT NULL COMMENT 'สัปดาห์ที่',
   `tcs_week_status` enum('เปิด','ปิด') NOT NULL COMMENT 'สถานะเปิดปิด',

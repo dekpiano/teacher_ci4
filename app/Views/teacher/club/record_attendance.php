@@ -6,15 +6,26 @@
 
 <?= $this->section('content') ?>
 
-<div class="container-fluid">
+<div class="">
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title"><?= esc($title ?? 'บันทึกการเข้าเรียน') ?></h3>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0"><?= esc($title ?? 'บันทึกการเข้าเรียนชุมนุม') ?></h3>
+                    <?php if (isset($hasAttendanceRecord)): ?>
+                        <?php if (!$hasAttendanceRecord): ?>
+                            <span class="badge bg-warning">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i> ยังไม่ได้บันทึกการเข้าเรียน
+                            </span>
+                        <?php else: ?>
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle-fill me-1"></i> บันทึกการเข้าเรียนแล้ว
+                            </span>
+                        <?php endif; ?>
+                    <?php endif; ?>
                 </div>
                 <div class="card-body">
-                    <form action="<?= site_url('club/saveAttendance/' . $club->club_id . '/' . $schedule->schedule_id) ?>" method="post">
+                    <form action="<?= site_url('club/saveAttendance/' . $club->club_id . '/' . $schedule->tcs_schedule_id) ?>" method="post">
                         <?= csrf_field() ?>
                         <?php if (!empty($members) && is_array($members)): ?>
                             <table class="table table-bordered table-hover">
@@ -41,7 +52,7 @@
                                                 <?php
                                                     $currentStatus = $existingAttendance[$member->StudentID] ?? 'มา';
                                                 ?>
-                                                <select class="form-control" name="attendance[<?= esc($member->StudentID) ?>]">
+                                                <select class="form-select" name="attendance[<?= esc($member->StudentID) ?>]">
                                                     <option value="มา" <?= $currentStatus === 'มา' ? 'selected' : '' ?>>มา</option>
                                                     <option value="ขาด" <?= $currentStatus === 'ขาด' ? 'selected' : '' ?>>ขาด</option>
                                                     <option value="ลาป่วย" <?= $currentStatus === 'ลาป่วย' ? 'selected' : '' ?>>ลาป่วย</option>

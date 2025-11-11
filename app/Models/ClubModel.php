@@ -130,10 +130,14 @@ class ClubModel extends Model
      * @param int $clubId The ID of the club.
      * @return array An array of schedule objects.
      */
-    public function getSchedulesByYear(string $year): array
+    public function getSchedulesByYear(string $year, string $term, int $clubId): array
     {
-        return $this->db->table('tb_club_settings_schedule')
-                        ->where('tcs_academic_year', $year)
+        return $this->db->table('tb_club_settings_schedule tcs')
+                        ->select('tcs.*, tca.act_name, tca.act_description, tca.act_location, tca.act_start_time, tca.act_end_time')
+                        ->join('tb_club_activities tca', 'tca.act_date = tcs.tcs_start_date AND tca.act_club_id = ' . $this->db->escape($clubId), 'left')
+                        ->where('tcs.tcs_academic_year', $year)
+                        ->where('tcs.tcs_academic_trem', $term)
+                        ->orderBy('tcs.tcs_week_number', 'ASC')
                         ->get()
                         ->getResult();
     }
@@ -170,7 +174,7 @@ class ClubModel extends Model
      */
     public function getAttendanceBySchedule(int $scheduleId): array
     {
-        return $this->db->table('tb_club_recoed_activity')
+        return $this->db->table('tb_club_record_activity')
                         ->where('trca_schedule_id', $scheduleId)
                         ->get()
                         ->getResult();
@@ -183,14 +187,14 @@ class ClubModel extends Model
      * @param int $studentId The ID of the student.
      * @return string|null The attendance status or null if not found.
      */
-    public function getStudentAttendanceStatus(int $scheduleId, int $studentId): ?string
-    {
-        $record = $this->db->table('tb_club_recoed_activity')
-                           ->where('schedule_id', $scheduleId)
-                           ->where('StudentID', $studentId)
-                           ->get()->getRow();
-        return $record->status ?? null;
-    }
+        public function getStudentAttendanceStatus(int $scheduleId, int $studentId): ?string
+        {
+                        $record = $this->db->table('tb_club_record_activity')
+                               ->where('trca_schedule_id', $scheduleId)
+                               ->where('StudentID', $studentId)
+                               ->get()->getRow();
+            return $record->status ?? null;
+        }
 
     /**
      * Saves or updates an attendance record.
@@ -200,29 +204,21 @@ class ClubModel extends Model
      * @param string $status The attendance status.
      * @return bool
      */
-    public function saveAttendance(int $scheduleId, int $studentId, string $status): bool
+    public function saveScheduleAttendance(array $data): bool
     {
-        $data = [
-            'schedule_id' => $scheduleId,
-            'StudentID' => $studentId,
-            'status' => $status,
-            'recorded_at' => date('Y-m-d H:i:s')
-        ];
-
-        // Check if a record already exists for this student and schedule
-        $existingRecord = $this->db->table('tb_club_recoed_activity')
-                                   ->where('schedule_id', $scheduleId)
-                                   ->where('StudentID', $studentId)
+        // Check if a record already exists for this schedule
+        $existingRecord = $this->db->table('tb_club_record_activity')
+                                   ->where('trca_schedule_id', $data['trca_schedule_id'])
                                    ->get()->getRow();
 
         if ($existingRecord) {
             // Update existing record
-            return $this->db->table('tb_club_recoed_activity')
-                            ->where('record_id', $existingRecord->record_id)
+            return $this->db->table('tb_club_record_activity')
+                            ->where('tcra_id', $existingRecord->tcra_id)
                             ->update($data);
         } else {
             // Insert new record
-            return $this->db->table('tb_club_recoed_activity')->insert($data);
+            return $this->db->table('tb_club_record_activity')->insert($data);
         }
     }
 
@@ -252,6 +248,31 @@ class ClubModel extends Model
     public function insertActivity(array $data): bool
     {
         return $this->db->table('tb_club_activities')->insert($data);
+    }
+
+    /**
+     * Inserts or updates an activity based on club_id and activity_date.
+     *
+     * @param array $data The data for the activity.
+     * @return bool
+     */
+    public function upsertActivity(array $data): bool
+    {
+        $existing = $this->db->table('tb_club_activities')
+                             ->where('act_club_id', $data['act_club_id'])
+                             ->where('act_date', $data['act_date'])
+                             ->get()
+                             ->getRow();
+
+        if ($existing) {
+            // Update
+            return $this->db->table('tb_club_activities')
+                            ->where('act_id', $existing->act_id)
+                            ->update($data);
+        } else {
+            // Insert
+            return $this->db->table('tb_club_activities')->insert($data);
+        }
     }
 
     /**
@@ -290,6 +311,20 @@ class ClubModel extends Model
         return $this->db->table('tb_club_activities')
                         ->where('act_id', $activityId)
                         ->delete();
+    }
+
+    /**
+     * Checks if attendance has been recorded for a specific schedule.
+     *
+     * @param int $scheduleId The ID of the schedule.
+     * @return bool True if attendance is recorded, false otherwise.
+     */
+    public function hasAttendanceRecorded(int $scheduleId): bool
+    {
+        $record = $this->db->table('tb_club_record_activity')
+                           ->where('trca_schedule_id', $scheduleId)
+                           ->get()->getRow();
+        return !empty($record);
     }
 }
 

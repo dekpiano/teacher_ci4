@@ -6,7 +6,7 @@
 
 <?= $this->section('content') ?>
 
-<div class="container-fluid">
+<div class="">
     <div class="row">
         <div class="col-md-12">
             <div class="card">
@@ -14,7 +14,7 @@
                     <h3 class="card-title"><?= esc($title ?? 'จัดการชุมนุม') ?></h3>
                     <div class="card-tools">
                         <a href="<?= site_url('club/schedule/' . $club->club_id) ?>" class="btn btn-success btn-sm me-2">
-                            <i class="bi bi-calendar-event"></i> จัดการตารางกิจกรรม
+                            <i class="bi bi-calendar-event"></i> บันทึกเวลากิจกรรม
                         </a>
                         <a href="<?= site_url('club/activities/' . $club->club_id) ?>" class="btn btn-info btn-sm me-2">
                             <i class="bi bi-bar-chart-line"></i> รายงานกิจกรรม
@@ -70,17 +70,17 @@
                                             <td><?= esc($member->StudentClass) ?></td>
                                             <td><?= esc($member->StudentNumber) ?></td>
                                             <td><?= esc($member->member_role) ?></td>
-                                            <td>
+                                            <td class="text-wrap">
                                                 <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#assignRoleModal"
                                                         data-studentid="<?= esc($member->StudentID) ?>" data-currentrole="<?= esc($member->member_role) ?>">
                                                     <i class="bi bi-person-badge"></i> กำหนดบทบาท
                                                 </button>
-                                                <form action="<?= site_url('club/removeMember/' . $club->club_id . '/' . $member->StudentID) ?>" method="post" class="d-inline remove-member-form">
+                                                <!-- <form action="<?= site_url('club/removeMember/' . $club->club_id . '/' . $member->StudentID) ?>" method="post" class="d-inline remove-member-form">
                                                     <?= csrf_field() ?>
                                                     <button type="submit" class="btn btn-danger btn-sm">
                                                         <i class="bi bi-trash"></i> ลบ
                                                     </button>
-                                                </form>
+                                                </form> -->
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

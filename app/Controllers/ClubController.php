@@ -248,8 +248,12 @@ class ClubController extends BaseController
 
         $data['title'] = "ตารางกิจกรรมชุมนุม: " . $club->club_name;
         $data['club'] = $club;
-        $year = $club->club_year . '/' . $club->club_trem;
-        $data['schedules'] = $this->clubModel->getSchedulesByYear($year);
+        $data['schedules'] = $this->clubModel->getSchedulesByYear($club->club_year, $club->club_trem, $clubId);
+
+        // Add attendance status to each schedule
+        foreach ($data['schedules'] as $schedule) {
+            $schedule->attendance_recorded = $this->clubModel->hasAttendanceRecorded($schedule->tcs_schedule_id);
+        }
 
         return view('teacher/club/schedule', $data);
     }
@@ -285,6 +289,47 @@ class ClubController extends BaseController
         return redirect()->to('club/schedule/' . $clubId);
     }
 
+    public function saveActivity($clubId)
+    {
+        $session = session();
+        if (!$session->get('isLoggedIn')) {
+            return redirect()->to('login');
+        }
+
+        $teacherId = $this->getTeacherId();
+        $club = $this->clubModel->find($clubId);
+
+        if (!$this->isClubAdvisor($teacherId, $club)) {
+            session()->setFlashdata('error', 'ไม่พบชุมนุมหรือคุณไม่มีสิทธิ์จัดการชุมนุมนี้');
+            return redirect()->to('club');
+        }
+
+        $data = [
+            'act_club_id' => $clubId,
+            'act_date' => $this->request->getPost('activity_date'),
+            'act_name' => $this->request->getPost('activity_name'),
+            'act_description' => $this->request->getPost('activity_description'),
+            'act_location' => $this->request->getPost('activity_location'),
+            'act_start_time' => $this->request->getPost('activity_start_time'),
+            'act_end_time' => $this->request->getPost('activity_end_time'),
+        ];
+
+        // Basic validation
+        if (empty($data['act_date']) || empty($data['act_name'])) {
+            session()->setFlashdata('error', 'กรุณากรอกข้อมูลกิจกรรมให้ครบถ้วน');
+            return redirect()->to('club/schedule/' . $clubId);
+        }
+
+        if ($this->clubModel->upsertActivity($data)) {
+            session()->setFlashdata('success', 'บันทึกข้อมูลกิจกรรมสำเร็จ');
+        } else {
+            session()->setFlashdata('error', 'ไม่สามารถบันทึกข้อมูลกิจกรรมได้');
+        }
+
+        return redirect()->to('club/schedule/' . $clubId);
+    }
+
+
     public function recordAttendance($clubId, $scheduleId)
     {
         $session = session();
@@ -296,21 +341,36 @@ class ClubController extends BaseController
         $club = $this->clubModel->find($clubId);
         $schedule = $this->clubModel->findSchedule($scheduleId);
 
-        if (!$this->isClubAdvisor($teacherId, $club) || !$schedule || $schedule->club_id != $clubId) {
+        if (!$this->isClubAdvisor($teacherId, $club) || !$schedule) {
             session()->setFlashdata('error', 'ไม่พบข้อมูลหรือคุณไม่มีสิทธิ์จัดการ');
             return redirect()->to('club');
         }
 
-        $data['title'] = "บันทึกการเข้าเรียน: " . $club->club_name . " - " . $schedule->schedule_title;
+        $data['title'] = "บันทึกการเข้าเรียนชุมนุม : " . $club->club_name . " - สัปดาห์ที่ " . $schedule->tcs_week_number;
         $data['club'] = $club;
         $data['schedule'] = $schedule;
         $data['members'] = $this->clubModel->getClubMembers($clubId);
 
         // Fetch existing attendance for this schedule
         $existingAttendance = [];
-        $records = $this->clubModel->getAttendanceBySchedule($scheduleId);
-        foreach ($records as $record) {
-            $existingAttendance[$record->student_id] = $record->status;
+        $record = $this->clubModel->getAttendanceBySchedule($scheduleId);        
+        $data['hasAttendanceRecord'] = !empty($record);
+        if (!empty($record)) {
+            // The model returns an array of records, but we expect only one
+            $record = $record[0]; 
+            $statusMap = [
+                'มา' => !empty($record->tcra_ma) ? explode(',', $record->tcra_ma) : [],
+                'ขาด' => !empty($record->tcra_khad) ? explode(',', $record->tcra_khad) : [],
+                'ลาป่วย' => !empty($record->tcra_rapwy) ? explode(',', $record->tcra_rapwy) : [],
+                'ลากิจ' => !empty($record->tcra_rakic) ? explode(',', $record->tcra_rakic) : [],
+                'กิจกรรม' => !empty($record->tcra_kickrrm) ? explode(',', $record->tcra_kickrrm) : [],
+            ];
+
+            foreach ($statusMap as $status => $studentIds) {
+                foreach ($studentIds as $studentId) {
+                    $existingAttendance[$studentId] = $status;
+                }
+            }
         }
         $data['existingAttendance'] = $existingAttendance;
 
@@ -328,7 +388,7 @@ class ClubController extends BaseController
         $club = $this->clubModel->find($clubId);
         $schedule = $this->clubModel->findSchedule($scheduleId);
 
-        if (!$this->isClubAdvisor($teacherId, $club) || !$schedule || $schedule->club_id != $clubId) {
+        if (!$this->isClubAdvisor($teacherId, $club) || !$schedule) {
             session()->setFlashdata('error', 'ไม่พบข้อมูลหรือคุณไม่มีสิทธิ์จัดการ');
             return redirect()->to('club');
         }
@@ -336,13 +396,38 @@ class ClubController extends BaseController
         $attendanceData = $this->request->getPost('attendance'); // Array of student_id => status
 
         if (!empty($attendanceData)) {
-            $successCount = 0;
+            // Categorize students by status
+            $statusGroups = [
+                'มา' => [],
+                'ขาด' => [],
+                'ลาป่วย' => [],
+                'ลากิจ' => [],
+                'กิจกรรม' => [],
+            ];
+
             foreach ($attendanceData as $studentId => $status) {
-                if ($this->clubModel->saveAttendance($scheduleId, $studentId, $status)) {
-                    $successCount++;
+                if (array_key_exists($status, $statusGroups)) {
+                    $statusGroups[$status][] = $studentId;
                 }
             }
-            session()->setFlashdata('success', "บันทึกการเข้าเรียนสำเร็จ {$successCount} รายการ");
+
+            // Prepare data for the model
+            $dataToSave = [
+                'tcra_club_id' => $clubId,
+                'trca_schedule_id' => $scheduleId,
+                'tcra_teac_id' => $teacherId,
+                'tcra_ma' => implode(',', $statusGroups['มา']),
+                'tcra_khad' => implode(',', $statusGroups['ขาด']),
+                'tcra_rapwy' => implode(',', $statusGroups['ลาป่วย']),
+                'tcra_rakic' => implode(',', $statusGroups['ลากิจ']),
+                'tcra_kickrrm' => implode(',', $statusGroups['กิจกรรม']),
+            ];
+
+            if ($this->clubModel->saveScheduleAttendance($dataToSave)) {
+                session()->setFlashdata('success', "บันทึกการเข้าเรียนสำเร็จ");
+            } else {
+                session()->setFlashdata('error', 'ไม่สามารถบันทึกข้อมูลการเข้าเรียนได้');
+            }
         } else {
             session()->setFlashdata('error', 'ไม่พบข้อมูลการเข้าเรียนที่จะบันทึก');
         }
