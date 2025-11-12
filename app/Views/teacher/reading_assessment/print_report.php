@@ -1,11 +1,3 @@
-<?php
-$homeroom_teacher = session()->get('fullname');
-// Placeholders for other roles - these should be fetched from the database
-$grade_level_head = '...........................................';
-$academic_head = 'นางสาวอรอุมา ฉวีทอง';
-$deputy_director = 'นางสาวศริทร์ทิพย์ กริมเขียว';
-$director = 'นายพงษ์ศักดิ์ เงินสันเทียะ';
-?>
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -133,14 +125,36 @@ $director = 'นายพงษ์ศักดิ์ เงินสันเท
         </div>
 
         <div class="signature-block">
-            <div class="row">
-                <div class="col-6">
-                    <p>ลงชื่อ <span class="signature-line"></span><br>( <?= esc($homeroom_teacher) ?> )<br>ครูที่ปรึกษา</p>
+            <?php
+            $teacherCount = count($homeroom_teachers);
+            $colClass = 'col-6'; // Default for 1 or 2 teachers
+            if ($teacherCount === 1) {
+                $colClass = 'col-12';
+            }
+            ?>
+            <?php if ($teacherCount === 3) : ?>
+                <div class="row">
+                    <div class="col-6">
+                        <p>ลงชื่อ <span class="signature-line"></span><br>( <?= esc($homeroom_teachers[0]) ?> )<br>ครูที่ปรึกษา</p>
+                    </div>
+                    <div class="col-6">
+                        <p>ลงชื่อ <span class="signature-line"></span><br>( <?= esc($homeroom_teachers[1]) ?> )<br>ครูที่ปรึกษา</p>
+                    </div>
                 </div>
-                <div class="col-6">
-                    <p>ลงชื่อ <span class="signature-line"></span><br>( ........................................... )<br>ครูที่ปรึกษา</p>
+                <div class="row justify-content-center">
+                    <div class="col-12">
+                        <p>ลงชื่อ <span class="signature-line"></span><br>( <?= esc($homeroom_teachers[2]) ?> )<br>ครูที่ปรึกษา</p>
+                    </div>
                 </div>
-            </div>
+            <?php else : ?>
+                <div class="row">
+                    <?php foreach ($homeroom_teachers as $teacherName) : ?>
+                        <div class="<?= $colClass ?>">
+                            <p>ลงชื่อ <span class="signature-line"></span><br>( <?= esc($teacherName) ?> )<br>ครูที่ปรึกษา</p>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
             <div class="row" style="margin-top: 2rem;">
                 <div class="col-6">
                     <p>ลงชื่อ <span class="signature-line"></span><br>( <?= esc($grade_level_head) ?> )<br>หัวหน้าระดับชั้น</p>

@@ -197,20 +197,52 @@ class DesirableAssessmentController extends BaseController
         $term = $latestYearTerm['term'];
 
         // --- Get Signatory Names ---
-        $homeroom_teacher_info = $model->getPersonnelInfo($this->teacherId);
-        $homeroom_teacher = ($homeroom_teacher_info) ? $homeroom_teacher_info['pers_prefix'] . $homeroom_teacher_info['pers_firstname'] . ' ' . $homeroom_teacher_info['pers_lastname'] : '';
+        $homeroomTeachersData = $model->getHomeroomTeachersByClassAndYear($class . '/' . $room, $academicYear);
+        $homeroom_teachers = [];
+        foreach ($homeroomTeachersData as $teacherData) {
+            $persId = $teacherData['class_teacher'];
+            $teacherInfo = $model->getPersonnelFullName($persId);
+            if ($teacherInfo) {
+                $homeroom_teachers[] = $teacherInfo['pers_prefix'] . $teacherInfo['pers_firstname'] . ' ' . $teacherInfo['pers_lastname'];
+            }
+        }
+
+        // Fallback if no homeroom teachers found in tb_regclass
+        if (empty($homeroom_teachers)) {
+            $homeroom_teacher_info = $model->getPersonnelFullName($this->teacherId);
+            if ($homeroom_teacher_info) {
+                $homeroom_teachers[] = $homeroom_teacher_info['pers_prefix'] . $homeroom_teacher_info['pers_firstname'] . ' ' . $homeroom_teacher_info['pers_lastname'];
+            } else {
+                $homeroom_teachers[] = '...........................................';
+            }
+        }
 
         $gradeLevelHeadId = $model->getGradeLevelHead($class, $academicYear);
-        $grade_level_head_info = $model->getPersonnelInfo($gradeLevelHeadId);
+        $grade_level_head_info = null;
+        if ($gradeLevelHeadId) {
+            $grade_level_head_info = $model->getPersonnelFullName($gradeLevelHeadId);
+        }
         $grade_level_head = ($grade_level_head_info) ? $grade_level_head_info['pers_prefix'] . $grade_level_head_info['pers_firstname'] . ' ' . $grade_level_head_info['pers_lastname'] : '...........................................';
 
-        $academic_head_info = $model->getPersonnelInfo(null, 'หัวหน้างานวิชาการ');
+        $academicHeadId = $model->getAdminPersonnelIdByRoleName('หัวหน้างานวิชาการ');
+        $academic_head_info = null;
+        if ($academicHeadId) {
+            $academic_head_info = $model->getPersonnelFullName($academicHeadId);
+        }
         $academic_head = ($academic_head_info) ? $academic_head_info['pers_prefix'] . $academic_head_info['pers_firstname'] . ' ' . $academic_head_info['pers_lastname'] : 'นางสาวชยารัตน์ เหงากูล'; // Fallback
 
-        $deputy_director_info = $model->getPersonnelInfo(null, 'รองผู้อำนวยการสถานศึกษา');
+        $deputyDirectorId = $model->getAdminPersonnelIdByRoleName('รองผู้อำนวยการสถานศึกษา');
+        $deputy_director_info = null;
+        if ($deputyDirectorId) {
+            $deputy_director_info = $model->getPersonnelFullName($deputyDirectorId);
+        }
         $deputy_director = ($deputy_director_info) ? $deputy_director_info['pers_prefix'] . $deputy_director_info['pers_firstname'] . ' ' . $deputy_director_info['pers_lastname'] : 'นางสาวอรอุมา ฉวีทอง'; // Fallback
 
-        $director_info = $model->getPersonnelInfo(null, 'ผู้อำนวยการสถานศึกษา');
+        $directorId = $model->getAdminPersonnelIdByRoleName('ผู้อำนวยการสถานศึกษา');
+        $director_info = null;
+        if ($directorId) {
+            $director_info = $model->getPersonnelFullName($directorId);
+        }
         $director = ($director_info) ? $director_info['pers_prefix'] . $director_info['pers_firstname'] . ' ' . $director_info['pers_lastname'] : 'นายพงษ์ศักดิ์ เงินสันเทียะ'; // Fallback
 
         // --- Get Report Data (Copied and adapted from assessClass) ---
@@ -304,7 +336,7 @@ class DesirableAssessmentController extends BaseController
             'assessmentItems' => $assessmentItems,
             'evaluations' => $evaluations,
             'studentResults' => $studentResults, // Pass detailed results for page 2
-            'homeroom_teacher' => $homeroom_teacher,
+            'homeroom_teachers' => $homeroom_teachers,
             'grade_level_head' => $grade_level_head,
             'academic_head' => $academic_head,
             'deputy_director' => $deputy_director,

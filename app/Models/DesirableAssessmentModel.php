@@ -132,18 +132,35 @@ class DesirableAssessmentModel extends Model
         return $evaluations;
     }
     
-    public function getPersonnelInfo(string $personnelId = null, string $position = null)
+    public function getPersonnelFullName(string $pers_id)
     {
-        $db = db_connect('personnel');
-        $builder = $db->table('tb_personnel');
+        $db = db_connect('personnel'); // Connect to the personnel database
+        return $db->table('tb_personnel')
+                    ->select('pers_prefix, pers_firstname, pers_lastname')
+                    ->where('pers_id', $pers_id)
+                    ->get()
+                    ->getRowArray();
+    }
 
-        if ($personnelId) {
-            $builder->where('pers_id', $personnelId);
-        } elseif ($position) {
-            $builder->where('pers_position', $position);
-        }
+    public function getHomeroomTeachersByClassAndYear(string $className, string $academicYear)
+    {
+        $db = db_connect('default'); // Assuming 'default' is the DBGroup for skjacth_academic
+        return $db->table('tb_regclass')
+                    ->select('class_teacher')
+                    ->where('Reg_Class', $className)
+                    ->where('Reg_Year', $academicYear)
+                    ->get()->getResultArray();
+    }
 
-        return $builder->get()->getRowArray();
+    public function getAdminPersonnelIdByRoleName(string $roleName)
+    {
+        $db = db_connect('default'); // Assuming 'default' is the DBGroup for skjacth_academic
+        $result = $db->table('tb_admin_rloes')
+                       ->select('admin_rloes_userid')
+                       ->where('admin_rloes_nanetype', $roleName)
+                       ->get()
+                       ->getRowArray();
+        return $result ? $result['admin_rloes_userid'] : null;
     }
 
     public function getLatestSchoolYear()

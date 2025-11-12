@@ -158,18 +158,46 @@
             </table>
 
             <div class="signature-section">
+                <?php
+                $teacherCount = count($homeroom_teachers);
+                $colClass = 'col-6'; // Default for 1 or 2 teachers
+                if ($teacherCount === 1) {
+                    $colClass = 'col-12';
+                }
+                ?>
+                <?php if ($teacherCount === 3) : ?>
+                    <div class="row">
+                        <div class="col-6 text-center">
+                            <p>ลงชื่อ...........................................ครูที่ปรึกษา</p>
+                            <p class="signature-name">( <?= esc($homeroom_teachers[0]) ?> )</p>
+                        </div>
+                        <div class="col-6 text-center">
+                            <p>ลงชื่อ...........................................ครูที่ปรึกษา</p>
+                            <p class="signature-name">( <?= esc($homeroom_teachers[1]) ?> )</p>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-12 text-center">
+                            <p>ลงชื่อ...........................................ครูที่ปรึกษา</p>
+                            <p class="signature-name">( <?= esc($homeroom_teachers[2]) ?> )</p>
+                        </div>
+                    </div>
+                <?php else : ?>
+                    <div class="row">
+                        <?php foreach ($homeroom_teachers as $index => $teacherName) : ?>
+                            <div class="<?= $colClass ?> text-center">
+                                <p>ลงชื่อ...........................................ครูที่ปรึกษา</p>
+                                <p class="signature-name">( <?= esc($teacherName) ?> )</p>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
                 <div class="row">
                     <div class="col-6 text-center">
-                        <p>ลงชื่อ...........................................ครูที่ปรึกษา</p>
-                        <p class="signature-name">( <?= esc($homeroom_teacher) ?> )</p>
-
                         <p>ลงชื่อ...........................................หัวหน้าระดับชั้น</p>
                         <p class="signature-name">( <?= esc($grade_level_head) ?> )</p>
                     </div>
                     <div class="col-6 text-center">
-                        <p>ลงชื่อ...........................................ครูที่ปรึกษา</p>
-                        <p class="signature-name">( ........................................... )</p>
-
                         <p>ลงชื่อ...........................................หัวหน้างานวิชาการ</p>
                         <p class="signature-name">( <?= esc($academic_head) ?> )</p>
                     </div>
