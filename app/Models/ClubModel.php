@@ -14,6 +14,7 @@ class ClubModel extends Model
         'club_description',
         'club_faculty_advisor',
         'club_group',
+        'club_level',
         'club_established_date',
         'club_max_participants',
         'club_status',
@@ -133,7 +134,7 @@ class ClubModel extends Model
     public function getSchedulesByYear(string $year, string $term, int $clubId): array
     {
         return $this->db->table('tb_club_settings_schedule tcs')
-                        ->select('tcs.*, tca.act_name, tca.act_description, tca.act_location, tca.act_start_time, tca.act_end_time')
+                        ->select('tcs.*, tca.act_name, tca.act_description, tca.act_location, tca.act_start_time, tca.act_end_time, tca.act_number_of_periods')
                         ->join('tb_club_activities tca', 'tca.act_date = tcs.tcs_start_date AND tca.act_club_id = ' . $this->db->escape($clubId), 'left')
                         ->where('tcs.tcs_academic_year', $year)
                         ->where('tcs.tcs_academic_trem', $term)
@@ -176,6 +177,17 @@ class ClubModel extends Model
     {
         return $this->db->table('tb_club_record_activity')
                         ->where('trca_schedule_id', $scheduleId)
+                        ->get()
+                        ->getResult();
+    }
+
+    public function getAttendanceByScheduleIds(array $scheduleIds): array
+    {
+        if (empty($scheduleIds)) {
+            return [];
+        }
+        return $this->db->table('tb_club_record_activity')
+                        ->whereIn('trca_schedule_id', $scheduleIds)
                         ->get()
                         ->getResult();
     }
@@ -325,6 +337,88 @@ class ClubModel extends Model
                            ->where('trca_schedule_id', $scheduleId)
                            ->get()->getRow();
         return !empty($record);
+    }
+
+    // --- Club Objectives Methods ---
+
+    public function getObjectivesByClub(int $clubId): array
+    {
+        return $this->db->table('tb_club_objectives')
+                        ->where('club_id', $clubId)
+                        ->orderBy('objective_order', 'ASC')
+                        ->get()
+                        ->getResult();
+    }
+
+    public function getClubStudentProgress(int $clubId): array
+    {
+        $progressData = $this->db->table('tb_club_student_progress')
+                                 ->where('club_id', $clubId)
+                                 ->get()
+                                 ->getResult();
+
+        $progressMap = [];
+        foreach ($progressData as $progress) {
+            $progressMap[$progress->student_id][$progress->objective_id] = $progress;
+        }
+
+        return $progressMap;
+    }
+
+    public function saveStudentProgress(int $clubId, string $teacherId, ?array $progressData): bool
+    {
+        $members = $this->getClubMembers($clubId);
+        $objectives = $this->getObjectivesByClub($clubId);
+
+        if (empty($members) || empty($objectives)) {
+            return true; // Nothing to save
+        }
+
+        $batchData = [];
+        foreach ($members as $member) {
+            foreach ($objectives as $objective) {
+                $status = isset($progressData[$member->StudentID][$objective->objective_id]) ? 1 : 0;
+                
+                $batchData[] = [
+                    'club_id' => $clubId,
+                    'student_id' => $member->StudentID,
+                    'objective_id' => $objective->objective_id,
+                    'status' => $status,
+                    'updated_by' => $teacherId,
+                ];
+            }
+        }
+
+        if (empty($batchData)) {
+            return true;
+        }
+
+        // Use upsertBatch for batch insert/update
+        $builder = $this->db->table('tb_club_student_progress');
+        $builder->upsertBatch($batchData);
+
+        return $this->db->affectedRows() > 0;
+    }
+
+    // --- Club Objective Definition Methods ---
+
+    public function addObjective(array $data): bool
+    {
+        return $this->db->table('tb_club_objectives')->insert($data);
+    }
+
+    public function updateObjective(int $objectiveId, array $data): bool
+    {
+        return $this->db->table('tb_club_objectives')
+                        ->where('objective_id', $objectiveId)
+                        ->update($data);
+    }
+
+    public function deleteObjective(int $objectiveId): bool
+    {
+        // Also delete related student progress records
+        $this->db->table('tb_club_student_progress')->where('objective_id', $objectiveId)->delete();
+        return $this->db->table('tb_club_objectives')->where('objective_id', $objectiveId)->delete();
     }
 }
 

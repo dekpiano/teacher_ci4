@@ -6,6 +6,12 @@
 
 <?= $this->section('content') ?>
 
+<style>
+    select.form-select option {
+        color: black;
+    }
+</style>
+
 <div class="">
     <div class="row">
         <div class="col-md-12">
@@ -40,7 +46,16 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php $i = 1; ?>
+                                    <?php
+                                        $i = 1;
+                                        $statusColors = [
+                                            'มา' => 'bg-success text-white',
+                                            'ขาด' => 'bg-danger text-white',
+                                            'ลาป่วย' => 'bg-warning',
+                                            'ลากิจ' => 'bg-info',
+                                            'กิจกรรม' => 'bg-secondary text-white',
+                                        ];
+                                    ?>
                                     <?php foreach ($members as $member): ?>
                                         <tr>
                                             <td><?= $i++ ?></td>
@@ -51,8 +66,9 @@
                                             <td>
                                                 <?php
                                                     $currentStatus = $existingAttendance[$member->StudentID] ?? 'มา';
+                                                    $colorClass = $statusColors[$currentStatus] ?? '';
                                                 ?>
-                                                <select class="form-select" name="attendance[<?= esc($member->StudentID) ?>]">
+                                                <select id="attendance-select-<?= esc($member->StudentID) ?>" class="form-select <?= $colorClass ?>" name="attendance[<?= esc($member->StudentID) ?>]">
                                                     <option value="มา" <?= $currentStatus === 'มา' ? 'selected' : '' ?>>มา</option>
                                                     <option value="ขาด" <?= $currentStatus === 'ขาด' ? 'selected' : '' ?>>ขาด</option>
                                                     <option value="ลาป่วย" <?= $currentStatus === 'ลาป่วย' ? 'selected' : '' ?>>ลาป่วย</option>
@@ -79,6 +95,35 @@
             </div>
         </div>
     </div>
-</div>
+<?= $this->endSection() ?>
 
+<?= $this->section('scripts') ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const statusColors = {
+            'มา': 'bg-success text-white',
+            'ขาด': 'bg-danger text-white',
+            'ลาป่วย': 'bg-warning',
+            'ลากิจ': 'bg-info',
+            'กิจกรรม': 'bg-secondary text-white',
+        };
+
+        const allColorClasses = Object.values(statusColors);
+
+        document.querySelectorAll('.form-select[name^="attendance"]').forEach(selectElement => {
+            selectElement.addEventListener('change', function () {
+                // Remove all possible color classes
+                this.classList.remove(...allColorClasses);
+                
+                // Add the new color class
+                const selectedStatus = this.value;
+                const newColorClass = statusColors[selectedStatus];
+                if (newColorClass) {
+                    // The classes in newColorClass might be multiple, e.g., 'bg-success text-white'
+                    this.classList.add(...newColorClass.split(' '));
+                }
+            });
+        });
+    });
+</script>
 <?= $this->endSection() ?>

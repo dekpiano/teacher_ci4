@@ -10,15 +10,19 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title"><?= esc($title ?? 'จัดการชุมนุม') ?></h3>
-                    <div class="card-tools">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0"><?= esc($title ?? 'จัดการชุมนุม') ?></h3>
+                    <div class="btn-group">
                         <a href="<?= site_url('club/schedule/' . $club->club_id) ?>" class="btn btn-success btn-sm me-2">
                             <i class="bi bi-calendar-event"></i> บันทึกเวลากิจกรรม
+                        </a>
+                         <a href="<?= site_url('club/objectives/' . $club->club_id) ?>" class="btn btn-secondary btn-sm me-2">
+                            <i class="bi bi-list-check"></i> จุดประสงค์กิจกรรม
                         </a>
                         <a href="<?= site_url('club/activities/' . $club->club_id) ?>" class="btn btn-info btn-sm me-2">
                             <i class="bi bi-bar-chart-line"></i> รายงานกิจกรรม
                         </a>
+                       
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editClubModal">
                             <i class="bi bi-pencil-square"></i> แก้ไขข้อมูลชุมนุม
                         </button>
@@ -132,6 +136,13 @@
                             <option value="closed" <?= $club->club_status === 'closed' ? 'selected' : '' ?>>ปิดรับสมัคร</option>
                         </select>
                         <label for="club_status">สถานะชุมนุม</label>
+                    </div>
+                    <div class="form-floating mt-3">
+                        <select class="form-select" id="club_level" name="club_level" required>
+                            <option value="ม.ต้น" <?= (isset($club->club_level) && $club->club_level === 'ม.ต้น') ? 'selected' : '' ?>>ม.ต้น</option>
+                            <option value="ม.ปลาย" <?= (isset($club->club_level) && $club->club_level === 'ม.ปลาย') ? 'selected' : '' ?>>ม.ปลาย</option>
+                        </select>
+                        <label for="club_level">ระดับชั้น</label>
                     </div>
                 </div>
                 <div class="modal-footer">

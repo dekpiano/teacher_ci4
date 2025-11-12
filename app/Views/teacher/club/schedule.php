@@ -22,6 +22,7 @@
                                     <th>สัปดาห์ที่</th>
                                     <th>วันที่</th>
                                     <th>หัวข้อกิจกรรมที่บันทึกแล้ว</th>
+                                    <th>จำนวนคาบ</th>
                                     <th>สถานะบันทึกเข้าเรียน</th>
                                     <th style="width: 350px;">จัดการ</th>
                                 </tr>
@@ -47,6 +48,9 @@
                                             <?php endif; ?>
                                         </td>
                                         <td>
+                                            <?= esc($schedule->act_number_of_periods ?? 'N/A') ?>
+                                        </td>
+                                        <td>
                                             <?php if ($schedule->attendance_recorded): ?>
                                                 <span class="badge bg-success">บันทึกแล้ว</span>
                                             <?php else: ?>
@@ -57,7 +61,7 @@
                                             <div class="btn-group" role="group">
                                                 <?php $isDateNotSet = ($schedule->tcs_start_date == '0000-00-00' || empty($schedule->tcs_start_date)); ?>
                                                 <?php $isActivityNotRecorded = empty($schedule->act_name); ?>
-                                                <?php $isAttendanceDisabled = $isDateNotSet || $isActivityNotRecorded; ?>
+                                                <?php $isAttendanceDisabled = $isDateNotSet; // Attendance should be possible once date is set, even without activity details ?>
                                                 <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#activityModal"
                                                     data-date="<?= esc($schedule->tcs_start_date) ?>"
                                                     data-name="<?= esc($schedule->act_name ?? '') ?>"
@@ -65,6 +69,7 @@
                                                     data-location="<?= esc($schedule->act_location ?? '') ?>"
                                                     data-start-time="<?= esc($schedule->act_start_time ?? '') ?>"
                                                     data-end-time="<?= esc($schedule->act_end_time ?? '') ?>"
+                                                    data-periods="<?= esc($schedule->act_number_of_periods ?? '1') ?>"
                                                     <?= $isDateNotSet ? 'disabled' : '' ?>>
                                                     <i class="bi bi-pencil-square"></i> บันทึก/แก้ไขกิจกรรม
                                                 </button>
@@ -104,9 +109,15 @@
                         <label for="modal_activity_name" class="form-label">ชื่อกิจกรรม <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="modal_activity_name" name="activity_name" placeholder="ระบุชื่อกิจกรรมที่ทำในวันนี้" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="modal_activity_location" class="form-label">สถานที่จัดกิจกรรม</label>
-                        <input type="text" class="form-control" id="modal_activity_location" name="activity_location" placeholder="เช่น ห้อง 123, สนามฟุตบอล">
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label for="modal_activity_location" class="form-label">สถานที่จัดกิจกรรม</label>
+                            <input type="text" class="form-control" id="modal_activity_location" name="activity_location" placeholder="เช่น ห้อง 123, สนามฟุตบอล">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="modal_act_number_of_periods" class="form-label">จำนวนคาบที่สอน</label>
+                            <input type="number" class="form-control" id="modal_act_number_of_periods" name="act_number_of_periods" value="1" min="1">
+                        </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -145,6 +156,7 @@
             var location = button.data('location');
             var startTime = button.data('start-time');
             var endTime = button.data('end-time');
+            var periods = button.data('periods');
 
             var modal = $(this);
             modal.find('#modal_activity_date').val(date);
@@ -153,6 +165,7 @@
             modal.find('#modal_activity_location').val(location);
             modal.find('#modal_activity_start_time').val(startTime);
             modal.find('#modal_activity_end_time').val(endTime);
+            modal.find('#modal_act_number_of_periods').val(periods);
             
             var formattedDate = new Date(date).toLocaleDateString('th-TH', {
                 day: 'numeric',

@@ -46,6 +46,12 @@ $routes->get('login/googleCallback', 'Login::googleCallback');
         $routes->post('createActivity/(:num)', 'ClubController::createActivity/$1');
         $routes->post('updateActivity/(:num)/(:num)', 'ClubController::updateActivity/$1/$2');
         $routes->post('deleteActivity/(:num)/(:num)', 'ClubController::deleteActivity/$1/$2');
+
+        // Objectives Routes
+        $routes->get('objectives/(:num)', 'ClubController::objectives/$1');
+        $routes->post('saveObjectives/(:num)', 'ClubController::saveObjectives/$1');
+        $routes->post('saveObjectiveDefinition/(:num)', 'ClubController::saveObjectiveDefinition/$1');
+        $routes->get('deleteObjective/(:num)/(:num)', 'ClubController::deleteObjective/$1/$2');
     });
 
     // Assessment Routes

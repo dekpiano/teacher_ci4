@@ -72,7 +72,7 @@ class ClubController extends BaseController
 
         // Check if the teacher has already created a club for the current year and term
         $hasClubForCurrentYear = false;
-        if (!empty($data['clubs'])) {
+        if (empty($data['clubs'])) {
             foreach ($data['clubs'] as $club) {
                 if ($club->club_year == $this->currentAcademicYear && $club->club_trem == $this->currentTerm) {
                     $hasClubForCurrentYear = true;
@@ -102,6 +102,7 @@ class ClubController extends BaseController
             'club_name' => $this->request->getPost('club_name'),
             'club_description' => $this->request->getPost('club_description'),
             'club_max_participants' => $this->request->getPost('club_max_participants'),
+            'club_level' => $this->request->getPost('club_level'),
             'club_faculty_advisor' => $teacherId,
             'club_year' => $this->currentAcademicYear,
             'club_trem' => $this->currentTerm,
@@ -139,6 +140,7 @@ class ClubController extends BaseController
             'club_description' => $this->request->getPost('club_description'),
             'club_max_participants' => $this->request->getPost('club_max_participants'),
             'club_status' => $this->request->getPost('club_status'),
+            'club_level' => $this->request->getPost('club_level'),
         ];
 
         if ($this->clubModel->update($clubId, $data)) {
@@ -312,6 +314,7 @@ class ClubController extends BaseController
             'act_location' => $this->request->getPost('activity_location'),
             'act_start_time' => $this->request->getPost('activity_start_time'),
             'act_end_time' => $this->request->getPost('activity_end_time'),
+            'act_number_of_periods' => $this->request->getPost('act_number_of_periods'),
         ];
 
         // Basic validation
@@ -452,9 +455,65 @@ class ClubController extends BaseController
             return redirect()->to('club');
         }
 
-        $data['title'] = "รายงานกิจกรรมชุมนุม: " . $club->club_name;
+        $data['title'] = "รายงานการบันทึกเวลาเรียน: " . $club->club_name;
         $data['club'] = $club;
-        $data['activities'] = $this->clubModel->getActivitiesByClub($clubId);
+        $data['members'] = $this->clubModel->getClubMembers($clubId);
+        
+        $schedules = $this->clubModel->getSchedulesByYear($club->club_year, $club->club_trem, $clubId);
+        
+        // Group schedules by month
+        $schedulesByMonth = [];
+        foreach ($schedules as $schedule) {
+            if ($schedule->tcs_start_date != '0000-00-00') {
+                $month = date('Y-m', strtotime($schedule->tcs_start_date));
+                $schedulesByMonth[$month][] = $schedule;
+            }
+        }
+        ksort($schedulesByMonth);
+        $data['schedulesByMonth'] = $schedulesByMonth;
+        $data['schedules'] = $schedules;
+
+        // Fetch all attendance records for the schedules
+        $scheduleIds = array_map(function($s) { return $s->tcs_schedule_id; }, $schedules);
+        $allAttendance = [];
+        if (!empty($scheduleIds)) {
+            $allAttendance = $this->clubModel->getAttendanceByScheduleIds($scheduleIds);
+        }
+        
+        // Create a map for easy lookup: [student_id][schedule_id] => status
+        $attendanceMap = [];
+        foreach ($allAttendance as $record) {
+            $statusMap = [
+                'มา' => !empty($record->tcra_ma) ? explode(',', $record->tcra_ma) : [],
+                'ขาด' => !empty($record->tcra_khad) ? explode(',', $record->tcra_khad) : [],
+                'ลาป่วย' => !empty($record->tcra_rapwy) ? explode(',', $record->tcra_rapwy) : [],
+                'ลากิจ' => !empty($record->tcra_rakic) ? explode(',', $record->tcra_rakic) : [],
+                'กิจกรรม' => !empty($record->tcra_kickrrm) ? explode(',', $record->tcra_kickrrm) : [],
+            ];
+
+            foreach ($statusMap as $status => $studentIds) {
+                foreach ($studentIds as $studentId) {
+                    $attendanceMap[$studentId][$record->trca_schedule_id] = $status;
+                }
+            }
+        }
+        $data['attendanceMap'] = $attendanceMap;
+
+        // --- Fetch data for Objectives Report ---
+        $data['club_objectives'] = $this->clubModel->getObjectivesByClub($clubId);
+        $progressData = $this->clubModel->getClubStudentProgress($clubId);
+        
+        // Create a map for easy lookup: [student_id][objective_id] => true/false
+        $objectiveProgressMap = [];
+        if (!empty($progressData)) {
+            foreach ($progressData as $studentId => $objectives) {
+                foreach ($objectives as $objectiveId => $status) {
+                    // Assuming status '1' means passed
+                    $objectiveProgressMap[$studentId][$objectiveId] = (isset($status->status) && $status->status == 1);
+                }
+            }
+        }
+        $data['objectiveProgressMap'] = $objectiveProgressMap;
 
         return view('teacher/club/activities', $data);
     }
@@ -569,5 +628,126 @@ class ClubController extends BaseController
         }
 
         return redirect()->to('club/activities/' . $clubId);
+    }
+
+    public function objectives($clubId)
+    {
+        $session = session();
+        if (!$session->get('isLoggedIn')) {
+            return redirect()->to('login');
+        }
+
+        $teacherId = $this->getTeacherId();
+        $club = $this->clubModel->find($clubId);
+
+        if (!$this->isClubAdvisor($teacherId, $club)) {
+            session()->setFlashdata('error', 'ไม่พบชุมนุมหรือคุณไม่มีสิทธิ์จัดการชุมนุมนี้');
+            return redirect()->to('club');
+        }
+
+        $data['title'] = "จุดประสงค์กิจกรรม: " . $club->club_name;
+        $data['club'] = $club;
+        $data['members'] = $this->clubModel->getClubMembers($clubId);
+        $data['objectives'] = $this->clubModel->getObjectivesByClub($clubId);
+        $data['progress'] = $this->clubModel->getClubStudentProgress($clubId);
+
+        return view('teacher/club/objectives', $data);
+    }
+
+    public function saveObjectives($clubId)
+    {
+        $session = session();
+        if (!$session->get('isLoggedIn')) {
+            return redirect()->to('login');
+        }
+
+        $teacherId = $this->getTeacherId();
+        $club = $this->clubModel->find($clubId);
+
+        if (!$this->isClubAdvisor($teacherId, $club)) {
+            session()->setFlashdata('error', 'ไม่พบชุมนุมหรือคุณไม่มีสิทธิ์จัดการชุมนุมนี้');
+            return redirect()->to('club');
+        }
+
+        $progressData = $this->request->getPost('progress');
+        
+        if ($this->clubModel->saveStudentProgress($clubId, $teacherId, $progressData)) {
+            session()->setFlashdata('success', 'บันทึกข้อมูลจุดประสงค์กิจกรรมสำเร็จ');
+        } else {
+            session()->setFlashdata('error', 'ไม่สามารถบันทึกข้อมูลได้');
+        }
+
+        return redirect()->to('club/objectives/' . $clubId);
+    }
+
+    public function saveObjectiveDefinition($clubId)
+    {
+        $session = session();
+        if (!$session->get('isLoggedIn')) {
+            return redirect()->to('login');
+        }
+
+        $teacherId = $this->getTeacherId();
+        $club = $this->clubModel->find($clubId);
+
+        if (!$this->isClubAdvisor($teacherId, $club)) {
+            session()->setFlashdata('error', 'ไม่พบชุมนุมหรือคุณไม่มีสิทธิ์จัดการชุมนุมนี้');
+            return redirect()->to('club');
+        }
+
+        $objectiveId = $this->request->getPost('objective_id');
+        $objectiveName = $this->request->getPost('objective_name');
+        $objectiveDescription = $this->request->getPost('objective_description');
+        $objectiveOrder = $this->request->getPost('objective_order');
+
+        $data = [
+            'club_id' => $clubId,
+            'objective_name' => $objectiveName,
+            'objective_description' => $objectiveDescription,
+            'objective_order' => $objectiveOrder,
+            'created_by' => $teacherId, // Assuming created_by is the current teacher
+        ];
+
+        if (empty($objectiveId)) {
+            // Add new objective
+            if ($this->clubModel->addObjective($data)) {
+                session()->setFlashdata('success', 'เพิ่มจุดประสงค์สำเร็จ');
+            } else {
+                session()->setFlashdata('error', 'ไม่สามารถเพิ่มจุดประสงค์ได้');
+            }
+        } else {
+            // Update existing objective
+            if ($this->clubModel->updateObjective($objectiveId, $data)) {
+                session()->setFlashdata('success', 'แก้ไขจุดประสงค์สำเร็จ');
+            } else {
+                session()->setFlashdata('error', 'ไม่สามารถแก้ไขจุดประสงค์ได้');
+            }
+        }
+
+        return redirect()->to('club/objectives/' . $clubId);
+    }
+
+    public function deleteObjective($clubId, $objectiveId)
+    {
+        $session = session();
+        if (!$session->get('isLoggedIn')) {
+            return redirect()->to('login');
+        }
+
+        $teacherId = $this->getTeacherId();
+        $club = $this->clubModel->find($clubId);
+
+        if (!$this->isClubAdvisor($teacherId, $club)) {
+            session()->setFlashdata('error', 'ไม่พบชุมนุมหรือคุณไม่มีสิทธิ์จัดการชุมนุมนี้');
+            return redirect()->to('club');
+        }
+
+        if ($this->clubModel->deleteObjective($objectiveId)) {
+            session()->setFlashdata('success', 'ลบจุดประสงค์สำเร็จ');
+        } else {
+            session()->setFlashdata('error', 'ไม่สามารถลบจุดประสงค์ได้');
+        }
+
+        return redirect()->to('club/objectives/' . $clubId);
     }
 }

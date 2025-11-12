@@ -92,9 +92,17 @@
                         <textarea class="form-control" id="club_description" name="club_description" placeholder="ระบุคำอธิบายโดยย่อ" style="height: 100px"></textarea>
                         <label for="club_description">คำอธิบายชุมนุม</label>
                     </div>
-                    <div class="form-floating">
+                    <div class="form-floating mb-3">
                         <input type="number" class="form-control" id="club_max_participants" name="club_max_participants" placeholder="จำนวนรับสูงสุด (คน)" value="50" required>
                         <label for="club_max_participants">จำนวนรับสูงสุด (คน)</label>
+                    </div>
+                    <div class="form-floating">
+                        <select class="form-select" id="club_level" name="club_level" required>
+                            <option value="" selected disabled>-- เลือกระดับชั้น --</option>
+                            <option value="ม.ต้น">ม.ต้น</option>
+                            <option value="ม.ปลาย">ม.ปลาย</option>
+                        </select>
+                        <label for="club_level">ระดับชั้น</label>
                     </div>
                 </div>
                 <div class="modal-footer">
