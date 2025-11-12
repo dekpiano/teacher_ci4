@@ -32,12 +32,26 @@
                         <div class="row g-4">
                             <?php foreach ($clubs as $club): ?>
                                 <div class="col-md-6 col-lg-4">
-                                    <div class="card h-100">
+                                    <div class="card h-100 ">
                                         <div class="card-body d-flex flex-column">
                                             <div class="d-flex justify-content-between align-items-start mb-2">
                                                 <h5 class="card-title mb-0"><?= esc($club->club_name) ?></h5>
-                                                <?php $color = $club->club_status === 'open' ? 'text-bg-success' : 'text-bg-danger' ?>
-                                                <span class="badge <?= $color ?> ms-2"><?= $club->club_status === 'open' ? 'เปิดรับสมัคร' : 'ปิดรับสมัคร' ?></span>
+                                                <?php
+                                                $currentDate = date('Y-m-d');
+                                                $statusText = 'ปิดรับสมัคร'; // Default
+                                                $color = 'text-bg-danger'; // Default
+
+                                                if ($registrationStartDate && $registrationEndDate) {
+                                                    if ($currentDate < $registrationStartDate) {
+                                                        $statusText = 'ยังไม่เปิดรับสมัคร';
+                                                        $color = 'text-bg-warning';
+                                                    } elseif ($currentDate >= $registrationStartDate && $currentDate <= $registrationEndDate) {
+                                                        $statusText = 'เปิดรับสมัคร';
+                                                        $color = 'text-bg-success';
+                                                    }
+                                                }
+                                                ?>
+                                                <span class="badge <?= $color ?> ms-2"><?= $statusText ?></span>
                                             </div>
                                             <p class="card-text text-muted small">
                                                 ปีการศึกษา <?= esc($club->club_year) ?> / <?= esc($club->club_trem) ?>

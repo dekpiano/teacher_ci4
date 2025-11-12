@@ -35,6 +35,26 @@ class ClubController extends BaseController
         }
     }
 
+    private function _getClubStatus(): string
+    {
+        $clubOnOffSettings = $this->clubModel->getClubOnOffSettings($this->currentAcademicYear, $this->currentTerm);
+        $currentDate = date('Y-m-d');
+
+        if ($clubOnOffSettings) {
+            $regisStart = $clubOnOffSettings->c_onoff_regisstart;
+            $regisEnd = $clubOnOffSettings->c_onoff_regisend;
+
+            if ($currentDate < $regisStart) {
+                return 'pending'; // ยังไม่เปิดรับสมัคร
+            } elseif ($currentDate >= $regisStart && $currentDate <= $regisEnd) {
+                return 'open'; // เปิดรับสมัคร
+            } else {
+                return 'closed'; // ปิดรับสมัคร
+            }
+        }
+        return 'closed'; // Default to closed if no settings found
+    }
+
     private function getTeacherId()
     {
         $session = session();
@@ -70,9 +90,13 @@ class ClubController extends BaseController
         $data['currentAcademicYear'] = $this->currentAcademicYear;
         $data['currentTerm'] = $this->currentTerm;
 
+        $clubOnOffSettings = $this->clubModel->getClubOnOffSettings($this->currentAcademicYear, $this->currentTerm);
+        $data['registrationStartDate'] = $clubOnOffSettings ? $clubOnOffSettings->c_onoff_regisstart : null;
+        $data['registrationEndDate'] = $clubOnOffSettings ? $clubOnOffSettings->c_onoff_regisend : null;
+
         // Check if the teacher has already created a club for the current year and term
         $hasClubForCurrentYear = false;
-        if (empty($data['clubs'])) {
+        if (!empty($data['clubs'])) { // Corrected condition: check if clubs array is NOT empty
             foreach ($data['clubs'] as $club) {
                 if ($club->club_year == $this->currentAcademicYear && $club->club_trem == $this->currentTerm) {
                     $hasClubForCurrentYear = true;
@@ -106,7 +130,7 @@ class ClubController extends BaseController
             'club_faculty_advisor' => $teacherId,
             'club_year' => $this->currentAcademicYear,
             'club_trem' => $this->currentTerm,
-            'club_status' => 'open', // Default status
+            'club_status' => $this->_getClubStatus(), // Determine status dynamically
             'club_established_date' => date('Y-m-d'),
         ];
 

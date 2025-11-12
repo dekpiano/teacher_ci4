@@ -420,5 +420,14 @@ class ClubModel extends Model
         $this->db->table('tb_club_student_progress')->where('objective_id', $objectiveId)->delete();
         return $this->db->table('tb_club_objectives')->where('objective_id', $objectiveId)->delete();
     }
+
+    public function getClubOnOffSettings(string $year, string $term): ?object
+    {
+        return $this->db->table('tb_club_onoff')
+                        ->where('c_onoff_year', $year)
+                        ->where('c_onoff_term', $term)
+                        ->get()
+                        ->getRow();
+    }
 }
 
