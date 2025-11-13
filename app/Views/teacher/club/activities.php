@@ -10,8 +10,11 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title"><?= esc($title ?? 'รายงานการบันทึกเวลาเรียน') ?></h3>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title">รายงานผลการบันทึกเวลาเรียน</h3>
+                    <a href="<?= site_url('club/printActivitiesReport/' . $club->club_id) ?>" target="_blank" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-printer"></i> พิมพ์รายงาน
+                    </a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -28,6 +31,7 @@
                                 <tr class="text-center">
                                     <th rowspan="2" class="align-middle">เลขที่</th>
                                     <th rowspan="2" class="align-middle" style="min-width: 200px;">ชื่อ - นามสกุล</th>
+                                    <th rowspan="2" class="align-middle">ชั้น</th> <!-- Added Class column -->
                                     <?php foreach ($schedulesByMonth as $month => $schedulesInMonth): ?>
                                         <?php
                                             $englishMonthName = date('F', strtotime($month));
@@ -63,6 +67,7 @@
                                         <tr>
                                             <td class="text-center"><?= $i++ ?></td>
                                             <td><?= esc($member->StudentPrefix . $member->StudentFirstName . ' ' . $member->StudentLastName) ?></td>
+                                            <td class="text-center"><?= esc($member->StudentClass) ?></td> <!-- Added Class data -->
                                             <?php 
                                                 $totalPresent = 0;
                                                 foreach ($schedulesByMonth as $month => $schedulesInMonth):
@@ -101,7 +106,7 @@
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="<?= 2 + ($totalDisplayedSchedules ?? 0) + 2 ?>" class="text-center">ไม่พบสมาชิกในชุมนุมนี้</td>
+                                        <td colspan="<?= 3 + ($totalDisplayedSchedules ?? 0) + 2 ?>" class="text-center">ไม่พบสมาชิกในชุมนุมนี้</td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>

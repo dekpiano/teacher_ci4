@@ -246,7 +246,7 @@ class ClubModel extends Model
     {
         return $this->db->table('tb_club_activities')
                         ->where('act_club_id', $clubId)
-                        ->orderBy('activity_date', 'DESC')
+                        ->orderBy('act_date', 'DESC')
                         ->get()
                         ->getResult();
     }
@@ -428,6 +428,27 @@ class ClubModel extends Model
                         ->where('c_onoff_term', $term)
                         ->get()
                         ->getRow();
+    }
+
+    public function getPersonnelFullName(string $pers_id)
+    {
+        $db = db_connect('personnel'); // Connect to the personnel database
+        return $db->table('tb_personnel')
+                    ->select('pers_prefix, pers_firstname, pers_lastname')
+                    ->where('pers_id', $pers_id)
+                    ->get()
+                    ->getRowArray();
+    }
+
+    public function getAdminPersonnelIdByRoleName(string $roleName)
+    {
+        $db = db_connect('default'); // Assuming 'default' is the DBGroup for skjacth_academic
+        $result = $db->table('tb_admin_rloes')
+                       ->select('admin_rloes_userid')
+                       ->like('admin_rloes_nanetype', $roleName, 'both') // Use LIKE to find role in a combined string
+                       ->get()
+                       ->getRowArray();
+        return $result ? $result['admin_rloes_userid'] : null;
     }
 }
 

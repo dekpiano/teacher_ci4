@@ -525,6 +525,7 @@ class ClubController extends BaseController
 
         // --- Fetch data for Objectives Report ---
         $data['club_objectives'] = $this->clubModel->getObjectivesByClub($clubId);
+       
         $progressData = $this->clubModel->getClubStudentProgress($clubId);
         
         // Create a map for easy lookup: [student_id][objective_id] => true/false
@@ -540,6 +541,197 @@ class ClubController extends BaseController
         $data['objectiveProgressMap'] = $objectiveProgressMap;
 
         return view('teacher/club/activities', $data);
+    }
+
+    public function printActivitiesReport($clubId)
+    {
+        $session = session();
+        if (!$session->get('isLoggedIn')) {
+            return redirect()->to('login');
+        }
+
+        $teacherId = $this->getTeacherId();
+        $club = $this->clubModel->find($clubId);
+
+        if (!$this->isClubAdvisor($teacherId, $club)) {
+            session()->setFlashdata('error', 'ไม่พบชุมนุมหรือคุณไม่มีสิทธิ์จัดการชุมนุมนี้');
+            return redirect()->to('club');
+        }
+
+        $data['club'] = $club;
+        $data['members'] = $this->clubModel->getClubMembers($clubId);
+        
+        $schedules = $this->clubModel->getSchedulesByYear($club->club_year, $club->club_trem, $clubId);
+        
+        // Group schedules by month
+        $schedulesByMonth = [];
+        foreach ($schedules as $schedule) {
+            if ($schedule->tcs_start_date != '0000-00-00') {
+                $month = date('Y-m', strtotime($schedule->tcs_start_date));
+                $schedulesByMonth[$month][] = $schedule;
+            }
+        }
+        ksort($schedulesByMonth);
+        $data['schedulesByMonth'] = $schedulesByMonth;
+        $data['schedules'] = $schedules;
+
+        // Fetch all attendance records for the schedules
+        $scheduleIds = array_map(function($s) { return $s->tcs_schedule_id; }, $schedules);
+        $allAttendance = [];
+        if (!empty($scheduleIds)) {
+            $allAttendance = $this->clubModel->getAttendanceByScheduleIds($scheduleIds);
+        }
+        
+        // Create a map for easy lookup: [student_id][schedule_id] => status
+        $attendanceMap = [];
+        foreach ($allAttendance as $record) {
+            $statusMap = [
+                'มา' => !empty($record->tcra_ma) ? explode(',', $record->tcra_ma) : [],
+                'ขาด' => !empty($record->tcra_khad) ? explode(',', $record->tcra_khad) : [],
+                'ลาป่วย' => !empty($record->tcra_rapwy) ? explode(',', $record->tcra_rapwy) : [],
+                'ลากิจ' => !empty($record->tcra_rakic) ? explode(',', $record->tcra_rakic) : [],
+                'กิจกรรม' => !empty($record->tcra_kickrrm) ? explode(',', $record->tcra_kickrrm) : [],
+            ];
+
+            foreach ($statusMap as $status => $studentIds) {
+                foreach ($studentIds as $studentId) {
+                    $attendanceMap[$studentId][$record->trca_schedule_id] = $status;
+                }
+            }
+        }
+        $data['attendanceMap'] = $attendanceMap;
+
+        // --- Fetch data for Objectives Report ---
+        $data['club_objectives'] = $this->clubModel->getObjectivesByClub($clubId);
+        $progressData = $this->clubModel->getClubStudentProgress($clubId);
+        
+        // Create a map for easy lookup: [student_id][objective_id] => true/false
+        $objectiveProgressMap = [];
+        if (!empty($progressData)) {
+            foreach ($progressData as $studentId => $objectives) {
+                foreach ($objectives as $objectiveId => $status) {
+                    // Assuming status '1' means passed
+                    $objectiveProgressMap[$studentId][$objectiveId] = (isset($status->status) && $status->status == 1);
+                }
+            }
+        }
+        $data['objectiveProgressMap'] = $objectiveProgressMap;
+
+        // --- Calculate Summary for Activity Participation ---
+        $totalPassedStudents = 0;
+        $totalFailedStudents = 0;
+        $totalLongAbsenceStudents = 0; // Placeholder for now
+        $totalDismissedStudents = 0; // Placeholder for now
+
+        $totalPossibleSchedules = 0;
+        foreach ($schedulesByMonth as $schedulesInMonth) {
+            $totalPossibleSchedules += count($schedulesInMonth);
+        }
+        $totalObjectivesCount = count($data['club_objectives']);
+
+        foreach ($data['members'] as $member) {
+            $studentId = $member->StudentID;
+            $totalPresent = 0;
+            foreach ($schedules as $schedule) {
+                $status = $attendanceMap[$studentId][$schedule->tcs_schedule_id] ?? '-';
+                if ($status === 'มา') {
+                    $totalPresent++;
+                }
+            }
+
+            $attendancePercentage = ($totalPossibleSchedules > 0) ? ($totalPresent / $totalPossibleSchedules) * 100 : 0;
+
+            $passedAllObjectives = true;
+            if ($totalObjectivesCount > 0) {
+                $passedCount = 0;
+                foreach ($data['club_objectives'] as $objective) {
+                    if (isset($objectiveProgressMap[$studentId][$objective->objective_id]) && $objectiveProgressMap[$studentId][$objective->objective_id]) {
+                        $passedCount++;
+                    }
+                }
+                if ($passedCount !== $totalObjectivesCount) {
+                    $passedAllObjectives = false;
+                }
+            } else {
+                // If no objectives are defined, consider them passed by default for objective criteria
+                $passedAllObjectives = true;
+            }
+
+            // Determine overall status
+            if ($attendancePercentage >= 80 && $passedAllObjectives) {
+                $totalPassedStudents++;
+            } else {
+                $totalFailedStudents++;
+            }
+
+            // Basic derivation for long absence and dismissed (can be refined with user input)
+            if ($attendancePercentage < 50 && $attendancePercentage > 0) {
+                $totalLongAbsenceStudents++;
+            } elseif ($attendancePercentage == 0) {
+                $totalDismissedStudents++;
+            }
+        }
+
+        $data['summaryParticipation'] = [
+            'totalStudents' => count($data['members']),
+            'passed' => $totalPassedStudents,
+            'failed' => $totalFailedStudents,
+            'longAbsence' => $totalLongAbsenceStudents,
+            'dismissed' => $totalDismissedStudents,
+        ];
+
+        // --- Fetch Signatory Names for Page 4 ---
+        $advisorIds = explode('|', $club->club_faculty_advisor);
+        $advisorNames = [];
+        foreach ($advisorIds as $id) {
+            if (empty(trim($id))) continue;
+            $info = $this->clubModel->getPersonnelFullName($id);
+            if ($info) {
+                $advisorNames[] = $info['pers_prefix'] . $info['pers_firstname'] . ' ' . $info['pers_lastname'];
+            }
+        }
+
+        // ผู้ดูแลกิจกรรม (All advisors)
+        if (!empty($advisorNames)) {
+            $data['evaluatorName'] = implode(', ', $advisorNames);
+        } else {
+            // Fallback to current teacher if no advisors are listed
+            $teacherInfo = $this->clubModel->getPersonnelFullName($teacherId);
+            $data['evaluatorName'] = $teacherInfo ? $teacherInfo['pers_prefix'] . $teacherInfo['pers_firstname'] . ' ' . $teacherInfo['pers_lastname'] : '...........................................';
+        }
+
+        // หัวหน้ากิจกรรม (First advisor)
+        if (!empty($advisorNames)) {
+            $data['activityHeadName'] = $advisorNames[0];
+        } else {
+            // Fallback to the same as evaluator if list is empty
+            $data['activityHeadName'] = $data['evaluatorName'];
+        }
+
+        // หัวหน้างานกิจกรรมพัฒนาผู้เรียน
+        $activityDevHeadId = $this->clubModel->getAdminPersonnelIdByRoleName('งานกิจกรรมพัฒนาผู้เรียน');
+        $activityDevHeadInfo = $activityDevHeadId ? $this->clubModel->getPersonnelFullName($activityDevHeadId) : null;
+        $data['activityDevHeadName'] = $activityDevHeadInfo ? $activityDevHeadInfo['pers_prefix'] . $activityDevHeadInfo['pers_firstname'] . ' ' . $activityDevHeadInfo['pers_lastname'] : '...........................................';
+
+        // หัวหน้าฝ่ายวัดผล
+        $measurementHeadId = $this->clubModel->getAdminPersonnelIdByRoleName('หัวหน้าวิชาการ');
+        $measurementHeadInfo = $measurementHeadId ? $this->clubModel->getPersonnelFullName($measurementHeadId) : null;
+        $data['measurementHeadName'] = $measurementHeadInfo ? $measurementHeadInfo['pers_prefix'] . $measurementHeadInfo['pers_firstname'] . ' ' . $measurementHeadInfo['pers_lastname'] : '...........................................';
+
+        // รองผู้อำนวยการฝ่ายวิชาการ
+        $deputyDirectorAcademicId = $this->clubModel->getAdminPersonnelIdByRoleName('รองวิชาการ');
+        $deputyDirectorAcademicInfo = $deputyDirectorAcademicId ? $this->clubModel->getPersonnelFullName($deputyDirectorAcademicId) : null;
+        $data['deputyDirectorAcademicName'] = $deputyDirectorAcademicInfo ? $deputyDirectorAcademicInfo['pers_prefix'] . $deputyDirectorAcademicInfo['pers_firstname'] . ' ' . $deputyDirectorAcademicInfo['pers_lastname'] : '...........................................';
+
+        // ผู้อำนวยการสถานศึกษา
+        $directorId = $this->clubModel->getAdminPersonnelIdByRoleName('ผู้บริหาร');
+        $directorInfo = $directorId ? $this->clubModel->getPersonnelFullName($directorId) : null;
+        $data['directorName'] = $directorInfo ? $directorInfo['pers_prefix'] . $directorInfo['pers_firstname'] . ' ' . $directorInfo['pers_lastname'] : '...........................................';
+
+        // Fetch activities for the new page
+        $data['activities'] = $this->clubModel->getActivitiesByClub($clubId);
+
+        return view('teacher/club/print_activities', $data);
     }
 
     public function createActivity($clubId)

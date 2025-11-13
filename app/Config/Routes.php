@@ -46,6 +46,7 @@ $routes->get('login/googleCallback', 'Login::googleCallback');
         $routes->post('createActivity/(:num)', 'ClubController::createActivity/$1');
         $routes->post('updateActivity/(:num)/(:num)', 'ClubController::updateActivity/$1/$2');
         $routes->post('deleteActivity/(:num)/(:num)', 'ClubController::deleteActivity/$1/$2');
+        $routes->get('printActivitiesReport/(:num)', 'ClubController::printActivitiesReport/$1'); // New route for printing
 
         // Objectives Routes
         $routes->get('objectives/(:num)', 'ClubController::objectives/$1');
