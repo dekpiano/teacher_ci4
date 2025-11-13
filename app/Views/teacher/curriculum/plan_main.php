@@ -56,26 +56,21 @@
 
             <?php
             // --- Dashboard Data Calculation ---
-            $typeplan_map_for_dashboard = [
-                'บันทึกตรวจใช้แผน' => 'บันทึกตรวจใช้แผน',
-                'แบบตรวจแผนการจัดการเรียนรู้' => 'แบบตรวจแผนฯ',
-                'โครงการสอน' => 'โครงการสอน',
-                'แผนการสอนหน้าเดียว' => 'แผนการสอน',
-                'บันทึกหลังสอน' => 'บันทึกหลังสอน'
-            ];
+            // Use active plan types passed from the controller
+            $all_plan_types = array_column($activePlanTypes, 'type_name');
 
-            $total_plans = count($planNew) * count($typeplan_map_for_dashboard);
+            $total_plans = count($planNew) * count($all_plan_types); // This might need adjustment based on actual required types per subject
             $submitted_count = 0;
             $dept_head_approved_count = 0;
             $curriculum_head_approved_count = 0;
             $revision_count = 0;
-            $plan_type_submitted_count = array_fill_keys(array_keys($typeplan_map_for_dashboard), 0);
+            $plan_type_submitted_count = array_fill_keys($all_plan_types, 0); // Initialize with fetched types
 
             foreach ($plan as $p) {
                 if (!empty($p->seplan_file)) {
                     $submitted_count++;
-                    if (isset($plan_type_submitted_count[$p->seplan_typeplan])) {
-                        $plan_type_submitted_count[$p->seplan_typeplan]++;
+                    if (isset($plan_type_submitted_count[$p->type_name])) { // Use type_name
+                        $plan_type_submitted_count[$p->type_name]++;
                     }
                 }
                 if (trim($p->seplan_status1) == 'ผ่าน') {
@@ -111,22 +106,15 @@
             </div>
 
             <?php
-            $planData = [];
+            $groupedPlans = [];
             foreach ($plan as $p) {
-                $key = $p->seplan_coursecode . '|' . $p->seplan_typeplan . '|' . $p->seplan_year . '|' . $p->seplan_term;
-                $planData[$key] = $p;
+                $groupedPlans[$p->seplan_coursecode][] = $p;
             }
-            $typeplan_map = [
-                'บันทึกตรวจใช้แผน' => 'บันทึกตรวจใช้แผน',
-                'แบบตรวจแผนการจัดการเรียนรู้' => 'แบบตรวจแผนการจัดการเรียนรู้',
-                'โครงการสอน' => 'โครงการสอน',
-                'แผนการสอนหน้าเดียว' => 'แผนการสอนหน้าเดียว',
-                'บันทึกหลังสอน' => 'บันทึกหลังสอน'
-            ];
+            // No need for $typeplan_map anymore, we iterate directly over groupedPlans
             ?>
 
             <div class="row" id="subject-cards-container"> 
-                <?php foreach ($planNew as $v_planNew) : ?>
+                <?php foreach ($planNew as $v_planNew) : // This loop is for course headers ?>
                     <div class="col-12 mb-4" data-course-code="<?= esc($v_planNew->seplan_coursecode) ?>" data-is-main-subject="<?= esc($v_planNew->seplan_is_main_subject ?? 0) ?>">
                         <div class="card">
                             <div class="card-header bg-light">
@@ -147,22 +135,19 @@
                                         </tr>
                                     </thead>
                                     <tbody class="table-border-bottom-0">
-                                        <?php foreach ($typeplan_map as $db_val => $display_val) : ?>
-                                            <?php
-                                            $lookupKey = $v_planNew->seplan_coursecode . '|' . $db_val . '|' . $v_planNew->seplan_year . '|' . $v_planNew->seplan_term;
-                                            $v_plan = $planData[$lookupKey] ?? null;
-                                            ?>
-                                            <tr data-typeplan="<?= esc($db_val) ?>"
+                                        <?php foreach ($groupedPlans[$v_planNew->seplan_coursecode] as $v_plan) : // Iterate over actual plan items for this course ?>
+                                            <?php if (in_array($v_plan->type_name, $all_plan_types)) : // Only display if type is active ?>
+                                            <tr data-typeplan="<?= esc($v_plan->type_name) ?>"
                                                 style="<?php
                                                     // If it's the main subject, show all document types
                                                     if (($v_planNew->seplan_is_main_subject ?? 0) == 1) {
                                                         echo ''; // No inline style needed, it will be visible by default
                                                     } else {
                                                         // If it's not the main subject, only show 'โครงการสอน'
-                                                        echo ($db_val === 'โครงการสอน') ? '' : 'display: none !important;';
+                                                        echo ($v_plan->type_name === 'โครงการสอน') ? '' : 'display: none !important;';
                                                     }
                                                 ?>">
-                                                <td><strong><?= esc($display_val) ?></strong></td>
+                                                <td><strong><?= esc($v_plan->type_name) ?></strong></td>
                                                 <td>
                                                     <?php if ($v_plan && !empty($v_plan->seplan_file)) : ?>
                                                         <span class="badge bg-success">ส่งแล้ว</span>
@@ -173,9 +158,9 @@
                                                 <td>
                                                     <?php if ($v_plan) : ?>
                                                         <?php
-                                                            if ($v_plan->seplan_status1 == 'ผ่าน') {
+                                                            if (trim($v_plan->seplan_status1) == 'ผ่าน') {
                                                                 echo '<span class="badge bg-success">ผ่าน</span>';
-                                                            } elseif ($v_plan->seplan_status1 == 'ไม่ผ่าน') {
+                                                            } elseif (trim($v_plan->seplan_status1) == 'ไม่ผ่าน') {
                                                                 echo '<span class="badge bg-danger" title="' . esc($v_plan->seplan_comment1) . '">ไม่ผ่าน</span>';
                                                             } else {
                                                                 echo '<span class="badge bg-warning">รอตรวจ</span>';
@@ -186,9 +171,9 @@
                                                 <td>
                                                     <?php if ($v_plan) : ?>
                                                         <?php
-                                                            if ($v_plan->seplan_status2 == 'ผ่าน') {
+                                                            if (trim($v_plan->seplan_status2) == 'ผ่าน') {
                                                                 echo '<span class="badge bg-success">ผ่าน</span>';
-                                                            } elseif ($v_plan->seplan_status2 == 'ไม่ผ่าน') {
+                                                            } elseif (trim($v_plan->seplan_status2) == 'ไม่ผ่าน') {
                                                                 echo '<span class="badge bg-danger" title="' . esc($v_plan->seplan_comment2) . '">ไม่ผ่าน</span>';
                                                             } else {
                                                                 echo '<span class="badge bg-warning">รอตรวจ</span>';
@@ -215,13 +200,14 @@
                                                             data-bs-target="#ModalUpdatePlan"
                                                             data-seplan-id="<?= esc($v_plan->seplan_ID ?? '') ?>"
                                                             data-seplan-coursecode="<?= esc($v_planNew->seplan_coursecode) ?>"
-                                                            data-seplan-typeplan="<?= esc($db_val) ?>"
+                                                            data-seplan-typeplan="<?= esc($v_plan->type_name) ?>"
                                                             data-seplan-sendcomment="<?= esc($v_plan->seplan_sendcomment ?? '') ?>">
                                                             <i class="bi bi-upload"></i> <?= $v_plan && $v_plan->seplan_file ? 'แก้ไข' : 'เพิ่ม' ?>
                                                         </button>
                                                     </div>
                                                 </td>
                                             </tr>
+                                            <?php endif; ?>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
