@@ -38,6 +38,7 @@ class ReadingAssessmentController extends BaseController
         $data = [
             'teacherClasses' => $teacherClasses,
             'academicYear' => $academicYear,
+            'term' => $term,
             'assessmentStatus' => $assessmentStatus,
             'title' => 'แบบประเมินการอ่าน คิดวิเคราะห์ และเขียน'
         ];
@@ -173,26 +174,47 @@ class ReadingAssessmentController extends BaseController
         }
         $grade_level_head = ($grade_level_head_info) ? $grade_level_head_info['pers_prefix'] . $grade_level_head_info['pers_firstname'] . ' ' . $grade_level_head_info['pers_lastname'] : '...........................................';
 
-        $academicHeadId = $model->getAdminPersonnelIdByRoleName('หัวหน้าวิชาการ');
-        $academic_head_info = null;
-        if ($academicHeadId) {
-            $academic_head_info = $model->getPersonnelFullName($academicHeadId);
+        // Academic Head
+        $academicHeadInfo = $model->getAdminPersonnelInfoByPosition('หัวหน้างานวิชาการ');
+        $academic_head_name = '...........................................';
+        $academic_head_position = 'หัวหน้างานวิชาการ';
+        if ($academicHeadInfo) {
+            $academic_head_personnel = $model->getPersonnelFullName($academicHeadInfo['admin_rloes_userid']);
+            if ($academic_head_personnel) {
+                $academic_head_name = $academic_head_personnel['pers_prefix'] . $academic_head_personnel['pers_firstname'] . ' ' . $academic_head_personnel['pers_lastname'];
+            }
+            if (!empty($academicHeadInfo['admin_rloes_academic_position'])) {
+                $academic_head_position = $academicHeadInfo['admin_rloes_academic_position'];
+            }
         }
-        $academic_head = ($academic_head_info) ? $academic_head_info['pers_prefix'] . $academic_head_info['pers_firstname'] . ' ' . $academic_head_info['pers_lastname'] : '...........................................'; // Fallback
 
-        $deputyDirectorId = $model->getAdminPersonnelIdByRoleName('รองวิชาการ');
-        $deputy_director_info = null;
-        if ($deputyDirectorId) {
-            $deputy_director_info = $model->getPersonnelFullName($deputyDirectorId);
+        // Deputy Director
+        $deputyDirectorInfo = $model->getAdminPersonnelInfoByPosition('รองผู้อำนวยการฝ่ายวิชาการ');
+        $deputy_director_name = '...........................................';
+        $deputy_director_position = 'รองผู้อำนวยการฝ่ายวิชาการ';
+        if ($deputyDirectorInfo) {
+            $deputy_director_personnel = $model->getPersonnelFullName($deputyDirectorInfo['admin_rloes_userid']);
+            if ($deputy_director_personnel) {
+                $deputy_director_name = $deputy_director_personnel['pers_prefix'] . $deputy_director_personnel['pers_firstname'] . ' ' . $deputy_director_personnel['pers_lastname'];
+            }
+            if (!empty($deputyDirectorInfo['admin_rloes_academic_position'])) {
+                $deputy_director_position = $deputyDirectorInfo['admin_rloes_academic_position'];
+            }
         }
-        $deputy_director = ($deputy_director_info) ? $deputy_director_info['pers_prefix'] . $deputy_director_info['pers_firstname'] . ' ' . $deputy_director_info['pers_lastname'] : '...........................................'; // Fallback
 
-        $directorId = $model->getAdminPersonnelIdByRoleName('ผู้บริหาร');
-        $director_info = null;
-        if ($directorId) {
-            $director_info = $model->getPersonnelFullName($directorId);
+        // Director
+        $directorInfo = $model->getAdminPersonnelInfoByPosition('ผู้อำนวยการสถานศึกษา');
+        $director_name = '...........................................';
+        $director_position = 'ผู้อำนวยการสถานศึกษา';
+        if ($directorInfo) {
+            $director_personnel = $model->getPersonnelFullName($directorInfo['admin_rloes_userid']);
+            if ($director_personnel) {
+                $director_name = $director_personnel['pers_prefix'] . $director_personnel['pers_firstname'] . ' ' . $director_personnel['pers_lastname'];
+            }
+            if (!empty($directorInfo['admin_rloes_academic_position'])) {
+                $director_position = $directorInfo['admin_rloes_academic_position'];
+            }
         }
-        $director = ($director_info) ? $director_info['pers_prefix'] . $director_info['pers_firstname'] . ' ' . $director_info['pers_lastname'] : '...........................................'; // Fallback
 
         // --- Get Report Data ---
         $students = $model->getStudentsByHomeroomClass($className, $academicYear);
@@ -257,9 +279,12 @@ class ReadingAssessmentController extends BaseController
             'totalStudents' => $totalAssessedStudents,
             'homeroom_teachers' => $homeroom_teachers,
             'grade_level_head' => $grade_level_head,
-            'academic_head' => $academic_head,
-            'deputy_director' => $deputy_director,
-            'director' => $director
+            'academic_head_name' => $academic_head_name,
+            'academic_head_position' => $academic_head_position,
+            'deputy_director_name' => $deputy_director_name,
+            'deputy_director_position' => $deputy_director_position,
+            'director_name' => $director_name,
+            'director_position' => $director_position
         ];
 
         return view('teacher/reading_assessment/print_report', $data);

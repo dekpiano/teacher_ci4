@@ -39,6 +39,7 @@ class DesirableAssessmentController extends BaseController
         $data = [
             'teacherClasses' => $teacherClasses,
             'academicYear' => $academicYear,
+            'term' => $term,
             'assessmentStatus' => $assessmentStatus,
             'title' => 'ประเมินคุณลักษณะอันพึงประสงค์'
         ];
@@ -228,7 +229,8 @@ class DesirableAssessmentController extends BaseController
         }
         $grade_level_head = ($grade_level_head_info) ? $grade_level_head_info['pers_prefix'] . $grade_level_head_info['pers_firstname'] . ' ' . $grade_level_head_info['pers_lastname'] : '...........................................';
 
-        $academicHeadInfo = $model->getAdminPersonnelInfoByRoleName('หัวหน้าวิชาการ');
+        // Academic Head
+        $academicHeadInfo = $model->getAdminPersonnelInfoByPosition('หัวหน้างานวิชาการ');
         $academic_head_name = '...........................................';
         $academic_head_position = 'หัวหน้างานวิชาการ';
         if ($academicHeadInfo) {
@@ -241,9 +243,10 @@ class DesirableAssessmentController extends BaseController
             }
         }
 
-        $deputyDirectorInfo = $model->getAdminPersonnelInfoByRoleName('รองวิชาการ');
+        // Deputy Director
+        $deputyDirectorInfo = $model->getAdminPersonnelInfoByPosition('รองผู้อำนวยการฝ่ายวิชาการ');
         $deputy_director_name = '...........................................';
-        $deputy_director_position = 'รองผู้อำนวยการสถานศึกษา';
+        $deputy_director_position = 'รองผู้อำนวยการฝ่ายวิชาการ';
         if ($deputyDirectorInfo) {
             $deputy_director_personnel = $model->getPersonnelFullName($deputyDirectorInfo['admin_rloes_userid']);
             if ($deputy_director_personnel) {
@@ -254,7 +257,8 @@ class DesirableAssessmentController extends BaseController
             }
         }
 
-        $directorInfo = $model->getAdminPersonnelInfoByRoleName('ผู้บริหาร');
+        // Director
+        $directorInfo = $model->getAdminPersonnelInfoByPosition('ผู้อำนวยการสถานศึกษา');
         $director_name = '...........................................';
         $director_position = 'ผู้อำนวยการสถานศึกษา';
         if ($directorInfo) {

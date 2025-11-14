@@ -205,16 +205,23 @@ class ReadingAssessmentModel extends Model
                     ->get()->getResultArray();
     }
 
-    public function getAdminPersonnelIdByRoleName(string $roleName)
+    public function getAdminPersonnelInfoByPosition(string $position)
     {
         $db = db_connect('default'); // Assuming 'default' is the DBGroup for skjacth_academic
         $result = $db->table('tb_admin_rloes')
-                       ->select('admin_rloes_userid')
-                       ->where('admin_rloes_nanetype', $roleName)
+                       ->select('admin_rloes_userid, admin_rloes_academic_position')
+                       ->where('admin_rloes_academic_position', $position)
                        ->get()
                        ->getRowArray();
-        return $result ? $result['admin_rloes_userid'] : null;
+        return $result; // Returns an array with userid and position, or null
     }
+
+    // Dates
+    protected $useTimestamps = false;
+    protected $dateFormat    = 'datetime';
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
+    protected $deletedField  = 'deleted_at';
 
     public function getAssessmentAcademicYearAndTerm()
     {
@@ -236,49 +243,46 @@ class ReadingAssessmentModel extends Model
         return ['year' => date('Y') + 543, 'term' => '1'];
     }
 
-    public function getAssessmentOnOffStatus()
-    {
-        $db = db_connect(); // Default DB
-        $result = $db->table('tb_register_onoff')
-                       ->select('onoff_status')
-                       ->where('onoff_name', 'ReadingWritingLearning')
-                       ->get()
-                       ->getRowArray();
+        public function getAssessmentOnOffStatus()
 
-        return $result ? $result['onoff_status'] : 'off'; // Default to 'off' if not found
+        {
+
+            $db = db_connect(); // Default DB
+
+            $result = $db->table('tb_register_onoff')
+
+                           ->select('onoff_status')
+
+                           ->where('onoff_name', 'ReadingWritingLearning')
+
+                           ->get()
+
+                           ->getRowArray();
+
+    
+
+            return $result ? $result['onoff_status'] : 'off'; // Default to 'off' if not found
+
+        }
+
+    
+
+        /*
+
+        This model will be used to interact with the following tables:
+
+        - tb_evalu_raw_item
+
+        - tb_evalu_raw_detail
+
+        - t_final_result
+
+        - t_class
+
+        - tb_students (for student info)
+
+        - tb_personnel (for teacher info)
+
+        */
+
     }
-
-    // Dates
-    protected $useTimestamps = false;
-    protected $dateFormat    = 'datetime';
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
-    protected $deletedField  = 'deleted_at';
-
-    // Validation
-    protected $validationRules      = [];
-    protected $validationMessages   = [];
-    protected $skipValidation       = false;
-    protected $cleanValidationRules = true;
-
-    // Callbacks
-    protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
-    protected $afterInsert    = [];
-    protected $beforeUpdate   = [];
-    protected $afterUpdate    = [];
-    protected $beforeFind     = [];
-    protected $afterFind      = [];
-    protected $beforeDelete   = [];
-    protected $afterDelete    = [];
-
-    /*
-    This model will be used to interact with the following tables:
-    - tb_evalu_raw_item
-    - tb_evalu_raw_detail
-    - t_final_result
-    - t_class
-    - tb_students (for student info)
-    - tb_personnel (for teacher info)
-    */
-}

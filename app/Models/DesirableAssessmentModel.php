@@ -152,12 +152,12 @@ class DesirableAssessmentModel extends Model
                     ->get()->getResultArray();
     }
 
-    public function getAdminPersonnelInfoByRoleName(string $roleName)
+    public function getAdminPersonnelInfoByPosition(string $position)
     {
-        $db = db_connect('default'); // Assuming 'default' is the DBGroup for skjacth_academic
+        $db = db_connect('default');
         $result = $db->table('tb_admin_rloes')
                        ->select('admin_rloes_userid, admin_rloes_academic_position')
-                       ->where('admin_rloes_nanetype', $roleName)
+                       ->where('admin_rloes_academic_position', $position)
                        ->get()
                        ->getRowArray();
         return $result; // Returns an array with userid and position, or null

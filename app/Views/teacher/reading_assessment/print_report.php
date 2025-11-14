@@ -160,12 +160,12 @@
                     <p>ลงชื่อ <span class="signature-line"></span><br>( <?= esc($grade_level_head) ?> )<br>หัวหน้าระดับชั้น</p>
                 </div>
                 <div class="col-6">
-                    <p>ลงชื่อ <span class="signature-line"></span><br>( <?= esc($academic_head) ?> )<br>หัวหน้างานวิชาการ</p>
+                    <p>ลงชื่อ <span class="signature-line"></span><br>( <?= esc($academic_head_name) ?> )<br><?= esc($academic_head_position) ?></p>
                 </div>
             </div>
             <div class="row" style="margin-top: 2rem;">
                 <div class="col-12">
-                    <p>ลงชื่อ <span class="signature-line"></span><br>( <?= esc($deputy_director) ?> )<br>รองผู้อำนวยการสถานศึกษา</p>
+                    <p>ลงชื่อ <span class="signature-line"></span><br>( <?= esc($deputy_director_name) ?> )<br><?= esc($deputy_director_position) ?></p>
                 </div>
             </div>
             <div class="row">
@@ -175,8 +175,8 @@
                         <p class="text-start"><input type="checkbox" disabled> อนุมัติ &nbsp;&nbsp;&nbsp; <input type="checkbox" disabled> ไม่อนุมัติ เนื่องจาก .......................................
                         <div class="signature-block" style="margin-top: 1rem;">
                             <p>ลงชื่อ <span class="signature-line"></span></p>
-                            <p>( <?= esc($director) ?> )</p>
-                            <p>ผู้อำนวยการสถานศึกษา โรงเรียนสวนกุหลาบวิทยาลัย (จิรประวัติ) นครสวรรค์</p>
+                            <p>( <?= esc($director_name) ?> )</p>
+                            <p><?= esc($director_position) ?> โรงเรียนสวนกุหลาบวิทยาลัย (จิรประวัติ) นครสวรรค์</p>
                         </div>
                     </div>
                 </div>

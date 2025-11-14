@@ -10,7 +10,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">ประเมินคุณลักษณะอันพึงประสงค์ (ปีการศึกษา <?= $academicYear ?>)</h3>
+                    <h3 class="card-title">ประเมินคุณลักษณะอันพึงประสงค์ (ปีการศึกษา <?= $term ?>/<?= $academicYear ?>)</h3>
                 </div>
                 <div class="card-body">
                     <?php if (($assessmentStatus ?? 'off') !== 'on') : ?>
