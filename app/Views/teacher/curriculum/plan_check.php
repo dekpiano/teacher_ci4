@@ -10,7 +10,12 @@
 
 
         <div class="container-fluid">
-            <?php  $typeplan = array('บันทึกตรวจใช้แผน','แบบตรวจแผนการจัดการเรียนรู้','โครงการสอน','แผนการสอนหน้าเดียว','บันทึกหลังสอน'); ?>
+            <?php
+            // Use active plan types passed from the controller
+            $distinctTypePlans = array_column($activePlanTypes, 'type_name');
+            // Sort them if a specific order is desired
+            sort($distinctTypePlans);
+            ?>
             <div class="card">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="card-title mb-0">ส่งแผนของ <?= esc($planNew[0]->pers_prefix ?? '') ?><?= esc($planNew[0]->pers_firstname ?? '') ?> <?= esc($planNew[0]->pers_lastname ?? '') ?></h5>
@@ -35,14 +40,19 @@
                                     <th class="w-25">รหัสชื่อวิชา</th>
                                     <th class="w-auto">ระดับ</th>
                                     <th class="w-auto">ผู้ส่ง</th>
-                                    <th class="w-auto">แบบตรวจแผน</th>
-                                    <th class="w-auto">บันทึกตรวจใช้แผน</th>
-                                    <th class="w-auto">โครงการสอน</th>
-                                    <th class="w-auto">แผนการสอนหน้าเดียว</th>
-                                    <th class="w-auto">บันทึกหลังสอน</th>
+                                    <?php foreach($distinctTypePlans as $tp): // Use dynamically generated types ?>
+                                    <th class="w-auto"><?= esc($tp) ?></th>
+                                    <?php endforeach; ?>
                                 </tr>
                             </thead>
                             <tbody>
+                                <?php
+                                // Pre-process checkplan for efficient lookup
+                                $checkplanLookup = [];
+                                foreach ($checkplan as $cp) {
+                                    $checkplanLookup[$cp->seplan_coursecode][$cp->type_name][$cp->seplan_usersend] = $cp;
+                                }
+                                ?>
                                 <?php  foreach ($planNew as $v_planNew): ?>
                                 <tr>
                                     <td scope="row"><?= esc($v_planNew->seplan_year) ?>/<?= esc($v_planNew->seplan_term) ?></td>
@@ -52,15 +62,9 @@
                                     <td><?= esc($v_planNew->pers_prefix) ?><?= esc($v_planNew->pers_firstname) ?> <?= esc($v_planNew->pers_lastname) ?>
                                     </td>
 
-                                    <?php foreach($typeplan as $v_typeplan): ?>
-                                    <?php 
-                                        $found_plan = null;
-                                        foreach($checkplan as $v_plan) {
-                                            if($v_plan->seplan_coursecode == $v_planNew->seplan_coursecode && $v_plan->seplan_typeplan == $v_typeplan && $v_planNew->pers_id == $v_plan->seplan_usersend) {
-                                                $found_plan = $v_plan;
-                                                break;
-                                            }
-                                        }
+                                    <?php foreach($distinctTypePlans as $v_typeplan_name): // Iterate over dynamic types ?>
+                                    <?php
+                                        $found_plan = $checkplanLookup[$v_planNew->seplan_coursecode][$v_typeplan_name][$v_planNew->seplan_usersend] ?? null;
                                     ?>
                                     <td>
                                         <?php if($found_plan && $found_plan->seplan_file == null): ?>

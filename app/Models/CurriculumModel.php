@@ -13,6 +13,7 @@ class CurriculumModel extends Model
         'seplan_namesubject', 'seplan_coursecode', 'seplan_typesubject', 'seplan_year',
         'seplan_term', 'seplan_usersend', 'seplan_learning', 'seplan_status1',
         'seplan_status2', 'seplan_sendcomment', 'seplan_gradelevel', 'seplan_typeplan',
+        'seplan_typeplan_id',
         'seplan_file', 'seplan_createdate', 'seplan_checkdate1', 'seplan_inspector1',
         'seplan_comment1', 'seplan_checkdate2', 'seplan_inspector2', 'seplan_comment2',
         'seplan_is_main_subject'

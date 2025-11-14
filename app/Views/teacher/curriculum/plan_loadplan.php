@@ -11,7 +11,12 @@
 
         <div class="container-fluid">
 
-            <?php  $typeplan = array('แบบตรวจแผนการจัดการเรียนรู้','บันทึกตรวจใช้แผน','โครงการสอน','แผนการสอนหน้าเดียว','บันทึกหลังสอน'); ?>
+            <?php
+            // Use active plan types passed from the controller
+            $distinctTypePlans = array_column($activePlanTypes, 'type_name');
+            // Sort them if a specific order is desired, e.g., alphabetically
+            sort($distinctTypePlans);
+            ?>
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="card-title mb-0">ตัวกรอง</h5>
@@ -59,7 +64,7 @@
                                     <th scope="col">รหัสชื่อวิชา</th>
                                     <th scope="col">ระดับ</th>
                                     <th scope="col">ประเภท</th>
-                                    <?php foreach($typeplan as $tp): ?>
+                                    <?php foreach($distinctTypePlans as $tp): // Use dynamically generated types ?>
                                     <th scope="col"><?= esc($tp) ?></th>
                                     <?php endforeach; ?>
                                 </tr>
@@ -81,7 +86,7 @@
                                             'files' => []
                                         ];
                                     }
-                                    $organizedPlans[$key]['files'][$p->seplan_typeplan] = ['file' => $p->seplan_file, 'id' => $p->seplan_ID];
+                                    $organizedPlans[$key]['files'][$p->type_name] = ['file' => $p->seplan_file, 'id' => $p->seplan_ID]; // Use type_name
                                 }
                                 ?>
                                 <?php foreach ($organizedPlans as $op):?>
@@ -91,7 +96,7 @@
                                     <td>ม.<?= esc($op['seplan_gradelevel']) ?></td>
                                     <td><?= esc($op['seplan_typesubject']) ?></td>
 
-                                    <?php foreach($typeplan as $tp): ?>
+                                    <?php foreach($distinctTypePlans as $tp): // Use dynamically generated types ?>
                                     <td class="text-center">
                                         <?php if(isset($op['files'][$tp]) && !empty($op['files'][$tp]['file'])):
                                             $file = $op['files'][$tp]['file'];

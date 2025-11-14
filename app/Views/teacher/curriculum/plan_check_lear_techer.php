@@ -12,20 +12,11 @@
 <div class="container-fluid">
     <?php
     // --- Data Preparation ---
-    $planData = [];
+    $planDataLookup = []; // Changed from $planData to $planDataLookup for clarity
     foreach ($checkplan as $p) {
         // Create a unique key for each plan entry
-        $key = $p->seplan_coursecode . '|' . $p->seplan_typeplan . '|' . $p->seplan_usersend;
-        $planData[$key] = $p;
+        $planDataLookup[$p->seplan_coursecode][$p->type_name][$p->seplan_usersend] = $p;
     }
-
-    $typeplan_map = [
-        'บันทึกตรวจใช้แผน' => 'บันทึกตรวจใช้แผน',
-        'แบบตรวจแผนการจัดการเรียนรู้' => 'แบบตรวจแผนการจัดการเรียนรู้',
-        'โครงการสอน' => 'โครงการสอน',
-        'แผนการสอนหน้าเดียว' => 'แผนการสอนหน้าเดียว',
-        'บันทึกหลังสอน' => 'บันทึกหลังสอน'
-    ];
 
     $teacher_info = $planNew[0] ?? null;
     ?>
@@ -69,14 +60,20 @@
                                     </tr>
                                 </thead>
                                 <tbody class="table-border-bottom-0">
-                                    <?php foreach ($typeplan_map as $db_val => $display_val): ?>
                                     <?php
-                                        $lookupKey = $v_planNew->seplan_coursecode . '|' . $db_val . '|' . $v_planNew->seplan_usersend;
-                                        $found_plan = $planData[$lookupKey] ?? null;
+                                    // Iterate over the actual plan items for this course, which are already grouped by course in $planNew
+                                    // We need to find all plan items for the current course code from $checkplanLookup
+                                    $currentCoursePlans = $planDataLookup[$v_planNew->seplan_coursecode] ?? [];
+                                    $activeTypeNames = array_column($activePlanTypes, 'type_name'); // Get active type names
+
+                                    foreach ($currentCoursePlans as $type_name => $plans_by_type) :
+                                        // Only display if the type is active
+                                        if (in_array($type_name, $activeTypeNames)) :
+                                            $found_plan = $plans_by_type[$v_planNew->seplan_usersend] ?? null; // Get the specific plan for this teacher and type
                                     ?>
                                     <tr>
                                         <td>
-                                            <strong><?= esc($display_val) ?></strong>
+                                            <strong><?= esc($type_name) ?></strong>
                                             <?php if ($found_plan && $found_plan->seplan_sendcomment): ?>
                                                 <p class="text-muted mb-0 small" title="หมายเหตุจากผู้ส่ง">
                                                     <i class="bi bi-chat-left-text"></i> <?= esc($found_plan->seplan_sendcomment) ?>
@@ -140,6 +137,7 @@
                                             <?php endif; ?>
                                         </td>
                                     </tr>
+                                    <?php endif; ?>
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>

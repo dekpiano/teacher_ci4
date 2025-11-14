@@ -38,11 +38,18 @@ class CurriculumController extends BaseController
 
         // Determine current year and term if not provided in URL
         if ($year === null || $term === null) {
-            if (!empty($this->setup)) {
-                $year = $this->setup->seplanset_year;
-                $term = $this->setup->seplanset_term;
+            // Get the latest year/term from the plan table
+            $latestPlan = $this->curriculumModel
+                                ->select('seplan_year, seplan_term')
+                                ->orderBy('seplan_year', 'DESC')
+                                ->orderBy('seplan_term', 'DESC')
+                                ->first();
+            
+            if ($latestPlan) {
+                $year = $latestPlan['seplan_year'];
+                $term = $latestPlan['seplan_term'];
             } else {
-                // Fallback if no setup found
+                // Fallback if no plans exist at all
                 $year = date('Y') + 543; // Buddhist year
                 $term = 1;
             }
@@ -53,12 +60,18 @@ class CurriculumController extends BaseController
         $person_id = $this->session->get('person_id');
         $data['person_id'] = $person_id;
 
-        $data['plan'] = $this->curriculumModel->where('seplan_usersend', $person_id)
+        $data['plan'] = $this->curriculumModel
+                                       ->select('tb_send_plan.*, tb_send_plan_type.type_name')
+                                       ->join('tb_send_plan_type', 'tb_send_plan_type.type_id = tb_send_plan.seplan_typeplan_id', 'left')
+                                       ->where('seplan_usersend', $person_id)
                                        ->where('seplan_year', $year)
                                        ->where('seplan_term', $term)
                                        ->get()->getResult();
 
-        $data['planNew'] = $this->curriculumModel->where('seplan_usersend', $person_id)
+        $data['planNew'] = $this->curriculumModel
+                                          ->select('tb_send_plan.*, tb_send_plan_type.type_name')
+                                          ->join('tb_send_plan_type', 'tb_send_plan_type.type_id = tb_send_plan.seplan_typeplan_id', 'left')
+                                          ->where('seplan_usersend', $person_id)
                                           ->where('seplan_year', $year)
                                           ->where('seplan_term', $term)
                                           ->groupBy('seplan_coursecode')
@@ -67,6 +80,13 @@ class CurriculumController extends BaseController
         $data['CheckYearPlan'] = $this->curriculumModel->select('seplan_year,seplan_term')
                                                 ->distinct()
                                                 ->get()->getResult();
+
+        // Fetch active plan types for the view
+        $data['activePlanTypes'] = $this->db->table('tb_send_plan_type')
+                                            ->select('type_name')
+                                            ->where('is_active', 1)
+                                            ->orderBy('type_id', 'ASC') // Or by type_name, depending on desired order
+                                            ->get()->getResultArray();
 
         return view('teacher/curriculum/plan_main', $data);
     }
@@ -107,15 +127,16 @@ class CurriculumController extends BaseController
             return $this->response->setJSON(['status' => 'duplicate', 'msg' => 'มีข้อมูลรายวิชานี้อยู่แล้ว']);
         }
 
-        $typePlan = [
-            'บันทึกตรวจใช้แผน', 'แบบตรวจแผนการจัดการเรียนรู้', 'โครงการสอน',
-            'แผนการสอนหน้าเดียว', 'แผนการสอนเต็ม', 'บันทึกหลังสอน'
-        ];
+        // Fetch plan types from the database
+        $planTypes = $this->db->table('tb_send_plan_type')
+                              ->select('type_id, type_name')
+                              ->where('is_active', 1) // Only active types
+                              ->get()->getResultArray();
 
         $insertData = [];
         $comment = nl2br(htmlentities($post['seplan_sendcomment'] ?? '', ENT_QUOTES, 'UTF-8'));
 
-        foreach ($typePlan as $v_typePlan) {
+        foreach ($planTypes as $type) {
             $insertData[] = [
                 'seplan_namesubject'  => $post['seplan_namesubject'] ?? null,
                 'seplan_coursecode'   => $seplan_coursecode,
@@ -128,7 +149,8 @@ class CurriculumController extends BaseController
                 'seplan_status2'      => "รอตรวจ",
                 'seplan_sendcomment'  => $comment,
                 'seplan_gradelevel'   => $post['seplan_gradelevel'] ?? null,
-                'seplan_typeplan'     => $v_typePlan,
+                'seplan_typeplan'     => $type['type_name'], // Keep old column for now
+                'seplan_typeplan_id'  => $type['type_id'],   // New column
             ];
         }
 
@@ -434,11 +456,19 @@ class CurriculumController extends BaseController
 
         // Get current year/term if not provided
         if ($year === null || $term === null) {
-            if (!empty($this->setup)) {
-                $year = $this->setup->seplanset_year;
-                $term = $this->setup->seplanset_term;
+            // Get the latest year/term from the plan table
+            $latestPlan = $this->curriculumModel
+                                ->select('seplan_year, seplan_term')
+                                ->orderBy('seplan_year', 'DESC')
+                                ->orderBy('seplan_term', 'DESC')
+                                ->first();
+            
+            if ($latestPlan) {
+                $year = $latestPlan['seplan_year'];
+                $term = $latestPlan['seplan_term'];
             } else {
-                $year = date('Y') + 543;
+                // Fallback if no plans exist at all
+                $year = date('Y') + 543; // Buddhist year
                 $term = 1;
             }
         }
@@ -456,7 +486,10 @@ class CurriculumController extends BaseController
                                          ->where('pers_learning', $CheckLearning->pers_learning)
                                          ->get()->getResult();
 
-        $builder = $this->curriculumModel->where('seplan_learning', $CheckLearning->pers_learning)
+        $builder = $this->curriculumModel
+                                   ->select('tb_send_plan.*, tb_send_plan_type.type_name') // Added type_name
+                                   ->join('tb_send_plan_type', 'tb_send_plan_type.type_id = tb_send_plan.seplan_typeplan_id', 'left') // Added join
+                                   ->where('seplan_learning', $CheckLearning->pers_learning)
                                    ->where('seplan_year', $year)
                                    ->where('seplan_term', $term);
 
@@ -465,7 +498,10 @@ class CurriculumController extends BaseController
         }
         $data['plan'] = $builder->get()->getResult();
 
-        $planNewBuilder = $this->curriculumModel->where('seplan_learning', $CheckLearning->pers_learning)
+        $planNewBuilder = $this->curriculumModel
+                                          ->select('tb_send_plan.*, tb_send_plan_type.type_name') // Added type_name
+                                          ->join('tb_send_plan_type', 'tb_send_plan_type.type_id = tb_send_plan.seplan_typeplan_id', 'left') // Added join
+                                          ->where('seplan_learning', $CheckLearning->pers_learning)
                                           ->where('seplan_year', $year)
                                           ->where('seplan_term', $term);
         if ($selectedTeacher !== "All") {
@@ -481,6 +517,13 @@ class CurriculumController extends BaseController
         $data['CheckYear'] = $this->curriculumModel->select('seplan_year,seplan_term')
                                             ->distinct()
                                             ->get()->getResult();
+
+        // Fetch active plan types for the view
+        $data['activePlanTypes'] = $this->db->table('tb_send_plan_type')
+                                            ->select('type_name')
+                                            ->where('is_active', 1)
+                                            ->orderBy('type_id', 'ASC')
+                                            ->get()->getResultArray();
 
         return view('teacher/curriculum/plan_loadplan', $data);
     }
@@ -584,15 +627,25 @@ class CurriculumController extends BaseController
         $data['IDlear'] = $idLear;
 
         $data['planNew'] = $this->db->table('tb_send_plan')
-                                ->select('tb_send_plan.*, tb_personnel.pers_id, tb_personnel.pers_prefix, tb_personnel.pers_firstname, tb_personnel.pers_lastname')
+                                ->select('tb_send_plan.*, tb_personnel.pers_id, tb_personnel.pers_prefix, tb_personnel.pers_firstname, tb_personnel.pers_lastname, tb_send_plan_type.type_name') // Added type_name
                                 ->join($this->db_personnel->database . '.tb_personnel', 'tb_personnel.pers_id = tb_send_plan.seplan_usersend')
+                                ->join('tb_send_plan_type', 'tb_send_plan_type.type_id = tb_send_plan.seplan_typeplan_id', 'left') // Added join
                                 ->where('seplan_learning', $idLear)
                                 ->groupBy(['seplan_coursecode', 'pers_id'])
                                 ->get()->getResult();
 
         $data['checkplan'] = $this->db->table('tb_send_plan')
+                                ->select('tb_send_plan.*, tb_send_plan_type.type_name') // Added type_name
+                                ->join('tb_send_plan_type', 'tb_send_plan_type.type_id = tb_send_plan.seplan_typeplan_id', 'left') // Added join
                                 ->where('seplan_learning', $idLear)
                                 ->get()->getResult();
+
+        // Fetch active plan types for the view
+        $data['activePlanTypes'] = $this->db->table('tb_send_plan_type')
+                                            ->select('type_name')
+                                            ->where('is_active', 1)
+                                            ->orderBy('type_id', 'ASC')
+                                            ->get()->getResultArray();
 
         return view('teacher/curriculum/plan_check', $data);
     }
@@ -642,12 +695,31 @@ class CurriculumController extends BaseController
             return $this->checkPlanLear($idLear);
         }
         
-        $queryYear = $year ?? $this->setup->seplanset_year;
-        $queryTerm = $term ?? $this->setup->seplanset_term;
+        if ($year === null || $term === null) {
+            // Get the latest year/term from the plan table
+            $latestPlan = $this->curriculumModel
+                                ->select('seplan_year, seplan_term')
+                                ->orderBy('seplan_year', 'DESC')
+                                ->orderBy('seplan_term', 'DESC')
+                                ->first();
+            
+            if ($latestPlan) {
+                $year = $latestPlan['seplan_year'];
+                $term = $latestPlan['seplan_term'];
+            } else {
+                // Fallback if no plans exist at all
+                $year = date('Y') + 543; // Buddhist year
+                $term = 1;
+            }
+        }
+
+        $queryYear = $year;
+        $queryTerm = $term;
 
         $data['planNew'] = $this->db->table('tb_send_plan')
-                                ->select('tb_send_plan.seplan_term, tb_send_plan.seplan_year, tb_send_plan.seplan_coursecode, tb_send_plan.seplan_namesubject, tb_send_plan.seplan_typesubject, tb_send_plan.seplan_gradelevel, tb_send_plan.seplan_learning, tb_personnel.pers_id, tb_personnel.pers_prefix, tb_personnel.pers_firstname, tb_personnel.pers_lastname')
+                                ->select('tb_send_plan.seplan_term, tb_send_plan.seplan_year, tb_send_plan.seplan_coursecode, tb_send_plan.seplan_namesubject, tb_send_plan.seplan_typesubject, tb_send_plan.seplan_gradelevel, tb_send_plan.seplan_learning, tb_personnel.pers_id, tb_personnel.pers_prefix, tb_personnel.pers_firstname, tb_personnel.pers_lastname, tb_send_plan_type.type_name') // Added type_name
                                 ->join($this->db_personnel->database . '.tb_personnel', 'tb_personnel.pers_id = tb_send_plan.seplan_usersend')
+                                ->join('tb_send_plan_type', 'tb_send_plan_type.type_id = tb_send_plan.seplan_typeplan_id', 'left') // Added join
                                 ->where('seplan_learning', $idLear)
                                 ->where('pers_id', $idTech)
                                 ->where('seplan_year', $queryYear)
@@ -655,6 +727,8 @@ class CurriculumController extends BaseController
                                 ->groupBy(['seplan_coursecode', 'pers_id'])
                                 ->get()->getResult();
         $data['checkplan'] = $this->db->table('tb_send_plan')
+                                ->select('tb_send_plan.*, tb_send_plan_type.type_name') // Added type_name
+                                ->join('tb_send_plan_type', 'tb_send_plan_type.type_id = tb_send_plan.seplan_typeplan_id', 'left') // Added join
                                 ->where('seplan_learning', $idLear)
                                 ->where('seplan_usersend', $idTech)
                                 ->where('seplan_year', $queryYear)
@@ -667,6 +741,13 @@ class CurriculumController extends BaseController
                                 ->orderBy('seplan_year', 'desc')
                                 ->orderBy('seplan_term', 'desc')
                                 ->get()->getResult();
+
+        // Fetch active plan types for the view
+        $data['activePlanTypes'] = $this->db->table('tb_send_plan_type')
+                                            ->select('type_name')
+                                            ->where('is_active', 1)
+                                            ->orderBy('type_id', 'ASC')
+                                            ->get()->getResultArray();
 
         return view('teacher/curriculum/plan_check_lear_techer', $data);
     }
@@ -695,6 +776,12 @@ class CurriculumController extends BaseController
                                      ->distinct()
                                      ->get()->getResult();
 
+        // Fetch plan types from the database once
+        $planTypes = $this->db->table('tb_send_plan_type')
+                              ->select('type_id, type_name')
+                              ->where('is_active', 1)
+                              ->get()->getResultArray();
+
         $response = [];
         $allInsertData = [];
 
@@ -708,11 +795,11 @@ class CurriculumController extends BaseController
             if ($existing) {
                 $response[] = ['status' => 'duplicate', 'subject' => $value->SubjectCode];
             } else {
-                $typePlan = ['บันทึกตรวจใช้แผน', 'แบบตรวจแผนการจัดการเรียนรู้', 'โครงการสอน', 'แผนการสอนหน้าเดียว', 'แผนการสอนเต็ม', 'บันทึกหลังสอน'];
+                // Use fetched plan types
                 $Class = explode('.', $value->SubjectClass);
                 $Type = explode('/', $value->SubjectType);
 
-                foreach ($typePlan as $v_typePlan) {
+                foreach ($planTypes as $type) { // Loop through fetched types
                     $allInsertData[] = [
                         'seplan_namesubject'  => $value->SubjectName,
                         'seplan_coursecode'   => $value->SubjectCode,
@@ -724,7 +811,8 @@ class CurriculumController extends BaseController
                         'seplan_status1'      => "รอตรวจ",
                         'seplan_status2'      => "รอตรวจ",
                         'seplan_gradelevel'   => $Class[1] ?? 'ไม่ระบุ',
-                        'seplan_typeplan'     => $v_typePlan
+                        'seplan_typeplan'     => $type['type_name'], // Old column
+                        'seplan_typeplan_id'  => $type['type_id']    // New column
                     ];
                 }
                 $response[] = ['status' => 'prepared', 'subject' => $value->SubjectCode];
@@ -758,8 +846,21 @@ class CurriculumController extends BaseController
 
         $postYear = $this->request->getPost('Year');
         if (empty($postYear)) {
-            $data['year'] = $this->setup->seplanset_year;
-            $data['term'] = $this->setup->seplanset_term;
+            // Get the latest year/term from the plan table
+            $latestPlan = $this->curriculumModel
+                                ->select('seplan_year, seplan_term')
+                                ->orderBy('seplan_year', 'DESC')
+                                ->orderBy('seplan_term', 'DESC')
+                                ->first();
+            
+            if ($latestPlan) {
+                $data['year'] = $latestPlan['seplan_year'];
+                $data['term'] = $latestPlan['seplan_term'];
+            } else {
+                // Fallback if no plans exist at all
+                $data['year'] = date('Y') + 543; // Buddhist year
+                $data['term'] = 1;
+            }
         } else {
             $CheckYear = explode('/', $postYear);
             $data['term'] = $CheckYear[0];
@@ -774,8 +875,9 @@ class CurriculumController extends BaseController
                                         ->get()->getResult();
 
         $data['Plan'] = $this->db->table('tb_send_plan')
-                            ->select('tb_send_plan.*, tb_personnel.pers_id, tb_personnel.pers_prefix, tb_personnel.pers_firstname, tb_personnel.pers_lastname, tb_personnel.pers_learning')
+                            ->select('tb_send_plan.*, tb_personnel.pers_id, tb_personnel.pers_prefix, tb_personnel.pers_firstname, tb_personnel.pers_lastname, tb_personnel.pers_learning, tb_send_plan_type.type_name') // Added type_name
                             ->join($this->db_personnel->database . '.tb_personnel', 'tb_personnel.pers_id = tb_send_plan.seplan_usersend', 'LEFT')
+                            ->join('tb_send_plan_type', 'tb_send_plan_type.type_id = tb_send_plan.seplan_typeplan_id', 'left') // Added join
                             ->where('seplan_year', $data['year'])
                             ->where('seplan_term', $data['term'])
                             ->groupBy(['seplan_coursecode', 'pers_id'])
@@ -886,11 +988,19 @@ class CurriculumController extends BaseController
 
         // Determine current year and term if not provided
         if ($year === null || $term === null) {
-            if (!empty($this->setup)) {
-                $year = $this->setup->seplanset_year;
-                $term = $this->setup->seplanset_term;
+            // Get the latest year/term from the plan table
+            $latestPlan = $this->curriculumModel
+                                ->select('seplan_year, seplan_term')
+                                ->orderBy('seplan_year', 'DESC')
+                                ->orderBy('seplan_term', 'DESC')
+                                ->first();
+            
+            if ($latestPlan) {
+                $year = $latestPlan['seplan_year'];
+                $term = $latestPlan['seplan_term'];
             } else {
-                $year = date('Y') + 543;
+                // Fallback if no plans exist at all
+                $year = date('Y') + 543; // Buddhist year
                 $term = 1;
             }
         }
@@ -906,14 +1016,22 @@ class CurriculumController extends BaseController
             ->get()->getResult();
 
         $data['plans'] = $this->curriculumModel
-            ->select('tb_send_plan.*, u.pers_firstname, u.pers_lastname')
+            ->select('tb_send_plan.*, u.pers_firstname, u.pers_lastname, tb_send_plan_type.type_name') // Added type_name
             ->join($this->db_personnel->database . '.tb_personnel as u', 'u.pers_id = tb_send_plan.seplan_usersend')
+            ->join('tb_send_plan_type', 'tb_send_plan_type.type_id = tb_send_plan.seplan_typeplan_id', 'left') // Added join
             ->where('tb_send_plan.seplan_usersend', $teacher_id)
             ->where('tb_send_plan.seplan_year', $year)
             ->where('tb_send_plan.seplan_term', $term)
             ->groupBy('tb_send_plan.seplan_ID')
             ->orderBy('tb_send_plan.seplan_namesubject', 'ASC')
             ->get()->getResult();
+
+        // Fetch active plan types for the view
+        $data['activePlanTypes'] = $this->db->table('tb_send_plan_type')
+                                            ->select('type_name')
+                                            ->where('is_active', 1)
+                                            ->orderBy('type_id', 'ASC')
+                                            ->get()->getResultArray();
 
         return view('teacher/curriculum/plan_check_head_detail', $data);
     }
