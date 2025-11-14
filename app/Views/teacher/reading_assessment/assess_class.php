@@ -106,7 +106,7 @@
                                     <?php foreach (($assessmentItems ?? []) as $item) : ?>
                                         <th style="width: 120px;">
                                             <div class="d-flex flex-column align-items-center">
-                                                <span>ตัวชี้วัดที่ <?= esc($item['ItemID']) ?></span>
+                                                <span>ตัวชี้วัดที่ <?= esc($item['ItemID']) ?>: <?= esc($item['ItemName']) ?></span>
                                                 <div class="btn-group mt-1">
                                                     <button type="button" class="btn btn-xs btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="กรอกคะแนนทั้งหมด">
                                                         <i class="bi bi-magic"></i>

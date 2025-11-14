@@ -21,9 +21,9 @@ class ReadingAssessmentController extends BaseController
     public function index()
     {
         $model = new \App\Models\ReadingAssessmentModel();
-        $latestYearTerm = $model->getLatestSchoolYear();
-        $academicYear = $latestYearTerm['year'];
-        $term = $latestYearTerm['term'];
+        $activeYearTerm = $model->getAssessmentAcademicYearAndTerm();
+        $academicYear = $activeYearTerm['year'];
+        $term = $activeYearTerm['term'];
 
         $teacherClasses = $model->getTeacherClasses($this->teacherId, $academicYear);
 
@@ -33,9 +33,12 @@ class ReadingAssessmentController extends BaseController
             $class['status'] = $status;
         }
 
+        $assessmentStatus = $model->getAssessmentOnOffStatus();
+
         $data = [
             'teacherClasses' => $teacherClasses,
             'academicYear' => $academicYear,
+            'assessmentStatus' => $assessmentStatus,
             'title' => 'แบบประเมินการอ่าน คิดวิเคราะห์ และเขียน'
         ];
 
@@ -46,8 +49,9 @@ class ReadingAssessmentController extends BaseController
     {
         $className = $class . '/' . $room;
         $model = new \App\Models\ReadingAssessmentModel();
-        $academicYear = '2568'; // Hardcoded for now
-        $term = '1'; // Hardcoded for now
+        $activeYearTerm = $model->getAssessmentAcademicYearAndTerm();
+        $academicYear = $activeYearTerm['year'];
+        $term = $activeYearTerm['term'];
 
         $students = $model->getStudentsByHomeroomClass($className, $academicYear);
         $assessmentItems = $model->getAssessmentItems();
@@ -136,9 +140,9 @@ class ReadingAssessmentController extends BaseController
     {
         $className = $class . '/' . $room;
         $model = new \App\Models\ReadingAssessmentModel();
-        $latestYearTerm = $model->getLatestSchoolYear();
-        $academicYear = $latestYearTerm['year'];
-        $term = '1'; // Hardcoded for now
+        $activeYearTerm = $model->getAssessmentAcademicYearAndTerm();
+        $academicYear = $activeYearTerm['year'];
+        $term = $activeYearTerm['term'];
 
         // --- Get Signatory Names ---
         $homeroomTeachersData = $model->getHomeroomTeachersByClassAndYear($class . '/' . $room, $academicYear);
@@ -174,21 +178,21 @@ class ReadingAssessmentController extends BaseController
         if ($academicHeadId) {
             $academic_head_info = $model->getPersonnelFullName($academicHeadId);
         }
-        $academic_head = ($academic_head_info) ? $academic_head_info['pers_prefix'] . $academic_head_info['pers_firstname'] . ' ' . $academic_head_info['pers_lastname'] : 'นางสาวอรอุมา ฉวีทอง'; // Fallback
+        $academic_head = ($academic_head_info) ? $academic_head_info['pers_prefix'] . $academic_head_info['pers_firstname'] . ' ' . $academic_head_info['pers_lastname'] : '...........................................'; // Fallback
 
         $deputyDirectorId = $model->getAdminPersonnelIdByRoleName('รองวิชาการ');
         $deputy_director_info = null;
         if ($deputyDirectorId) {
             $deputy_director_info = $model->getPersonnelFullName($deputyDirectorId);
         }
-        $deputy_director = ($deputy_director_info) ? $deputy_director_info['pers_prefix'] . $deputy_director_info['pers_firstname'] . ' ' . $deputy_director_info['pers_lastname'] : 'นางสาวศริทร์ทิพย์ กริมเขียว'; // Fallback
+        $deputy_director = ($deputy_director_info) ? $deputy_director_info['pers_prefix'] . $deputy_director_info['pers_firstname'] . ' ' . $deputy_director_info['pers_lastname'] : '...........................................'; // Fallback
 
         $directorId = $model->getAdminPersonnelIdByRoleName('ผู้บริหาร');
         $director_info = null;
         if ($directorId) {
             $director_info = $model->getPersonnelFullName($directorId);
         }
-        $director = ($director_info) ? $director_info['pers_prefix'] . $director_info['pers_firstname'] . ' ' . $director_info['pers_lastname'] : 'นายพงษ์ศักดิ์ เงินสันเทียะ'; // Fallback
+        $director = ($director_info) ? $director_info['pers_prefix'] . $director_info['pers_firstname'] . ' ' . $director_info['pers_lastname'] : '...........................................'; // Fallback
 
         // --- Get Report Data ---
         $students = $model->getStudentsByHomeroomClass($className, $academicYear);
@@ -266,11 +270,12 @@ class ReadingAssessmentController extends BaseController
         $model = new \App\Models\ReadingAssessmentModel();
         $className = $this->request->getPost('className');
         $scores = $this->request->getPost('scores');
+        $activeYearTerm = $model->getAssessmentAcademicYearAndTerm();
 
         $data = [
             'scores' => $scores,
-            'term' => '1', // Hardcoded for now
-            'academicYear' => '2568', // Hardcoded for now
+            'term' => $activeYearTerm['term'],
+            'academicYear' => $activeYearTerm['year'],
             'evaluatorId' => $this->teacherId
         ];
 

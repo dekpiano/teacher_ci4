@@ -445,7 +445,7 @@ class ClubModel extends Model
         $db = db_connect('default'); // Assuming 'default' is the DBGroup for skjacth_academic
         $result = $db->table('tb_admin_rloes')
                        ->select('admin_rloes_userid')
-                       ->like('admin_rloes_nanetype', $roleName, 'both') // Use LIKE to find role in a combined string
+                       ->like('admin_rloes_academic_position', $roleName, 'both') // Use LIKE to find role in a combined string
                        ->get()
                        ->getRowArray();
         return $result ? $result['admin_rloes_userid'] : null;

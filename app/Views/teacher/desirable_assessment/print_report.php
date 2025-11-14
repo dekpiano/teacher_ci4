@@ -199,20 +199,20 @@
                     </div>
                     <div class="col-6 text-center">
                         <p>ลงชื่อ...........................................หัวหน้างานวิชาการ</p>
-                        <p class="signature-name">( <?= esc($academic_head) ?> )</p>
+                        <p class="signature-name">( <?= esc($academic_head_name) ?> )</p>
                     </div>
                 </div>
                 <div class="row mt-2">
                     <div class="col-12 text-center">                       
 
-                        <p>ลงชื่อ...........................................รองผู้อำนวยการสถานศึกษา</p>
-                        <p class="signature-name">( <?= esc($deputy_director) ?> )</p>
+                        <p>ลงชื่อ...........................................รองผู้อำนวยการฝ่ายวิชาการ</p>
+                        <p class="signature-name">( <?= esc($deputy_director_name) ?> )</p>
 <br>
                          <p>☐ อนุมัติ &nbsp;&nbsp;&nbsp; ☐ ไม่อนุมัติ
                             เนื่องจาก...........................................</p>
 
                         <p>ลงชื่อ...........................................ผู้อำนวยการสถานศึกษา</p>
-                        <p class="signature-name">( <?= esc($director) ?> )</p>
+                        <p class="signature-name">( <?= esc($director_name) ?> )</p>
                     </div>
                 </div>
             </div>

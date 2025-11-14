@@ -152,15 +152,15 @@ class DesirableAssessmentModel extends Model
                     ->get()->getResultArray();
     }
 
-    public function getAdminPersonnelIdByRoleName(string $roleName)
+    public function getAdminPersonnelInfoByRoleName(string $roleName)
     {
         $db = db_connect('default'); // Assuming 'default' is the DBGroup for skjacth_academic
         $result = $db->table('tb_admin_rloes')
-                       ->select('admin_rloes_userid')
+                       ->select('admin_rloes_userid, admin_rloes_academic_position')
                        ->where('admin_rloes_nanetype', $roleName)
                        ->get()
                        ->getRowArray();
-        return $result ? $result['admin_rloes_userid'] : null;
+        return $result; // Returns an array with userid and position, or null
     }
 
     public function getLatestSchoolYear()
@@ -230,6 +230,38 @@ class DesirableAssessmentModel extends Model
                        ->get()
                        ->getRowArray();
         return $result ? $result['class_teacher'] : null;
+    }
+
+    public function getAssessmentAcademicYearAndTerm()
+    {
+        $db = db_connect(); // Default DB
+        $result = $db->table('tb_register_onoff')
+                       ->select('onoff_year, onoff_detail')
+                       ->where('onoff_name', 'DesirableCharacteristics')
+                       ->get()
+                       ->getRowArray();
+
+        if ($result) {
+            $parts = explode('/', $result['onoff_year']);
+            $term = $parts[0] ?? '1';
+            $year = $parts[1] ?? date('Y') + 543;
+            return ['year' => $year, 'term' => $term];
+        }
+
+        // Fallback to current Buddhist year and term '1' if no record found
+        return ['year' => date('Y') + 543, 'term' => '1'];
+    }
+
+    public function getAssessmentOnOffStatus()
+    {
+        $db = db_connect(); // Default DB
+        $result = $db->table('tb_register_onoff')
+                       ->select('onoff_status')
+                       ->where('onoff_name', 'DesirableCharacteristics')
+                       ->get()
+                       ->getRowArray();
+
+        return $result ? $result['onoff_status'] : 'off'; // Default to 'off' if not found
     }
 
 }

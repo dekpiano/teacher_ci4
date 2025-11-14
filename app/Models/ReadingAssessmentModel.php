@@ -166,7 +166,8 @@ class ReadingAssessmentModel extends Model
         $assessedCount = $this->db->table('tb_evalu_raw_detail')
                                   ->select('StudentID')
                                   ->whereIn('StudentID', $studentIds)
-                                  ->where('AcademicYear', ''.$academicYear.'/'.$term.'')
+                                  ->where('AcademicYear', $academicYear)
+                                  ->where('Term', $term)
                                   ->distinct()
                                   ->countAllResults();
 
@@ -213,6 +214,38 @@ class ReadingAssessmentModel extends Model
                        ->get()
                        ->getRowArray();
         return $result ? $result['admin_rloes_userid'] : null;
+    }
+
+    public function getAssessmentAcademicYearAndTerm()
+    {
+        $db = db_connect(); // Default DB
+        $result = $db->table('tb_register_onoff')
+                       ->select('onoff_year, onoff_detail')
+                       ->where('onoff_name', 'ReadingWritingLearning')
+                       ->get()
+                       ->getRowArray();
+
+        if ($result) {
+            $parts = explode('/', $result['onoff_year']);
+            $term = $parts[0] ?? '1';
+            $year = $parts[1] ?? date('Y') + 543;
+            return ['year' => $year, 'term' => $term];
+        }
+
+        // Fallback to current Buddhist year and term '1' if no record found
+        return ['year' => date('Y') + 543, 'term' => '1'];
+    }
+
+    public function getAssessmentOnOffStatus()
+    {
+        $db = db_connect(); // Default DB
+        $result = $db->table('tb_register_onoff')
+                       ->select('onoff_status')
+                       ->where('onoff_name', 'ReadingWritingLearning')
+                       ->get()
+                       ->getRowArray();
+
+        return $result ? $result['onoff_status'] : 'off'; // Default to 'off' if not found
     }
 
     // Dates

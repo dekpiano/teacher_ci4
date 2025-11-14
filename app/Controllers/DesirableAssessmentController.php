@@ -21,9 +21,9 @@ class DesirableAssessmentController extends BaseController
     public function index()
     {
         $model = new DesirableAssessmentModel();
-        $latestYearTerm = $model->getLatestSchoolYear();
-        $academicYear = $latestYearTerm['year'];
-        $term = $latestYearTerm['term'];
+        $activeYearTerm = $model->getAssessmentAcademicYearAndTerm();
+        $academicYear = $activeYearTerm['year'];
+        $term = $activeYearTerm['term'];
 
         $teacherClasses = $model->getTeacherClasses($this->teacherId, $academicYear);
 
@@ -33,9 +33,13 @@ class DesirableAssessmentController extends BaseController
             $status = $model->getAssessmentStatusForClass($class['Reg_Class'], $academicYear, $term);
             $class['status'] = $status;
         }
+
+        $assessmentStatus = $model->getAssessmentOnOffStatus();
+
         $data = [
             'teacherClasses' => $teacherClasses,
             'academicYear' => $academicYear,
+            'assessmentStatus' => $assessmentStatus,
             'title' => 'ประเมินคุณลักษณะอันพึงประสงค์'
         ];
 
@@ -46,9 +50,9 @@ class DesirableAssessmentController extends BaseController
     {
         $className = $class . '/' . $room;
         $model = new DesirableAssessmentModel();
-        $latestYearTerm = $model->getLatestSchoolYear();
-        $academicYear = $latestYearTerm['year'];
-        $term = $latestYearTerm['term'];
+        $activeYearTerm = $model->getAssessmentAcademicYearAndTerm();
+        $academicYear = $activeYearTerm['year'];
+        $term = $activeYearTerm['term'];
 
         $students = $model->getStudentsByHomeroomClass($className, $academicYear);
         $assessmentItems = $model->getAssessmentItems(); // This is now hierarchical
@@ -172,12 +176,12 @@ class DesirableAssessmentController extends BaseController
         $className = $this->request->getPost('className');
         $scores = $this->request->getPost('scores');
         
-        $latestYearTerm = $model->getLatestSchoolYear();
+        $activeYearTerm = $model->getAssessmentAcademicYearAndTerm();
 
         $data = [
             'scores' => $scores,
-            'term' => $latestYearTerm['term'],
-            'academicYear' => $latestYearTerm['year'],
+            'term' => $activeYearTerm['term'],
+            'academicYear' => $activeYearTerm['year'],
             'evaluatorId' => $this->teacherId
         ];
 
@@ -192,9 +196,9 @@ class DesirableAssessmentController extends BaseController
     {
         $className = $class . '/' . $room;
         $model = new DesirableAssessmentModel();
-        $latestYearTerm = $model->getLatestSchoolYear();
-        $academicYear = $latestYearTerm['year'];
-        $term = $latestYearTerm['term'];
+        $activeYearTerm = $model->getAssessmentAcademicYearAndTerm();
+        $academicYear = $activeYearTerm['year'];
+        $term = $activeYearTerm['term'];
 
         // --- Get Signatory Names ---
         $homeroomTeachersData = $model->getHomeroomTeachersByClassAndYear($class . '/' . $room, $academicYear);
@@ -224,26 +228,44 @@ class DesirableAssessmentController extends BaseController
         }
         $grade_level_head = ($grade_level_head_info) ? $grade_level_head_info['pers_prefix'] . $grade_level_head_info['pers_firstname'] . ' ' . $grade_level_head_info['pers_lastname'] : '...........................................';
 
-        $academicHeadId = $model->getAdminPersonnelIdByRoleName('หัวหน้างานวิชาการ');
-        $academic_head_info = null;
-        if ($academicHeadId) {
-            $academic_head_info = $model->getPersonnelFullName($academicHeadId);
+        $academicHeadInfo = $model->getAdminPersonnelInfoByRoleName('หัวหน้าวิชาการ');
+        $academic_head_name = '...........................................';
+        $academic_head_position = 'หัวหน้างานวิชาการ';
+        if ($academicHeadInfo) {
+            $academic_head_personnel = $model->getPersonnelFullName($academicHeadInfo['admin_rloes_userid']);
+            if ($academic_head_personnel) {
+                $academic_head_name = $academic_head_personnel['pers_prefix'] . $academic_head_personnel['pers_firstname'] . ' ' . $academic_head_personnel['pers_lastname'];
+            }
+            if (!empty($academicHeadInfo['admin_rloes_academic_position'])) {
+                $academic_head_position = $academicHeadInfo['admin_rloes_academic_position'];
+            }
         }
-        $academic_head = ($academic_head_info) ? $academic_head_info['pers_prefix'] . $academic_head_info['pers_firstname'] . ' ' . $academic_head_info['pers_lastname'] : 'นางสาวชยารัตน์ เหงากูล'; // Fallback
 
-        $deputyDirectorId = $model->getAdminPersonnelIdByRoleName('รองผู้อำนวยการสถานศึกษา');
-        $deputy_director_info = null;
-        if ($deputyDirectorId) {
-            $deputy_director_info = $model->getPersonnelFullName($deputyDirectorId);
+        $deputyDirectorInfo = $model->getAdminPersonnelInfoByRoleName('รองวิชาการ');
+        $deputy_director_name = '...........................................';
+        $deputy_director_position = 'รองผู้อำนวยการสถานศึกษา';
+        if ($deputyDirectorInfo) {
+            $deputy_director_personnel = $model->getPersonnelFullName($deputyDirectorInfo['admin_rloes_userid']);
+            if ($deputy_director_personnel) {
+                $deputy_director_name = $deputy_director_personnel['pers_prefix'] . $deputy_director_personnel['pers_firstname'] . ' ' . $deputy_director_personnel['pers_lastname'];
+            }
+            if (!empty($deputyDirectorInfo['admin_rloes_academic_position'])) {
+                $deputy_director_position = $deputyDirectorInfo['admin_rloes_academic_position'];
+            }
         }
-        $deputy_director = ($deputy_director_info) ? $deputy_director_info['pers_prefix'] . $deputy_director_info['pers_firstname'] . ' ' . $deputy_director_info['pers_lastname'] : 'นางสาวอรอุมา ฉวีทอง'; // Fallback
 
-        $directorId = $model->getAdminPersonnelIdByRoleName('ผู้อำนวยการสถานศึกษา');
-        $director_info = null;
-        if ($directorId) {
-            $director_info = $model->getPersonnelFullName($directorId);
+        $directorInfo = $model->getAdminPersonnelInfoByRoleName('ผู้บริหาร');
+        $director_name = '...........................................';
+        $director_position = 'ผู้อำนวยการสถานศึกษา';
+        if ($directorInfo) {
+            $director_personnel = $model->getPersonnelFullName($directorInfo['admin_rloes_userid']);
+            if ($director_personnel) {
+                $director_name = $director_personnel['pers_prefix'] . $director_personnel['pers_firstname'] . ' ' . $director_personnel['pers_lastname'];
+            }
+            if (!empty($directorInfo['admin_rloes_academic_position'])) {
+                $director_position = $directorInfo['admin_rloes_academic_position'];
+            }
         }
-        $director = ($director_info) ? $director_info['pers_prefix'] . $director_info['pers_firstname'] . ' ' . $director_info['pers_lastname'] : 'นายพงษ์ศักดิ์ เงินสันเทียะ'; // Fallback
 
         // --- Get Report Data (Copied and adapted from assessClass) ---
         $students = $model->getStudentsByHomeroomClass($className, $academicYear);
@@ -338,9 +360,12 @@ class DesirableAssessmentController extends BaseController
             'studentResults' => $studentResults, // Pass detailed results for page 2
             'homeroom_teachers' => $homeroom_teachers,
             'grade_level_head' => $grade_level_head,
-            'academic_head' => $academic_head,
-            'deputy_director' => $deputy_director,
-            'director' => $director
+            'academic_head_name' => $academic_head_name,
+            'academic_head_position' => $academic_head_position,
+            'deputy_director_name' => $deputy_director_name,
+            'deputy_director_position' => $deputy_director_position,
+            'director_name' => $director_name,
+            'director_position' => $director_position
         ];
 
         return view('teacher/desirable_assessment/print_report', $data);
