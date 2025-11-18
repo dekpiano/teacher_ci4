@@ -37,6 +37,7 @@
                                 <p><strong>ชื่อชุมนุม:</strong> <?= esc($club->club_name) ?></p>
                                 <p><strong>คำอธิบาย:</strong> <?= esc($club->club_description) ?></p>
                                 <p><strong>จำนวนรับสูงสุด:</strong> <?= esc($club->club_max_participants) ?></p>
+                                <p><strong>ระดับชั้น:</strong> <?= esc($club->club_level) ?></p>
                                 <div><strong>สถานะ:</strong>
                                     <?php if ($club->club_status === 'open'): ?>
                                         <div class="alert alert-success py-1 px-2 d-inline-block">เปิดรับสมัคร</div>
@@ -145,6 +146,7 @@
                         <select class="form-select" id="club_level" name="club_level" required>
                             <option value="ม.ต้น" <?= (isset($club->club_level) && $club->club_level === 'ม.ต้น') ? 'selected' : '' ?>>ม.ต้น</option>
                             <option value="ม.ปลาย" <?= (isset($club->club_level) && $club->club_level === 'ม.ปลาย') ? 'selected' : '' ?>>ม.ปลาย</option>
+                            <option value="ม.ต้น และ ม.ปลาย" <?= (isset($club->club_level) && $club->club_level === 'ม.ต้น และ ม.ปลาย') ? 'selected' : '' ?>>ม.ต้น และ ม.ปลาย</option>
                         </select>
                         <label for="club_level">ระดับชั้น</label>
                     </div>

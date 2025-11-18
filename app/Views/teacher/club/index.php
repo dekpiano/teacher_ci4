@@ -57,6 +57,10 @@
                                             </p>
                                             <ul class="list-group list-group-flush mb-3">
                                                 <li class="list-group-item d-flex justify-content-between align-items-center p-0 border-0">
+                                                    <small class="text-muted">ระดับชั้น:</small>
+                                                    <small><?= esc($club->club_level) ?></small>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center p-0 border-0">
                                                     <small class="text-muted">จำนวนรับสูงสุด:</small>
                                                     <small><?= esc($club->club_max_participants) ?> คน</small>
                                                 </li>
@@ -105,7 +109,7 @@
                         <label for="club_description">คำอธิบายชุมนุม</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="number" class="form-control" id="club_max_participants" name="club_max_participants" placeholder="จำนวนรับสูงสุด (คน)" value="50" required>
+                        <input type="number" class="form-control" id="club_max_participants" name="club_max_participants" placeholder="จำนวนรับสูงสุด (คน)" value="20" required>
                         <label for="club_max_participants">จำนวนรับสูงสุด (คน)</label>
                     </div>
                     <div class="form-floating">
@@ -113,6 +117,7 @@
                             <option value="" selected disabled>-- เลือกระดับชั้น --</option>
                             <option value="ม.ต้น">ม.ต้น</option>
                             <option value="ม.ปลาย">ม.ปลาย</option>
+                            <option value="ม.ต้น และ ม.ปลาย">ม.ต้น และ ม.ปลาย</option>
                         </select>
                         <label for="club_level">ระดับชั้น</label>
                     </div>
