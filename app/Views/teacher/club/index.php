@@ -117,7 +117,7 @@
                             <option value="" selected disabled>-- เลือกระดับชั้น --</option>
                             <option value="ม.ต้น">ม.ต้น</option>
                             <option value="ม.ปลาย">ม.ปลาย</option>
-                            <option value="ม.ต้น และ ม.ปลาย">ม.ต้น และ ม.ปลาย</option>
+                            <option value="ม.ต้น หรือ ม.ปลาย">ม.ต้น หรือ ม.ปลาย</option>
                         </select>
                         <label for="club_level">ระดับชั้น</label>
                     </div>

@@ -146,7 +146,7 @@
                         <select class="form-select" id="club_level" name="club_level" required>
                             <option value="ม.ต้น" <?= (isset($club->club_level) && $club->club_level === 'ม.ต้น') ? 'selected' : '' ?>>ม.ต้น</option>
                             <option value="ม.ปลาย" <?= (isset($club->club_level) && $club->club_level === 'ม.ปลาย') ? 'selected' : '' ?>>ม.ปลาย</option>
-                            <option value="ม.ต้น และ ม.ปลาย" <?= (isset($club->club_level) && $club->club_level === 'ม.ต้น และ ม.ปลาย') ? 'selected' : '' ?>>ม.ต้น และ ม.ปลาย</option>
+                            <option value="ม.ต้น หรือ ม.ปลาย" <?= (isset($club->club_level) && $club->club_level === 'ม.ต้น หรือ ม.ปลาย') ? 'selected' : '' ?>>ม.ต้น หรือ ม.ปลาย</option>
                         </select>
                         <label for="club_level">ระดับชั้น</label>
                     </div>
