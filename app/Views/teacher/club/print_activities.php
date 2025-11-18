@@ -185,6 +185,7 @@
             <p class="mb-0">การบันทึกเวลาเรียน</p>
         </div>
 
+        <div class="table-responsive">
         <table class="table table-bordered" style="width: 100%;">
             <thead>
                 <?php
@@ -276,6 +277,7 @@
                 <?php endif; ?>
             </tbody>
         </table>
+    </div>
     </div>
 
 <div class="printable-page">

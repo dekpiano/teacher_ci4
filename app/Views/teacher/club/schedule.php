@@ -6,15 +6,18 @@
 
 <?= $this->section('content') ?>
 
-<div class="">
-    <div class="row">
+<div class="row">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title"><?= esc($title ?? 'ตารางกิจกรรมชุมนุม') ?></h3>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0"><?= esc($title ?? 'ตารางกิจกรรมชุมนุม') ?></h3>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#clubHelpModal">
+                        <i class="bi bi-question-circle"></i> คำแนะนำ
+                    </button>
                 </div>
                 <div class="card-body">
                     <?php if (!empty($schedules) && is_array($schedules)): ?>
+                        <div class="table-responsive">
                         <table class="table table-bordered table-hover">
                             <thead>
                                 <tr>
@@ -82,6 +85,7 @@
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
+                    </div>
                     <?php else: ?>
                         <div class="alert alert-info">
                             ไม่พบตารางกิจกรรมสำหรับชุมนุมนี้ (ผู้ดูแลระบบยังไม่ได้ตั้งค่า)
@@ -143,11 +147,35 @@
     </div>
 </div>
 
+<!-- Help Modal -->
+<div class="modal fade" id="clubHelpModal" tabindex="-1" aria-labelledby="clubHelpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clubHelpModalLabel"><i class="bi bi-question-circle-fill me-2"></i>คำแนะนำการใช้งานระบบชุมนุม</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <?php include('help_modal_content.php'); ?>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
 <script>
     $(document).ready(function() {
+        // When the help modal is shown, activate the correct tab for this page
+        $('#clubHelpModal').on('show.bs.modal', function () {
+            var tab = new bootstrap.Tab(document.querySelector('#pills-schedule-tab'));
+            tab.show();
+        });
+
         $('#activityModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
             var date = button.data('date');

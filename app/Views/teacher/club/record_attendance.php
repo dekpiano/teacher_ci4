@@ -12,28 +12,33 @@
     }
 </style>
 
-<div class="">
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title mb-0"><?= esc($title ?? 'บันทึกการเข้าเรียนชุมนุม') ?></h3>
-                    <?php if (isset($hasAttendanceRecord)): ?>
-                        <?php if (!$hasAttendanceRecord): ?>
-                            <span class="badge bg-warning">
-                                <i class="bi bi-exclamation-triangle-fill me-1"></i> ยังไม่ได้บันทึกการเข้าเรียน
-                            </span>
-                        <?php else: ?>
-                            <span class="badge bg-success">
-                                <i class="bi bi-check-circle-fill me-1"></i> บันทึกการเข้าเรียนแล้ว
-                            </span>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#clubHelpModal">
+                            <i class="bi bi-question-circle"></i> คำแนะนำ
+                        </button>
+                        <?php if (isset($hasAttendanceRecord)): ?>
+                            <?php if (!$hasAttendanceRecord): ?>
+                                <span class="badge bg-warning">
+                                    <i class="bi bi-exclamation-triangle-fill me-1"></i> ยังไม่ได้บันทึกการเข้าเรียน
+                                </span>
+                            <?php else: ?>
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle-fill me-1"></i> บันทึกการเข้าเรียนแล้ว
+                                </span>
+                            <?php endif; ?>
                         <?php endif; ?>
-                    <?php endif; ?>
+                    </div>
                 </div>
                 <div class="card-body">
                     <form action="<?= site_url('club/saveAttendance/' . $club->club_id . '/' . $schedule->tcs_schedule_id) ?>" method="post">
                         <?= csrf_field() ?>
                         <?php if (!empty($members) && is_array($members)): ?>
+                            <div class="table-responsive">
                             <table class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
@@ -80,6 +85,7 @@
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
+                        </div>
                             <div class="card-footer">
                                 <button type="submit" class="btn btn-primary">บันทึกการเข้าเรียน</button>
                                 <a href="<?= site_url('club/schedule/' . $club->club_id) ?>" class="btn btn-secondary">ย้อนกลับ</a>
@@ -95,11 +101,38 @@
             </div>
         </div>
     </div>
+
+<!-- Help Modal -->
+<div class="modal fade" id="clubHelpModal" tabindex="-1" aria-labelledby="clubHelpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clubHelpModalLabel"><i class="bi bi-question-circle-fill me-2"></i>คำแนะนำการใช้งานระบบชุมนุม</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <?php include('help_modal_content.php'); ?>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+            </div>
+        </div>
+    </div>
+</div>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // When the help modal is shown, activate the correct tab for this page
+        const helpModal = document.getElementById('clubHelpModal');
+        if (helpModal) {
+            helpModal.addEventListener('show.bs.modal', function () {
+                var tab = new bootstrap.Tab(document.querySelector('#pills-attendance-tab'));
+                tab.show();
+            });
+        }
+
         const statusColors = {
             'มา': 'bg-success text-white',
             'ขาด': 'bg-danger text-white',

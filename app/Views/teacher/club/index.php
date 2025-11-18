@@ -6,8 +6,7 @@
 
 <?= $this->section('content') ?>
 
-<div class="">
-    <div class="row">
+<div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -17,7 +16,7 @@
                             <span class="text-muted fs-5 ms-2">(ปีการศึกษา <?= esc($currentAcademicYear) ?> ภาคเรียนที่ <?= esc($currentTerm) ?>)</span>
                         <?php endif; ?>
                     </h3>
-                    <div class="card-tools">
+                    <div class="card-tools d-flex gap-2">
                         <?php if (isset($hasClubForCurrentYear) && $hasClubForCurrentYear): ?>
                             <span class="text-muted fst-italic">คุณได้สร้างชุมนุมสำหรับภาคเรียนนี้แล้ว</span>
                         <?php else: ?>
@@ -85,7 +84,6 @@
             </div>
         </div>
     </div>
-</div>
 
 <!-- Create Club Modal -->
 <div class="modal fade" id="createClubModal" tabindex="-1" role="dialog" aria-labelledby="createClubModalLabel" aria-hidden="true">
@@ -126,6 +124,30 @@
             </form>
         </div>
     </div>
-</div>
+<!-- Help Modal -->
+<div class="modal fade" id="clubHelpModal" tabindex="-1" aria-labelledby="clubHelpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clubHelpModalLabel"><i class="bi bi-question-circle-fill me-2"></i>คำแนะนำการใช้งานระบบชุมนุม</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <?php include('help_modal_content.php'); ?>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+            </div>
+        </div>
+    </div>
+<?= $this->endSection() ?>
 
+<?= $this->section('scripts') ?>
+<script>
+    // When the help modal is shown, activate the correct tab for this page
+    $('#clubHelpModal').on('show.bs.modal', function () {
+        var tab = new bootstrap.Tab(document.querySelector('#pills-index-tab'));
+        tab.show();
+    });
+</script>
 <?= $this->endSection() ?>

@@ -6,20 +6,22 @@
 
 <?= $this->section('content') ?>
 
-<div class="">
-    <div class="row">
+<div class="row">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                     <h3 class="card-title mb-0"><?= esc($title ?? 'จัดการชุมนุม') ?></h3>
-                    <div class="btn-group">
-                        <a href="<?= site_url('club/schedule/' . $club->club_id) ?>" class="btn btn-success btn-sm me-2">
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#clubHelpModal">
+                            <i class="bi bi-question-circle"></i> คำแนะนำ
+                        </button>
+                        <a href="<?= site_url('club/schedule/' . $club->club_id) ?>" class="btn btn-success btn-sm">
                             <i class="bi bi-calendar-event"></i> บันทึกเวลากิจกรรม
                         </a>
-                         <a href="<?= site_url('club/objectives/' . $club->club_id) ?>" class="btn btn-secondary btn-sm me-2">
+                         <a href="<?= site_url('club/objectives/' . $club->club_id) ?>" class="btn btn-secondary btn-sm">
                             <i class="bi bi-list-check"></i> จุดประสงค์กิจกรรม
                         </a>
-                        <a href="<?= site_url('club/activities/' . $club->club_id) ?>" class="btn btn-info btn-sm me-2">
+                        <a href="<?= site_url('club/activities/' . $club->club_id) ?>" class="btn btn-info btn-sm">
                             <i class="bi bi-bar-chart-line"></i> รายงานกิจกรรม
                         </a>
                        
@@ -52,6 +54,7 @@
 
                         <h4 class="mt-4">สมาชิกในชุมนุม (จำนวน: <?= !empty($members) ? count($members) : 0 ?> คน)</h4>
                         <?php if (!empty($members) && is_array($members)): ?>
+                            <div class="table-responsive">
                             <table class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
@@ -90,6 +93,7 @@
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
+                        </div>
                         <?php else: ?>
                             <div class="alert alert-info">
                                 ไม่พบสมาชิกในชุมนุมนี้
@@ -181,11 +185,36 @@
             </form>
         </div>
     </div>
-</div>                                        <?= $this->endSection() ?>
+</div>
+
+<!-- Help Modal -->
+<div class="modal fade" id="clubHelpModal" tabindex="-1" aria-labelledby="clubHelpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clubHelpModalLabel"><i class="bi bi-question-circle-fill me-2"></i>คำแนะนำการใช้งานระบบชุมนุม</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <?php include('help_modal_content.php'); ?>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+            </div>
+        </div>
+    </div>
+</div>
+<?= $this->endSection() ?>
                                         
                                         <?= $this->section('scripts') ?>
                                         <script>
                                             $(document).ready(function() {
+                                                // When the help modal is shown, activate the correct tab for this page
+                                                $('#clubHelpModal').on('show.bs.modal', function () {
+                                                    var tab = new bootstrap.Tab(document.querySelector('#pills-manage-tab'));
+                                                    tab.show();
+                                                });
+
                                                 // Handle Assign Role Modal data population
                                                 $('#assignRoleModal').on('show.bs.modal', function (event) {
                                                     var button = $(event.relatedTarget); // Button that triggered the modal

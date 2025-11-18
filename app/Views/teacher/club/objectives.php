@@ -6,16 +6,20 @@
 
 <?= $this->section('content') ?>
 
-<div class="">
-    <div class="row">
+<div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title mb-0"><?= esc($title ?? 'จุดประสงค์กิจกรรม') ?></h3>
-                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                        data-bs-target="#manageObjectivesModal">
-                        <i class="bi bi-plus-circle"></i> จัดการจุดประสงค์
-                    </button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#clubHelpModal">
+                            <i class="bi bi-question-circle"></i> คำแนะนำ
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#manageObjectivesModal">
+                            <i class="bi bi-plus-circle"></i> จัดการจุดประสงค์
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
                     <?php if (!empty($objectives)): ?>
@@ -96,7 +100,6 @@
             </div>
         </div>
     </div>
-</div>
 
 <!-- Manage Objectives Modal -->
 <div class="modal fade" id="manageObjectivesModal" tabindex="-1" aria-labelledby="manageObjectivesModalLabel"
@@ -132,7 +135,8 @@
 
                     <h5>จุดประสงค์ที่มีอยู่</h5>
                     <?php if (!empty($objectives)): ?>
-                    <table class="table table-bordered table-hover">
+                    <div class="table-responsive">
+<table class="table table-bordered table-hover">
                         <thead>
                             <tr>
                                 <th style="width: 50px;">ลำดับ</th>
@@ -164,6 +168,7 @@
                             <?php endforeach; ?>
                         </tbody>
                     </table>
+                    </div>
                     <?php else: ?>
                     <div class="alert alert-info">ยังไม่มีจุดประสงค์สำหรับชุมนุมนี้</div>
                     <?php endif; ?>
@@ -176,11 +181,38 @@
     </div>
 </div>
 
+<!-- Help Modal -->
+<div class="modal fade" id="clubHelpModal" tabindex="-1" aria-labelledby="clubHelpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clubHelpModalLabel"><i class="bi bi-question-circle-fill me-2"></i>คำแนะนำการใช้งานระบบชุมนุม</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <?php include('help_modal_content.php'); ?>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // When the help modal is shown, activate the correct tab for this page
+    const helpModal = document.getElementById('clubHelpModal');
+    if (helpModal) {
+        helpModal.addEventListener('show.bs.modal', function () {
+            var tab = new bootstrap.Tab(document.querySelector('#pills-objectives-tab'));
+            tab.show();
+        });
+    }
+
     const totalObjectives = <?= !empty($objectives) ? count($objectives) : 0 ?>;
 
     function updateRowSummary(row) {
