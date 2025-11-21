@@ -19,6 +19,13 @@
     <link href="https://fonts.googleapis.com/css2?family=K2D:wght@400;500;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" crossorigin="anonymous" />
 
+    <!-- Helpers -->
+    <script src="<?= base_url('public/assets/sneat/vendor/js/helpers.js') ?>"></script>
+
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="<?= base_url('public/assets/sneat/js/config.js') ?>"></script>
+
     <!-- Core CSS -->
     <link rel="stylesheet" href="<?= base_url('public/assets/sneat/vendor/css/core.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('public/assets/sneat/css/demo.css') ?>" />
@@ -58,10 +65,6 @@
             background-size: 100%; /* Adjusted size */
         }
     </style>
-
-    <!-- Helpers -->
-    <script src="<?= base_url('public/assets/sneat/vendor/js/helpers.js') ?>"></script>
-    <script src="<?= base_url('public/assets/sneat/js/config.js') ?>"></script>
 
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.min.css">
@@ -171,29 +174,37 @@
                     </li>
 
                     <!-- งานหลักสูตร -->
-                     <li class="menu-item <?= is_open_segment([['curriculum']], $segments) ?>">
+                     <li class="menu-item <?= is_open_segment([['curriculum'], ['research']], $segments) ?>">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bi-book-fill"></i>
                             <div data-i18n="งานหลักสูตร">งานหลักสูตร</div>
                         </a>
                         <ul class="menu-sub">
-                            <li class="menu-item <?= is_active_segment(['curriculum', 'SendPlan'], $segments) ?>">
-                                <a href="<?= base_url('curriculum/SendPlan') ?>" class="menu-link">
+                            <li class="menu-item <?= is_active_segment(['curriculum'], $segments) && !in_array('download-plan', $segments) ? 'active' : '' ?>">
+                                <a href="<?= base_url('curriculum') ?>" class="menu-link">
                                     <div data-i18n="ส่งแผนการสอน">ส่งแผนการสอน</div>
                                 </a>
                             </li>
-                            <?php if (session()->get('pers_groupleade') !== null && session()->get('pers_groupleade') !== ''): ?>
-                            <li class="menu-item <?= is_active_segment(['curriculum', 'check-plan-head'], $segments) ?>">
-                                <a href="<?= base_url('curriculum/check-plan-head') ?>" class="menu-link">
-                                    <div data-i18n="ตรวจแผน (หน.กลุ่มสาระ)">ตรวจแผน (หน.กลุ่มสาระ)</div>
-                                </a>
-                            </li>
-                            <?php endif; ?>
-                            <li class="menu-item <?= is_active_segment(['curriculum', 'download-plan'], $segments) ?>">
+                             <li class="menu-item <?= is_active_segment(['curriculum', 'download-plan'], $segments) ?>">
                                 <a href="<?= base_url('curriculum/download-plan') ?>" class="menu-link">
-                                    <div data-i18n="ดาวโหลดแผน">ดาวโหลดแผน</div>
+                                    <div data-i18n="ดาวโหลดแผนการสอน">ดาวโหลดแผนการสอน</div>
                                 </a>
                             </li>
+                             <li class="menu-item <?= is_active_segment(['research'], $segments) && !in_array('load-research', $segments) && !in_array('setting', $segments) ? 'active' : '' ?>">
+                                <a href="<?= base_url('research') ?>" class="menu-link">
+                                    <div data-i18n="ส่งงานวิจัยในชั้นเรียน">ส่งงานวิจัยในชั้นเรียน</div>
+                                </a>
+                            </li>
+                            <!-- <li class="menu-item <?= is_active_segment(['research', 'load-research'], $segments) ?>">
+                                <a href="<?= base_url('research/load-research') ?>" class="menu-link">
+                                    <div data-i18n="ดาวน์โหลดงานวิจัย">ดาวน์โหลดงานวิจัย</div>
+                                </a>
+                            </li> -->
+                             <!-- <li class="menu-item <?= is_active_segment(['research', 'setting'], $segments) ?>">
+                                <a href="<?= base_url('research/setting') ?>" class="menu-link">
+                                    <div data-i18n="ตั้งค่าส่งงานวิจัย">ตั้งค่าส่งงานวิจัย</div>
+                                </a>
+                            </li> -->
                         </ul>
                     </li>
 

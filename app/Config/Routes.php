@@ -119,7 +119,21 @@ $routes->get('login/googleCallback', 'Login::googleCallback');
         $routes->post('save_comment', 'CurriculumController::save_comment');
     });
 
-    // Reading Assessment Routes
+    // Research Routes
+    $routes->group('research', static function ($routes) {
+        $routes->get('', 'ResearchController::index');
+        $routes->get('(:num)/(:num)', 'ResearchController::index/$1/$2'); // For year/term filtering
+        $routes->get('send', 'ResearchController::sendResearch');
+        $routes->post('insert-research', 'ResearchController::insertResearch');
+        $routes->get('edit-research/(:num)', 'ResearchController::editResearch/$1');
+        $routes->post('update-research', 'ResearchController::updateResearch');
+        $routes->post('delete-research/(:num)', 'ResearchController::deleteResearch/$1');
+        $routes->get('load-research', 'ResearchController::loadResearch');
+        $routes->get('load-research/(:num)/(:num)', 'ResearchController::loadResearch/$1/$2'); // For year/term
+    $routes->get('load-research/(:num)/(:num)/(:any)', 'ResearchController::loadResearch/$1/$2/$3'); // For year/term/teacher
+    $routes->get('setting', 'ResearchController::settingResearch');
+    $routes->post('setting-update', 'ResearchController::settingUpdateResearch');
+});
     $routes->group('teacher/reading_assessment', static function ($routes) {
         $routes->get('', 'ReadingAssessmentController::index');
         $routes->get('assess/(:num)/(:num)', 'ReadingAssessmentController::assessClass/$1/$2');

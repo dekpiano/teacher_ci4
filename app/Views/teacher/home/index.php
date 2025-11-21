@@ -234,6 +234,16 @@
 								</div>
 								<div class="desc">อัปโหลดและส่งแผนการสอนเพื่อขออนุมัติ</div>
 							</a>
+							<a role="listitem" class="tile" href="<?= base_url('research') ?>" aria-label="ส่งงานวิจัยในชั้นเรียน">
+								<div class="meta">
+									<div class="title">
+										<div class="icon"><i class="bi bi-journal-text"></i></div>
+										<span>ส่งงานวิจัยในชั้นเรียน</span>
+									</div>
+									<div class="chev"><i class="bi bi-arrow-right-circle-fill text-muted"></i></div>
+								</div>
+								<div class="desc">อัปโหลดและส่งงานวิจัยในชั้นเรียน</div>
+							</a>
 							<a role="listitem" class="tile" href="<?= base_url('curriculum/download-plan') ?>" aria-label="ดาวน์โหลดแผน">
 								<div class="meta">
 									<div class="title">
